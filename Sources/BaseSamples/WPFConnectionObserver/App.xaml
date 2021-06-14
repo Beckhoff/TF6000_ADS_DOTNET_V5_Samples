@@ -1,0 +1,9 @@
+﻿<Application x:Class="_40_ADS.NET_WPFConnectionObserver.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:_40_ADS.NET_WPFConnectionObserver"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>

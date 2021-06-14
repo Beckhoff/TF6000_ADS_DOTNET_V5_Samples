@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.0.26">
+  <POU Name="MAIN" Id="{5b8b105e-ebeb-4fa9-bab8-986ca93559f8}">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	//Sample 01 and 02
+	nCounter     AT %MD0 :DWORD;
+	TP_1		: TP;
+	TOGGEL		: BOOL;
+
+	//Sample03
+	 boolVal   : BOOL;
+	 intVal    : INT;
+	 dintVal   : DINT;
+	 sintVal   : SINT;
+	 lrealVal  : LREAL;
+	 realVal   : REAL;
+	 stringVal : STRING(20);
+	 
+	//Sample10
+	text : STRING[30] := 'Hello TwinCAT';
+	
+	//Sample11
+	Time1:TIME := T#21H33M23S231MS;
+    Date1:DT:=DT#1993-06-12-15:36:55.40;
+	
+	//Sample12
+	PLCArray : ARRAY [0..99] OF INT;
+  	Index: BYTE;
+	
+	//Sample13
+	PLCStruct : PLCStruct;	
+	
+	//Sample14
+	(*primitive Types*)
+	bool1:BOOL := FALSE;
+	int1:INT := 30000;
+	dint1:DINT:=125000;
+	usint1:USINT:=200;
+	real1:REAL:= 1.2;
+	lreal1:LREAL:=3.5;
+
+	(*string Types*)
+	str1:STRING := 'this is a test string';
+	str2:STRING(5) := 'hallo';
+
+	(*struct Types*)
+	complexStruct1 : TComplexStruct;
+	
+	//Sample22
+	uintValue 	: UDINT 	:= 54321;
+	boolValue	: BOOL 		:= TRUE;
+	dintValue	: DINT		:= -12345678;
+	
+	//Sample30
+	fbMath	: FB_MATH;
+	TON1: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Sample 01 and 02
+nCounter := nCounter + 1;
+
+//Sample 03
+sintVal := sintVal + 1;
+dintVal := dintVal + 5;
+realVal := realVal + 0.1;
+lrealVal := lrealVal + 0.1;
+
+boolVal := FALSE;
+TON1(IN:= TRUE, PT:= T#200MS, Q=> boolVal);
+IF boolVal THEN
+	IF intval > 12 THEN
+		intval := 0;
+	END_IF
+	intVal := intVal + 1;
+	stringVal := LEFT(Text, intVal);
+	TON1(IN:= FALSE);
+END_IF
+
+//Sample12
+FOR Index := 0 TO 99 DO
+  PLCArray[Index] := 3500 + INDEX;
+END_FOR]]></ST>
+    </Implementation>
+    <ObjectProperties />
+  </POU>
+</TcPlcObject>

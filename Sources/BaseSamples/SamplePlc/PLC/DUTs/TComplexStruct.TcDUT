@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.0.26">
+  <DUT Name="TComplexStruct" Id="{4e04e13f-6d32-4ced-b9ff-7055f4fa75d3}">
+    <Declaration><![CDATA[TYPE TComplexStruct :
+STRUCT
+	intVal 			: INT:=1200;
+	dintArr			: ARRAY[0..3] OF DINT := [1,2,3,4];
+	boolVal			: BOOL := FALSE;
+	byteVal			: BYTE:=10;
+	stringVal 		: STRING(5) := 'hallo';
+	simpleStruct1	:  TSimpleStruct;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+    <ObjectProperties />
+  </DUT>
+</TcPlcObject>

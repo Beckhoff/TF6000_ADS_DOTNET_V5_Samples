@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.0.26">
+  <POU Name="FB_Math" Id="{08e5cb93-d3b0-4799-8ac9-227213fd8810}">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Math
+VAR
+	calls : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Addition" Id="{e1bdf1e4-5f4f-4c5b-9be7-6c14ec4d4362}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD Addition
+VAR_INPUT
+	a: DINT;
+	b: DINT;
+END_VAR
+VAR_OUTPUT
+	sum: DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[sum := a + b;
+calls := calls + 1;
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <ObjectProperties />
+  </POU>
+</TcPlcObject>
