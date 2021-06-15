@@ -1,0 +1,27 @@
+﻿<Window x:Class="AdsSessionTest.SymbolsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AdsSessionTest"
+        mc:Ignorable="d"
+        Title="SymbolsWindow" Height="768" Width="1024">
+    <Grid>
+        <Grid Margin="0,6,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <local:SymbolsControl x:Name="symbolsControl" Grid.Column="0" Margin="10"/>
+            <local:DataTypesControl x:Name="dataTypesControl" Grid.Column="1" Margin="10"/>
+            <TextBox x:Name="tBInstanceName" Height="23" Margin="10,10,0,0" Grid.Row="1" Text="TextBox" VerticalAlignment="Top" Width="276" HorizontalContentAlignment="Stretch"/>
+            <TextBox x:Name="tBInstanceType" Height="23" Margin="10,38,0,10" Grid.Row="1" Text="TextBox" VerticalAlignment="Top" Width="276" HorizontalContentAlignment="Stretch"/>
+            <TextBox x:Name="tBNamespace" Height="23" Margin="10,10,0,0" Grid.Row="1" Text="TextBox" VerticalAlignment="Top" Width="276" Grid.Column="1" HorizontalContentAlignment="Stretch"/>
+            <TextBox x:Name="tBTypeName" Height="23" Margin="10,38,0,10" Grid.Row="1" Text="TextBox" VerticalAlignment="Top" Width="276" Grid.Column="1" HorizontalContentAlignment="Stretch"/>
+        </Grid>
+    </Grid>
+</Window>

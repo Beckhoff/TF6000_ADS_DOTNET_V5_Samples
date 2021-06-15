@@ -1,0 +1,107 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AdsSessionTest"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        x:Class="AdsSessionTest.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="480" Width="640" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="640" MinHeight="800">
+    <!--<Window.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+        ObjectType="{x:Type sys:Enum}"
+        x:Key="AdsErrorCodeValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ads:AdsErrorCode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>-->
+    <Grid>
+        <Grid Margin="10,20,10,0" UseLayoutRounding="False">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnConnect" Content="Connect" Grid.Column="2" Margin="0,10,10,0" Width="102" Click="btnConnect_Click" Height="29" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+            <Button x:Name="btnInjectError" Content="Inject Error" Grid.Column="2" Margin="0,0,10,10" Width="87" HorizontalAlignment="Right" Click="btnInjectError_Click" Height="29" VerticalAlignment="Bottom"/>
+            <GroupBox x:Name="groupBox" Header="Settings" Margin="10" Grid.Row="1">
+                <Grid Margin="0,10,-2,-12">
+                    <Label x:Name="lblResurrection" Content="ResurrectionTime" HorizontalAlignment="Left" Margin="0,7,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblSynchronized" Content="Synchronized" HorizontalAlignment="Left" Margin="0,38,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblTimeout" Content="Timeout" HorizontalAlignment="Left" Margin="0,69,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tBResurrectionTime" Height="23" Margin="107,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Settings.ResurrectionTime, Mode=OneWay, StringFormat=\{0:ss\}}"/>
+                    <TextBox x:Name="tBSynchronized" Height="23" Margin="107,41,10,0" TextWrapping="Wrap" VerticalAlignment="Top" />
+                    <TextBox x:Name="tBTimeout" Height="23" Margin="107,72,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Settings.Timeout, Mode=OneWay}" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="gBMessages" Header="Messages" Margin="10" Grid.Row="3" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <TextBox x:Name="tBMessages" Margin="10,0,-2,4" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Stretch"/>
+            </GroupBox>
+            <GroupBox x:Name="gBState" Grid.Column="1" Header="State" Margin="10" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <Grid Margin="0,0,-2,-12">
+                    <TextBox x:Name="tBConnectionState" Height="23" Margin="105,13,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tBAdsState" Height="23" Margin="105,41,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <Label x:Name="lblConnectionState" Content="ConnectionState" Margin="10,13,61,117"/>
+                    <Label x:Name="lblAdsState" Content="AdsState" Margin="10,41,61,93"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="gBSession" Header="Session" Margin="10" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <Grid Margin="0,0,0,0">
+                    <TextBox x:Name="tBSessionEstablishedAt" Height="23" Margin="103,11,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.SessionEstablishedAt, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True"/>
+                    <TextBox x:Name="tBConnectionActiveSince" Height="23" Margin="103,41,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionActiveSince, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True"/>
+                    <Label x:Name="lblSessionEstablishedAt" Content="EstablishedAt" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblConnectionActiveSince" Content="ActiveSince" HorizontalAlignment="Left" Margin="8,38,0,0" VerticalAlignment="Top"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="gBConnection" Grid.Column="1" Header="Connection" Margin="10,9,10,10" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <Grid Margin="0,0,0,0">
+                    <TextBox x:Name="tBConnectionEstablishedAt" Height="22" Margin="98,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionEstablishedAt, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True"/>
+                    <TextBox x:Name="tBConnectionLostCount" Height="22" Margin="98,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionLostCount, Mode=OneWay}" IsReadOnly="True"/>
+                    <TextBox x:Name="tBCConnectionLostTime" Height="24" Margin="98,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionLostTime, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True"/>
+                    <Label x:Name="lblConnectionLostCount" Content="LostCount" HorizontalAlignment="Left" Margin="3,42,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.494,1.731"/>
+                    <Label x:Name="lblConnectionLostTime" Content="LostTime" HorizontalAlignment="Left" Margin="3,12,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblConnectionEstablishedAt" Content="Established" HorizontalAlignment="Left" Margin="3,74,0,0" VerticalAlignment="Top"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="gBSettings" Grid.Column="2" Header="Settings" HorizontalAlignment="Stretch" Margin="10,9,10,10" Grid.Row="2" VerticalAlignment="Stretch">
+                <Grid Margin="0,0,0,0">
+                    <Label x:Name="lblResurrections" Content="Resurrections" Margin="0,98,84,24"/>
+                    <TextBox x:Name="tBTotalCycles" Height="22" Margin="96,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.TotalCycles, Mode=OneWay}" IsReadOnly="True"/>
+                    <TextBox x:Name="tBTotalErrors" Height="22" Margin="96,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.TotalErrors, Mode=OneWay}" IsReadOnly="True"/>
+                    <TextBox x:Name="tBErrorsSinceLastSucceeded" Height="24" Margin="98,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ErrorsSinceLastSucceeded, Mode=OneWay}" IsReadOnly="True"/>
+                    <TextBox x:Name="tBResurrections" Height="24" Margin="96,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.Resurrections, Mode=OneWay}"/>
+                    <Label x:Name="lblCycles" Content="Cycles" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblTotalErrors" Content="Errors" HorizontalAlignment="Left" Margin="0,42,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblErrorsSinceLastSuccess" Content="ErrorsSinceSucc" HorizontalAlignment="Left" Margin="0,72,0,0" VerticalAlignment="Top"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="gBAddress" Header="Address" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.ColumnSpan="2">
+                <Grid Margin="0,0,0,0">
+                    <Label x:Name="lblNetId" Content="NetId:" Margin="0,4,316,113"/>
+                    <Label x:Name="lblPort" Content="Port:" Margin="5,34,311,0" Height="24" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tbPort" Margin="70,36,10,0" TextWrapping="Wrap" Text="851" Height="22" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tbNetId" Margin="70,9,10,0" TextWrapping="Wrap" Height="22" VerticalAlignment="Top"/>
+                </Grid>
+            </GroupBox>
+            <ComboBox x:Name="cBError" Grid.Column="2" Margin="0,117,10,49" SelectionChanged="comboBox_SelectionChanged" HorizontalAlignment="Right" Width="179" VerticalAlignment="Top"/>
+            <GroupBox x:Name="gBSymbols" Grid.Column="2" Header="Symbols" HorizontalAlignment="Stretch" Margin="10" Grid.Row="1" VerticalAlignment="Stretch">
+                <Grid Margin="0,0,0,0">
+                    <Button x:Name="btnSymbols" Content="Symbols" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Width="75" Click="btnSymbols_Click"/>
+                </Grid>
+            </GroupBox>
+            <Label x:Name="lblDefaultResurrection" Content="ResurrectionTime" HorizontalAlignment="Left" Margin="30,50,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+            <TextBox x:Name="tBDefaultResurrectionTime" Height="23" Margin="137,53,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="2"/>
+            <Label x:Name="lblDefaultTimeOut" Content="Timeout" HorizontalAlignment="Left" Margin="30,78,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+            <TextBox x:Name="tBDefaultTimeout" Height="23" Margin="137,81,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="2"/>
+            <Button x:Name="btnResurrect" Content="Resurrect" Grid.Column="2" Margin="0,0,102,10" Width="87" HorizontalAlignment="Right" Click="btnResurrect_Click" Height="29" VerticalAlignment="Bottom" RenderTransformOrigin="-0.655,0.448"/>
+        </Grid>
+    </Grid>
+</Window>

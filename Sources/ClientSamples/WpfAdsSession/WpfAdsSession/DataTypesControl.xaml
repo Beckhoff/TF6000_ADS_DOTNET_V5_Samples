@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="AdsSessionTest.DataTypesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AdsSessionTest"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:ads="clr-namespace:TwinCAT.Ads;assembly=TwinCAT.Ads"
+             xmlns:typeSystem="clr-namespace:TwinCAT.TypeSystem;assembly=TwinCAT.Ads"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+            
+        <ScrollViewer HorizontalScrollBarVisibility="Visible" Grid.Row="0">
+                   <Grid Grid.IsSharedSizeScope="True">
+                        <Grid.RowDefinitions>
+                            <!-- Header row -->
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TreeView BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Row="0">
+                            <TreeViewItem>
+                                <TreeViewItem.Header>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="25" SharedSizeGroup="Icon"/>
+                                            <ColumnDefinition Width="200" SharedSizeGroup="Name"/>
+                                            <ColumnDefinition Width="150" SharedSizeGroup="TypeName"/>
+                                            <ColumnDefinition Width="150" SharedSizeGroup="Category"/>
+                                            <ColumnDefinition Width="150" SharedSizeGroup="Comment"/>
+                                            <ColumnDefinition Width="50" SharedSizeGroup="Offset"/>
+                                            <ColumnDefinition Width="50" SharedSizeGroup="Size"/>
+                                            <ColumnDefinition Width="100" SharedSizeGroup="BaseType"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="1" Margin="3,0,3,0" Text="Name"></TextBlock>
+                                        <TextBlock Grid.Column="2" Margin="3,0,3,0" Text="TypeName"></TextBlock>
+                                        <TextBlock Grid.Column="3" Margin="3,0,3,0" Text="Category"></TextBlock>
+                                        <TextBlock Grid.Column="4" Margin="3,0,3,0" Text="Comment"></TextBlock>
+                                        <TextBlock Grid.Column="5" Margin="3,0,3,0" Text="Offset"></TextBlock>
+                                        <TextBlock Grid.Column="6" Margin="3,0,3,0" Text="Size"></TextBlock>
+                                        <TextBlock Grid.Column="7" Margin="3,0,3,0" Text="BaseType"></TextBlock>
+                                    </Grid>
+                                </TreeViewItem.Header>
+                            </TreeViewItem>
+                        </TreeView>
+                        <TreeView x:Name="treeView" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" ItemsSource="{Binding DataTypes}" Grid.Row="1">
+                            <TreeView.ItemContainerStyle>
+                                <!-- 
+                        This Style binds a TreeViewItem to a SymbolViewModel. 
+                    -->
+                                <Style TargetType="{x:Type TreeViewItem}">
+                                    <!-- This Setter applies an attached behavior to all TreeViewItems.  -->
+                                    <Setter Property="local:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True"/>
+                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                    <Setter Property="FontWeight" Value="Normal" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="FontWeight" Value="Bold" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TreeView.ItemContainerStyle>
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding SubSymbols}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition SharedSizeGroup="Icon"/>
+                                            <ColumnDefinition SharedSizeGroup="Name"/>
+                                            <ColumnDefinition SharedSizeGroup="TypeName"/>
+                                            <ColumnDefinition SharedSizeGroup="Category"/>
+                                            <ColumnDefinition SharedSizeGroup="Comment"/>
+                                            <ColumnDefinition SharedSizeGroup="Offset"/>
+                                            <ColumnDefinition SharedSizeGroup="Size"/>
+                                            <ColumnDefinition SharedSizeGroup="BaseType"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Image Name="img"   Width="16" Height="16"  Grid.Column="0"  Source="{Binding Image}"/>
+                                        <TextBlock Grid.Column="1" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding Name}" />
+                                        <TextBlock Grid.Column="2" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding TypeName}" />
+                                        <TextBlock Grid.Column="3" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding Category}" Foreground="Blue" />
+                                        <TextBlock Grid.Column="4" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding Comment}" />
+                                        <TextBlock Grid.Column="5" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding Offset}" />
+                                        <TextBlock Grid.Column="6" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding Size}" />
+                                        <TextBlock Grid.Column="7" Margin="5,0,5,0" TextAlignment="Left" Text="{Binding BaseType}" />
+                                    </Grid>
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </Grid>
+            </ScrollViewer>
+                <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1,0,1,1">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#33000000" Offset="0" />
+                                <GradientStop Color="#11000000" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>            
+                        <StackPanel HorizontalAlignment="Center" Margin="4" Orientation="Horizontal">
+                            <TextBlock Text="Search for:" />
+                            <TextBox x:Name="searchTextBox" KeyDown="searchTextBox_KeyDown" Margin="6,0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                            <Button Command="{Binding SearchCommand}" Content="_Find" Padding="8,0" />
+                        </StackPanel>
+                    </Border>
+       </Grid>
+</UserControl>
