@@ -17,7 +17,7 @@ namespace Sample.Ads.AdsServerCore
 
     class Program
     {
-        static ILogger s_logger = null;
+        //static ILogger s_logger = null;
 
         public static void Main(string[] args)
         {

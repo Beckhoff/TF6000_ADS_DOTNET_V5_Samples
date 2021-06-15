@@ -15,26 +15,26 @@ namespace TestServer
 {
     public interface IServerLogger
     {
-        void AppendLoggerList(string str);
-        uint ServerNotificationHandle { get; set; }
+        void Log(string str);
+        //uint ServerNotificationHandle { get; set; }
 
-        void OnAdsWriteInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData);
-        void OnAdsReadInd(AmsAddress rAddr, uint invokeId, uint indexOffset, int cbLength);
-        void OnAdsReadStateInd(AmsAddress rAddr, uint invokeId);
-        void OnAdsWriteControlInd(AmsAddress rAddr, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data);
-        void OnAdsAddDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int cbLength, NotificationSettings notificationSettings);
-        void OnAdsDelDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint hNotification);
-        void OnAdsDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint numStapHeaders, NotificationSamplesStamp[] stampHeaders);
-        void OnAdsReadWriteInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int cbReadLength, ReadOnlyMemory<byte> writeData);
-        void OnAdsReadStateCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState);
-        void OnAdsReadCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData);
-        void OnAdsWriteCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result);
-        void OnAdsReadDeviceInfoCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, string name, AdsVersion version);
-        void OnAdsReadDeviceInfoCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result);
-        void OnAdsAddDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle);
-        void OnAdsDelDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result);
-        void OnAdsReadWriteCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData);
-        void OnAdsReadDeviceInfoInd(AmsAddress rAddr, uint invokeId);
+        void LogWriteInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData);
+        void LogReadInd(AmsAddress rAddr, uint invokeId, uint indexOffset, int cbLength);
+        void LogReadStateInd(AmsAddress rAddr, uint invokeId);
+        void LogWriteControlInd(AmsAddress rAddr, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data);
+        void LogAddDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int cbLength, NotificationSettings notificationSettings);
+        void LogDelDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint hNotification);
+        void LogDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint numStapHeaders, NotificationSamplesStamp[] stampHeaders);
+        void LogReadWriteInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int cbReadLength, ReadOnlyMemory<byte> writeData);
+        void LogReadStateCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState);
+        void LogReadCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData);
+        void LogWriteCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result);
+        void LogReadDeviceInfoCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, string name, AdsVersion version);
+        void LogReadDeviceInfoCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result);
+        void LogAddDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle);
+        void LogDelDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result);
+        void LogReadWriteCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData);
+        void LogReadDeviceInfoInd(AmsAddress rAddr, uint invokeId);
 
         ILogger Logger { get; }
     }
@@ -59,172 +59,168 @@ namespace TestServer
             set { }
         }
 
-        public virtual void AppendLoggerList(string str)
+        public virtual void Log(string str)
         {
         }
 
-        public virtual void OnAdsAddDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle)
+        public virtual void LogAddDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle)
         {
         }
 
-        public virtual void OnAdsAddDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int cbLength, NotificationSettings settings)
+        public virtual void LogAddDeviceNotificationInd(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int cbLength, NotificationSettings settings)
         {
         }
 
-        public virtual void OnAdsDelDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result)
+        public virtual void LogDelDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result)
         {
         }
 
-        public virtual void OnAdsDelDeviceNotificationInd(AmsAddress sender, uint invokeId, uint hNotification)
+        public virtual void LogDelDeviceNotificationInd(AmsAddress sender, uint invokeId, uint hNotification)
         {
         }
 
-        public virtual void OnAdsDeviceNotificationInd(AmsAddress sender, uint invokeId, uint numStapHeaders, NotificationSamplesStamp[] stampHeaders)
+        public virtual void LogDeviceNotificationInd(AmsAddress sender, uint invokeId, uint numStapHeaders, NotificationSamplesStamp[] stampHeaders)
         {
         }
 
-        public virtual void OnAdsReadCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
+        public virtual void LogReadCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
         {
         }
 
-        public virtual void OnAdsReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result, string name, AdsVersion version)
+        public virtual void LogReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result, string name, AdsVersion version)
         {
         }
 
-        public virtual void OnAdsReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
+        public virtual void LogReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
         {
         }
 
-        public virtual void OnAdsReadDeviceInfoInd(AmsAddress sender, uint invokeId)
+        public virtual void LogReadDeviceInfoInd(AmsAddress sender, uint invokeId)
         {
         }
 
-        public virtual void OnAdsReadInd(AmsAddress sender, uint invokeId, uint indexOffset, int cbLength)
+        public virtual void LogReadInd(AmsAddress sender, uint invokeId, uint indexOffset, int cbLength)
         {
         }
 
-        public virtual void OnAdsReadStateCon(AmsAddress sender, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState)
+        public virtual void LogReadStateCon(AmsAddress sender, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState)
         {
         }
 
-        public virtual void OnAdsReadStateInd(AmsAddress sender, uint invokeId)
+        public virtual void LogReadStateInd(AmsAddress sender, uint invokeId)
         {
         }
 
-        public virtual void OnAdsReadWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
+        public virtual void LogReadWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
         {
         }
 
-        public virtual void OnAdsReadWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int cbReadLength, ReadOnlyMemory<byte> writeData)
+        public virtual void LogReadWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int cbReadLength, ReadOnlyMemory<byte> writeData)
         {
         }
 
-        public virtual void OnAdsWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
+        public virtual void LogWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
         {
         }
 
-        public virtual void OnAdsWriteControlInd(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data)
+        public virtual void LogWriteControlInd(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data)
         {
         }
 
-        public virtual void OnAdsWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData)
+        public virtual void LogWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData)
         {
         }
     }
 
     public class ServerLogger : ServerLoggerBase
     {
-        //ILogger _logger;
-
         public ServerLogger(ILogger logger) : base(logger)
         {
-            //_logger = logger;
         }
 
-
-        public override void OnAdsAddDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle)
+        public override void LogAddDeviceNotificationCon(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle)
         {
-            Logger.LogDebug(string.Format("AddDeviceNotificationCon(Address: {0}, InvokeId: {1}, Result: {2}, Handle: {3}"), rAddr, invokeId, result, notificationHandle);
+            Logger.LogDebug($"AddDeviceNotificationCon(Address: {rAddr}, InvokeId: {invokeId}, Result: {result}, Handle: {notificationHandle}");
         }
 
-        public override void OnAdsAddDeviceNotificationInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int cbLength, NotificationSettings settings)
+        public override void LogAddDeviceNotificationInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int cbLength, NotificationSettings settings)
         {
-            Logger.LogDebug(string.Format("AddDeviceNotificationInd(Address: {0}, InvokeId: {1}, IG: {2}, IO: {3}, Len: {4})", sender, invokeId, indexGroup, indexOffset, cbLength));
+            Logger.LogDebug($"AddDeviceNotificationInd(Address: {sender}, InvokeId: {invokeId}, IG: {indexGroup}, IO: {indexOffset}, Len: {cbLength})");
         }
 
-        public override void OnAdsDelDeviceNotificationCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
+        public override void LogDelDeviceNotificationCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
         {
-            Logger.LogDebug(string.Format("DelDeviceNotificationCon(Address: {0}, InvokeId: {1}, Result: {2})", sender, invokeId, result));
+            Logger.LogDebug($"DelDeviceNotificationCon(Address: {sender}, InvokeId: {invokeId}, Result: {result})");
         }
 
-        public override void OnAdsDelDeviceNotificationInd(AmsAddress sender, uint invokeId, uint hNotification)
+        public override void LogDelDeviceNotificationInd(AmsAddress sender, uint invokeId, uint hNotification)
         {
-            Logger.LogDebug(string.Format("DelDeviceNotificationInd(Address: {0}, InvokeId: {1}, Handle: {2})", sender, invokeId, hNotification));
+            Logger.LogDebug($"DelDeviceNotificationInd(Address: {sender}, InvokeId: {invokeId}, Handle: {hNotification})");
         }
 
-        public override void OnAdsDeviceNotificationInd(AmsAddress sender, uint invokeId, uint numStapHeaders, NotificationSamplesStamp[] stampHeaders)
+        public override void LogDeviceNotificationInd(AmsAddress sender, uint invokeId, uint numStapHeaders, NotificationSamplesStamp[] stampHeaders)
         {
-            Logger.LogDebug(string.Format("DeviceNotificationInd(Address: {0}, InvokeId: {1}, Headers: {2})", sender, invokeId, numStapHeaders));
+            Logger.LogDebug($"DeviceNotificationInd(Address: {sender}, InvokeId: {invokeId}, Headers: {numStapHeaders})");
         }
 
-        public override void OnAdsReadCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
+        public override void LogReadCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
         {
-            Logger.LogDebug(string.Format("ReadCon(Address: {0}, InvokeId: {1}, Result: {2}, cbLength: {3}", sender, invokeId, result, readData.Length));
+            Logger.LogDebug($"ReadCon(Address: {sender}, InvokeId: {invokeId}, Result: {result}, cbLength: {readData.Length}");
         }
 
-        public override void OnAdsReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result, string name, AdsVersion version)
+        public override void LogReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result, string name, AdsVersion version)
         {
-            Logger.LogDebug(string.Format("ReadDeviceInfoCon(Address: {0}, InvokeId: {1}, Result: {2}, Name: {3}, Version: {4})", sender, invokeId, result, name, version));
+            Logger.LogDebug($"ReadDeviceInfoCon(Address: {sender}, InvokeId: {invokeId}, Result: {result}, Name: {name}, Version: {version})");
         }
 
-        public override void OnAdsReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
+        public override void LogReadDeviceInfoCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
         {
-            Logger.LogDebug(string.Format("ReadDeviceInfoCon(Address: {0}, InvokeId: {1}, Result: {2})", sender, invokeId, result));
+            Logger.LogDebug($"ReadDeviceInfoCon(Address: {sender}, InvokeId: {invokeId}, Result: {result})");
         }
 
-        public override void OnAdsReadDeviceInfoInd(AmsAddress sender, uint invokeId)
+        public override void LogReadDeviceInfoInd(AmsAddress sender, uint invokeId)
         {
-            Logger.LogDebug(string.Format("ReadDeviceInfoInd(Address: {0}, InvokeId: {1})", sender, invokeId));
+            Logger.LogDebug($"ReadDeviceInfoInd(Address: {sender}, InvokeId: {invokeId})");
         }
 
-        public override void OnAdsReadInd(AmsAddress sender, uint invokeId, uint indexOffset, int cbLength)
+        public override void LogReadInd(AmsAddress sender, uint invokeId, uint indexOffset, int cbLength)
         {
-            Logger.LogDebug(string.Format("ReadInd(Address: {0}, InvokeId: {1}, Result: {2}, IO: {3}, Length: {4})", sender, invokeId, indexOffset, cbLength));
+            Logger.LogDebug($"ReadInd(Address: {sender}, InvokeId: {invokeId}, IO: {indexOffset}, Length: {cbLength})");
         }
 
-        public override void OnAdsReadStateCon(AmsAddress sender, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState)
+        public override void LogReadStateCon(AmsAddress sender, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState)
         {
-            Logger.LogDebug(string.Format("ReadStateCon(Address: {0}, InvokeId: {1}, Result: {2}, State: {3}, DeviceState: {4})", sender, invokeId, result, adsState, deviceState));
+            Logger.LogDebug($"ReadStateCon(Address: {sender}, InvokeId: {invokeId}, Result: {result}, State: {adsState}, DeviceState: {deviceState})");
         }
 
-        public override void OnAdsReadStateInd(AmsAddress sender, uint invokeId)
+        public override void LogReadStateInd(AmsAddress sender, uint invokeId)
         {
-            Logger.LogDebug(string.Format("ReadStateInd(Address: {0}, InvokeId: {1})", sender, invokeId));
+            Logger.LogDebug($"ReadStateInd(Address: {sender}, InvokeId: {invokeId})");
         }
 
-        public override void OnAdsReadWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
+        public override void LogReadWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData)
         {
-            Logger.LogDebug(string.Format("ReadWriteConfirmation(Address: {0}, InvokeId: {1}, Result: {2}, Length: {3})", sender, invokeId, result, readData.Length));
+            Logger.LogDebug($"ReadWriteConfirmation(Address: {sender}, InvokeId: {invokeId}, Result: {result}, Length: {readData.Length})");
         }
 
-        public override void OnAdsReadWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int cbReadLength, ReadOnlyMemory<byte> writeData)
+        public override void LogReadWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int cbReadLength, ReadOnlyMemory<byte> writeData)
         {
-            Logger.LogDebug(string.Format("ReadWriteInd(Address: {0}, InvokeId: {1}, IG: {2}, IO: {3}, ReadLen: {4}, WriteLen: {5})", sender, invokeId, indexGroup, indexOffset, cbReadLength, writeData.Length));
+            Logger.LogDebug($"ReadWriteInd(Address: {sender}, InvokeId: {invokeId}, IG: {indexGroup}, IO: {indexOffset}, ReadLen: {cbReadLength}, WriteLen: {writeData.Length})");
         }
 
-        public override void OnAdsWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
+        public override void LogWriteCon(AmsAddress sender, uint invokeId, AdsErrorCode result)
         {
-            Logger.LogDebug(string.Format("WriteCon(Address: {0}, InvokeId: {1}, Result: {2})", sender, invokeId, result));
+            Logger.LogDebug($"WriteCon(Address: {sender}, InvokeId: {invokeId}, Result: {result})");
         }
 
-        public override void OnAdsWriteControlInd(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data)
+        public override void LogWriteControlInd(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data)
         {
-            Logger.LogDebug(string.Format("WriteControlInd(Address: {0}, InvokeId: {1}, AdsState: {2}, DeviceState: {3}, Length: {4})", sender, invokeId, adsState, deviceState, data.Length));
+            Logger.LogDebug($"WriteControlInd(Address: {sender}, InvokeId: {invokeId}, AdsState: {adsState}, DeviceState: {deviceState}, Length: {data.Length})");
         }
 
-        public override void OnAdsWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData)
+        public override void LogWriteInd(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData)
         {
-            Logger.LogDebug(string.Format("WriteInd(Address: {0}, InvokeId: {1}, IG: {2}, IO: {3}, Length: {4})", sender, invokeId, indexGroup, indexOffset, writeData.Length));
+            Logger.LogDebug($"WriteInd(Address: {sender}, InvokeId: {invokeId}, IG: {indexGroup}, IO: {indexOffset}, Length: {writeData.Length})");
         }
     }
 
@@ -243,10 +239,11 @@ namespace TestServer
 
         /* Instanstiate an ADS server with a fix ADS port assigned by the ADS router.
         */
-        public AdsSampleServer(ushort port, string portName, IServerLogger logger) : base(port, portName, logger.Logger)
-        {
-            _serverLogger = logger;
-        }
+        //public AdsSampleServer(ushort port, string portName, ILogger logger) : base(port, portName, logger)
+        //{
+        //    _serverLogger = new ServerLogger(logger)
+        //    //_serverLogger = logger;
+        //}
 
         public AdsSampleServer(ushort port, string portName, ILogger logger) : base(port, portName, logger)
         {
@@ -283,7 +280,7 @@ namespace TestServer
 
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadDeviceInfoInd(rAddr, invokeId);
+                _serverLogger.LogReadDeviceInfoInd(rAddr, invokeId);
             }
             // Send a response to the requester
 
@@ -316,7 +313,7 @@ namespace TestServer
 
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsWriteInd(sender, invokeId, indexGroup, indexOffset, writeData);
+                _serverLogger.LogWriteInd(sender, invokeId, indexGroup, indexOffset, writeData);
             }
 
             switch (indexGroup) /* use index group (and offset) to distinguish between the services
@@ -341,7 +338,7 @@ namespace TestServer
 
                         if (_serverLogger != null)
                         {
-                            _serverLogger.AppendLoggerList(String.Format("PLC Counter: {0}", value));
+                            _serverLogger.Log(String.Format("PLC Counter: {0}", value));
                         }
                     }
 
@@ -364,7 +361,7 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadInd(rAddr, invokeId, indexOffset, readLength);
+                _serverLogger.LogReadInd(rAddr, invokeId, indexOffset, readLength);
             }
             /* Distinguish between services like in AdsWriteInd */
 
@@ -380,7 +377,7 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadStateInd(rAddr, invokeId);
+                _serverLogger.LogReadStateInd(rAddr, invokeId);
             }
 
             return ReadDeviceStateResponseAsync(rAddr, // requestor's AMS address
@@ -395,7 +392,7 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsWriteControlInd(rAddr, invokeId, adsState, deviceState, data);
+                _serverLogger.LogWriteControlInd(rAddr, invokeId, adsState, deviceState, data);
             }
 
             // Set requested ADS and device status
@@ -415,7 +412,7 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsAddDeviceNotificationInd(rAddr, invokeId, indexGroup, indexOffset, length, settings);
+                _serverLogger.LogAddDeviceNotificationInd(rAddr, invokeId, indexGroup, indexOffset, length, settings);
             }
 
 
@@ -431,7 +428,7 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsDelDeviceNotificationInd(rAddr, invokeId, hNotification);
+                _serverLogger.LogDelDeviceNotificationInd(rAddr, invokeId, hNotification);
             }
 
             AdsErrorCode errorCode = AdsErrorCode.NoError;
@@ -458,8 +455,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsDeviceNotificationInd(address, invokeId, numStampHeaders, stampHeaders);
-                _serverLogger.AppendLoggerList("Received Device Notification Request");
+                _serverLogger.LogDeviceNotificationInd(address, invokeId, numStampHeaders, stampHeaders);
+                _serverLogger.Log("Received Device Notification Request");
             }
 
             /*
@@ -473,7 +470,7 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadWriteInd(rAddr, invokeId, indexGroup, indexOffset, readLength, writeData);
+                _serverLogger.LogReadWriteInd(rAddr, invokeId, indexGroup, indexOffset, readLength, writeData);
             }
 
             /* Distinguish between services like in AdsWriteInd */
@@ -509,8 +506,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadStateCon(rAddr, invokeId, result, adsState, deviceState);
-                _serverLogger.AppendLoggerList("Received Read State Confirmation");
+                _serverLogger.LogReadStateCon(rAddr, invokeId, result, adsState, deviceState);
+                _serverLogger.Log("Received Read State Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -521,8 +518,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadCon(sender, invokeId, result, readData);
-                _serverLogger.AppendLoggerList("Received Read Confirmation");
+                _serverLogger.LogReadCon(sender, invokeId, result, readData);
+                _serverLogger.Log("Received Read Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -532,8 +529,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsWriteCon(sender, invokeId, result);
-                _serverLogger.AppendLoggerList("Received Write Confirmation");
+                _serverLogger.LogWriteCon(sender, invokeId, result);
+                _serverLogger.Log("Received Write Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -543,8 +540,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadDeviceInfoCon(sender, invokeId, result, name, version);
-                _serverLogger.AppendLoggerList("Received Read Device Info Confirmation");
+                _serverLogger.LogReadDeviceInfoCon(sender, invokeId, result, name, version);
+                _serverLogger.Log("Received Read Device Info Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -555,8 +552,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadDeviceInfoCon(rAddr, invokeId, result);
-                _serverLogger.AppendLoggerList("Received Write Control Confirmation");
+                _serverLogger.LogReadDeviceInfoCon(rAddr, invokeId, result);
+                _serverLogger.Log("Received Write Control Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -565,12 +562,12 @@ namespace TestServer
         protected override Task<AdsErrorCode> AddDeviceNotificationConfirmationAsync(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle, CancellationToken cancel)
 
         {
-            _serverLogger.ServerNotificationHandle = notificationHandle;
+            //_serverLogger.ServerNotificationHandle = notificationHandle;
 
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsAddDeviceNotificationCon(rAddr, invokeId, result, notificationHandle);
-                _serverLogger.AppendLoggerList("Received Add Device Notification Confirmation. Notification handle: " + notificationHandle);
+                _serverLogger.LogAddDeviceNotificationCon(rAddr, invokeId, result, notificationHandle);
+                _serverLogger.Log("Received Add Device Notification Confirmation. Notification handle: " + notificationHandle);
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -581,8 +578,8 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsDelDeviceNotificationCon(rAddr, invokeId, result);
-                _serverLogger.AppendLoggerList("Received Delete Device Notification Confirmation");
+                _serverLogger.LogDelDeviceNotificationCon(rAddr, invokeId, result);
+                _serverLogger.Log("Received Delete Device Notification Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
@@ -593,11 +590,53 @@ namespace TestServer
         {
             if (_serverLogger != null)
             {
-                _serverLogger.OnAdsReadWriteCon(address, invokeId, result, readData);
-                _serverLogger.AppendLoggerList("Received Read Write Confirmation");
+                _serverLogger.LogReadWriteCon(address, invokeId, result, readData);
+                _serverLogger.Log("Received Read Write Confirmation");
             }
 
             return Task.FromResult(AdsErrorCode.Succeeded);
+        }
+
+        uint invokeId = 0;
+
+        public Task<AdsErrorCode> TriggerReadDeviceInfoRequestAsync(AmsAddress target, CancellationToken cancel)
+        {
+            return base.ReadDeviceInfoRequestAsync(target, invokeId++, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerReadRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
+        {
+            return ReadRequestAsync(target, invokeId++, indexGroup, indexOffset, readLength, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerWriteRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, ReadOnlySpan<byte> data, CancellationToken cancel)
+        {
+            return WriteRequestAsync(target, invokeId++, indexGroup, indexOffset, data, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerReadStateRequestAsync(AmsAddress target, CancellationToken cancel)
+        {
+            return ReadDeviceStateRequestAsync(target, invokeId++, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerWriteControlRequestAsync(AmsAddress target, AdsState state, ushort deviceState, ReadOnlySpan<byte> data, CancellationToken cancel)
+        {
+            return WriteControlRequestAsync(target, invokeId++, state, deviceState, data, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerAddDeviceNotificationRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, int dataLength, NotificationSettings settings, CancellationToken cancel)
+        {
+            return AddDeviceNotificationRequestAsync(target, invokeId++, indexGroup, indexOffset, dataLength, settings, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerDeleteDeviceNotificationRequestAsync(AmsAddress target, uint handle, CancellationToken cancel)
+        {
+            return DeleteDeviceNotificationRequestAsync(target, invokeId++, handle, cancel);
+        }
+
+        public Task<AdsErrorCode> TriggerReadWriteRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, int readLength, ReadOnlySpan<byte>data, CancellationToken cancel)
+        {
+            return ReadWriteRequestAsync(target, invokeId++, indexGroup, indexOffset, readLength, data, cancel);
         }
     }
 }
