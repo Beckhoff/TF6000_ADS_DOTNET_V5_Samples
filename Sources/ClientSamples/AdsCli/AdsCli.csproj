@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Globals" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <StartupObject>TwinCAT.Ads.Cli.AdsCliClient</StartupObject>
+    <RootNamespace>TwinCAT.Ads.Cli</RootNamespace>
+    <AssemblyName>Ads</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="5.0.379" />
+  </ItemGroup>
+</Project>
