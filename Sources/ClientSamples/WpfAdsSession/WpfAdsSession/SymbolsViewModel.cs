@@ -154,7 +154,7 @@ namespace AdsSessionTest
 
         private SymbolViewModel(ISymbol symbol, SymbolViewModel parent)
         {
-            _symbol = (IAdsSymbol)symbol;
+            _symbol = symbol;
             _parent = parent;
 
             if (_symbol is IStructInstance)
@@ -193,8 +193,7 @@ namespace AdsSessionTest
         }
 
 
-        IAdsSymbol _symbol = null;
-
+        ISymbol _symbol = null;
 
         SymbolViewModel _parent = null;
 
@@ -304,13 +303,27 @@ namespace AdsSessionTest
         {
             get { return _symbol.Size; }
         }
-        public uint IndexGroup
+        public int IndexGroup
         {
-            get { return _symbol.IndexGroup; }
+            get 
+            {
+                IAdsSymbol s = _symbol as IAdsSymbol;
+                if (s != null)
+                    return (int)s.IndexGroup;
+                else
+                    return -1;
+            }
         }
-        public uint IndexOffset
+        public int IndexOffset
         {
-            get { return _symbol.IndexOffset; }
+            get
+            {
+                IAdsSymbol s = _symbol as IAdsSymbol;
+                if (s != null)
+                    return (int)s.IndexOffset;
+                else
+                    return -1; 
+            }
         }
 
 

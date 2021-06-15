@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -150,8 +151,7 @@ namespace AdsSessionTest
         private void OnConnect()
         {
             //RouteTarget target = (RouteTarget)lbNetId.SelectedItem;
-            AmsNetId netId = AmsNetId.Local;
-
+            AmsNetId netId = AmsNetId.Parse(tbNetId.Text);
             int port = int.Parse(tbPort.Text);
 
             int communicationTimeout = int.Parse(tBDefaultTimeout.Text) * 1000;
@@ -175,7 +175,8 @@ namespace AdsSessionTest
 
             try
             {
-                _connection.AdsStateChanged += _connection_AdsStateChanged;
+                _connection.RegisterAdsStateChangedAsync(_connection_AdsStateChanged, CancellationToken.None);
+                //_connection.AdsStateChanged += _connection_AdsStateChanged;
                 _connection.AdsSymbolVersionChanged += _connection_AdsSymbolVersionChanged;
             }
             catch (Exception)
