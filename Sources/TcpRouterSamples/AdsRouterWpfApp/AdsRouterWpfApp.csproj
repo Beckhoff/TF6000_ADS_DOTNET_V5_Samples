@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <StartupObject>TcpIpRouterWpf.App</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\RalfH\.nuget\packages\beckhoff.twincat.ads.tcprouter\5.0.379\contentFiles\any\net5.0\StaticRoutes.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="5.0.379" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>
