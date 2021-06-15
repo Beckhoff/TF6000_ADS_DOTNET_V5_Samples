@@ -3,12 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <StartupObject>AdsRouterAndClientConsoleApp.Program</StartupObject>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="C:\Users\RalfH\.nuget\packages\beckhoff.twincat.ads.tcprouter\5.0.379\contentFiles\any\net5.0\StaticRoutes.xml" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="5.0.379" />
     <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="5.0.379" />

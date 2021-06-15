@@ -2,10 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TcpIpRouterClientIntegration.Services;
 using TwinCAT.Ads;
 
-namespace TcpIpRouterClientIntegration
+namespace AdsRouterAndClientConsoleApp
 {
     internal class Program
     {

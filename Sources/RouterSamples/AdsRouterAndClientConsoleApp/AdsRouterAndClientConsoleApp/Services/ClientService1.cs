@@ -1,15 +1,13 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using TwinCAT.Ads;
 
-namespace TcpIpRouterClientIntegration
+namespace AdsRouterAndClientConsoleApp
 {
-    internal class ClientService2 : AdsBaseService
+    internal class ClientService1 : AdsBaseService
     {
-        public ClientService2(AmsAddress address, ILogger logger) : base(address, logger)
+        public ClientService1(AmsAddress address, ILogger logger) : base(address, logger)
         {
         }
 

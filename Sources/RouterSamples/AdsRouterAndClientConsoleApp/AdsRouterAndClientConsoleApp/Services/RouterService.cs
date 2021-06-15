@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TwinCAT.Ads;
 using TwinCAT.Ads.TcpRouter;
 
-namespace TcpIpRouterClientIntegration.Services
+namespace AdsRouterAndClientConsoleApp
 {
     internal class RouterService : BackgroundService
     {
