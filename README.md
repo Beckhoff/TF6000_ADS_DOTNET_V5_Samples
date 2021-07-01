@@ -1,5 +1,3 @@
-# TF6000_ADS_DOTNET_V5_Samples
-
 # About this repository
 This repository contains official sample code for the product TF6000|TwinCAT ADS .NET V5 offered by [Beckhoff Automation](https://www.beckhoff.com). The sample code is provided as-is under the Zero-Clause BSD license.
 
