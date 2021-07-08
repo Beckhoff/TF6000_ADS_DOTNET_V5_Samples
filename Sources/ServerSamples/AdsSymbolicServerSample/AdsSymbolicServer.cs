@@ -46,7 +46,7 @@ namespace AdsSymbolicServerSample
         {
         }
 
-        IDisposable? _changeValueObserver = null;
+        IDisposable _changeValueObserver = null;
 
         /// <summary>
         /// Called when [connected].

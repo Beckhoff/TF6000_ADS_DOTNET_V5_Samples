@@ -23,14 +23,15 @@ and different TwinCAT (Tc2 and Tc3) versions.
 
 Please check the installation hints and install the module via PowershellGet Package Manager:
 ```powershell
-install-module TcXaeMgmt
-get-module TcXaeMgmt -listAvailable
+PS> install-module TcXaeMgmt
+PS> get-module TcXaeMgmt -listAvailable
 ```
 ## Testing the custom Ads Server **AdsSymbolServer**
 
 ### Getting AdsState
 ```powershell
- $session | Get-AdsState
+PS> $session = new-tcsession -NetId Local -port 6000
+PS> $session | Get-AdsState
 
 Name    State OK   Time (ms) Address
 ----    ----- --   --------- -------
@@ -39,11 +40,13 @@ CX_1234 Run   True 20        172.17.60.167.1.1:6000
 ### Reading/Writing Values
 
 ```powershell
+PS> $session = new-tcsession -NetId Local -port 6000
 PS> $session | Read-TcValue -path Main.string1
 Hello world!
 ```
 
 ```powershell
+PS> $session = new-tcsession -NetId Local -port 6000
 PS> $session | Write-TcValue -path Main.string1 -Value 'New written Value' -force
 ```
 
