@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdsServerConsoleApp", "AdsS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdsServerTester", "AdsServerTester\AdsServerTester.csproj", "{C46DCFD0-845F-4AD5-A1FC-16F9DAC3DE6C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4F715DC-76CD-480E-B185-2895DFAEBEFA}"
+	ProjectSection(SolutionItems) = preProject
+		AdsServerConsoleApp.png = AdsServerConsoleApp.png
+		AdsServerTester.png = AdsServerTester.png
+		ReadMe.md = ReadMe.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
