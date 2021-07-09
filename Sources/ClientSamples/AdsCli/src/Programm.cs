@@ -35,7 +35,7 @@ namespace TwinCAT.Ads.Cli
         }
 
     }
-    class AdsCliClient
+    class Programm
     {
         /// <summary>
         /// Defines the entry point of the application.
@@ -82,7 +82,7 @@ namespace TwinCAT.Ads.Cli
                     Logger.logDebug($"Try to connect to: {address.ToString()}");
                     client.Connect(address.NetId, address.Port); // Connect to Port (851, first PLC by default)
 
-                    AdsCommand cmd = new AdsCommand(client, plcSymbol, plcType, setValue);
+                    IAdsCommand cmd = new AdsCommand(client, plcSymbol, plcType, setValue);
                     result = cmd.execute();
                     returnValue = 0;
                     
@@ -90,6 +90,7 @@ namespace TwinCAT.Ads.Cli
                 catch (System.Exception ex)
                 {
                     Logger.log(ex.ToString());
+                    returnValue = 1;
                 }
             }
 
