@@ -17,4 +17,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["dotnet", "AdsCliClient.dll"]
+ENTRYPOINT ["dotnet", "AdsCli.dll"]

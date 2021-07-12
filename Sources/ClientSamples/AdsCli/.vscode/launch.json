@@ -5,7 +5,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/bin/Debug/net5.0/AdsCliClient.dll",
+            "program": "${workspaceFolder}/src/bin/Debug/net5.0/AdsCli.dll",
             "args": ["5.76.88.215.1.1", "-v", "INT", "MAIN.counter", "16"],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
@@ -17,7 +17,7 @@
             "request": "launch",
             "preLaunchTask": "docker-run: debug",
             "netCore": {
-                "appProject": "${workspaceFolder}/src/AdsCliClient.csproj"
+                "appProject": "${workspaceFolder}/src/AdsCli.csproj"
             }
         }
     ]
