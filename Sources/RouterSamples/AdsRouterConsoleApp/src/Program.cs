@@ -47,9 +47,9 @@ namespace TwinCAT.Ads.AdsRouterService
                 {
                     // Add further AppConfigurationProvider here.
                     config.Sources.Clear(); // Clear all default config sources 
-                    //config.AddEnvironmentVariables("ENV_"); // Use Environment variables
+                    config.AddEnvironmentVariables("ENV_"); // Use Environment variables
                     //config.AddCommandLine(args); // Use Command Line
-                    config.AddJsonFile("appSettings.json"); // Use Appsettings
+                    //config.AddJsonFile("appSettings.json"); // Use Appsettings
                     //config.AddStaticRoutesXmlConfiguration(); // Overriding settings with StaticRoutes.Xml 
                 })
                 .ConfigureLogging(logging =>

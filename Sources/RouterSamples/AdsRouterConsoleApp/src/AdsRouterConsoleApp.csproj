@@ -4,38 +4,16 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1;net461;netstandard2.0;net5.0</TargetFrameworks>
-    <!--<TargetFramework>netcoreapp3.1</TargetFramework>-->    
-    <TargetFrameworks Condition="'$(BuildHelp)' == 'true'">netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net5.0;netcoreapp3.1;net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BuildHelp)' == 'true'">net5.0</TargetFrameworks>
     <Description>Simple TCP/IP ADS Router Console Application for use on systems without TwinCAT installation / setup.</Description>
     <Product>TCP/IP ADS Router Console Application</Product>
-    <!--<PackageTags>Beckhoff TwinCAT ADS Router TCP NetCore</PackageTags>
-    <PackageId>Beckhoff.TwinCAT.Ads.AdsRouterConsole</PackageId>
-    <SignAssembly>true</SignAssembly>-->
-    <!--<AssemblyOriginatorKeyFile>..\..\Beckhoff.snk</AssemblyOriginatorKeyFile>-->
-    <!--<PackageType>DotnetCliTool</PackageType>-->
-    <!--<PublishTrimmed>true</PublishTrimmed>
-    <PublishSingleFile>false</PublishSingleFile>-->
-    <!--<RuntimeIdentifier>win-x64</RuntimeIdentifier>-->
-    <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
-    <!--<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>-->    
-    <!--<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>-->
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <!--<PackageReadmeFile>ReadMe.md</PackageReadmeFile>-->
     <StartupObject>TwinCAT.Ads.AdsRouterService.Program</StartupObject>
-    <!--<PackAsTool>true</PackAsTool>
-    <ToolCommandName>AdsRouterConsole</ToolCommandName>-->
     <DebugSymbols>true</DebugSymbols>
-    <!--<DebugType>full</DebugType>-->
     <DebugType>portable</DebugType>    
     <LangVersion>8.0</LangVersion>
-    <!--<Nullable>enable</Nullable>-->
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-    <!--<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
-    <DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
-    <DockerfileRunArguments>-p 48898:48898/tcp -p 48900:48900/tcp</DockerfileRunArguments>-->
-    <!--<DockerfileRunArguments>-n host</DockerfileRunArguments>-->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;ROUTER;NETSTANDARD</DefineConstants>
