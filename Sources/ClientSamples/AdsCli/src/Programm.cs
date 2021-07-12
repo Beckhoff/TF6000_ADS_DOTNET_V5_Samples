@@ -2,44 +2,15 @@
 using TwinCAT.Ams;
 using System.Net;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace TwinCAT.Ads.Cli
 {
-    static class Logger
-    {
-
-        static private int logLevel = 1;
-
-        static public void setLogLevel(int level){
-            if(level >= 3)
-                logLevel = 3;
-            else if (level < 0)
-                logLevel = 0;
-            else
-                logLevel = level;
-        }
-
-        static public void log(string message, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string caller = null){
-            if (logLevel <= 0)
-                return;
-
-            Console.WriteLine($"{message} - at line: {lineNumber} {caller}");
-        }
-
-        static public void logDebug(string message){
-            if (logLevel >= 1)
-                Console.WriteLine(message);
-        }
-    }
-
     class Programm
     {
-        /// <summary>
-        /// Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
         static int Main(string[] args)
         {
+
             ApplicationArgs appArgs = null;
             try
             {
@@ -62,21 +33,35 @@ namespace TwinCAT.Ads.Cli
                 return 0;
             }
 
-            IPAddress ipEndpoint = null;
-            int port = 48898;
+            Logger.enableLogging = appArgs.verbosity;
+
+            IPAddress ipEndpoint;
             if(IPAddress.TryParse(System.Environment.GetEnvironmentVariable("AMS_ROUTER_IP_ENDPOINT"), out ipEndpoint))
             {
-                int.TryParse(System.Environment.GetEnvironmentVariable("AMS_ROUTER_PORT"), out port);
-                Logger.logDebug($"IPEndpoint: {ipEndpoint.ToString()}:{port}");
-                AmsConfiguration.RouterEndPoint = new IPEndPoint(ipEndpoint, port);
+                Logger.log($"AMS_ROUTER_IP_ENDPOINT={ipEndpoint.ToString()}");
+            } else {
+                ipEndpoint = IPAddress.Loopback;
             }
+
+            int port;
+            if(int.TryParse(System.Environment.GetEnvironmentVariable("AMS_ROUTER_PORT"), out port))
+            {
+                Logger.log($"AMS_ROUTER_PORT={port.ToString()}");
+            } else {
+                port = 48898;
+            }
+
+            AmsConfiguration.RouterEndPoint = new IPEndPoint( ipEndpoint, port);
+            Logger.log($"AMS router endpoint set to: {AmsConfiguration.RouterEndPoint.ToString()}");
 
             using (AdsClient client = new AdsClient())
             {
                 try
                 {
                     // Connect to Address
+                    Logger.log($"ADS client will connect to ADS service: {appArgs.netId}:{appArgs.port}");
                     client.Connect(appArgs.netId, appArgs.port);
+                    Logger.log($"ADS client connected to ADS service: {appArgs.netId}:{appArgs.port}");
 
                     IAdsCommand cmd = new AdsCommand(client, appArgs.symbolName, appArgs.symbolType, appArgs.value);
                     string result = String.Empty;
@@ -87,7 +72,7 @@ namespace TwinCAT.Ads.Cli
                 }
                 catch (System.Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Logger.log(ex.Message);
                     return 1;
                 }
             }

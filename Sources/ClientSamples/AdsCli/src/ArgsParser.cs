@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using TwinCAT.Ads;
 
 namespace TwinCAT.Ads.Cli
 {
     public static class ArgsParser
     {
-        /// <summary>
-        /// Parses the arguments.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        /// <returns>AmsAddress.</returns>
+
+        private static string[] _args;
+
         public static ApplicationArgs parse(string[] args)
         {
+            _args = args;
 
-            if((args == null) || (args.Length == 0)){
+            if((_args == null) || (_args.Length == 0)){
                 throw new Exception("No arguments passed");
             }
 
             ApplicationArgs appArgs = null;
-            if(args.Length == 1)
+
+            if(_args.Length == 1)
             {
-                switch (args[0])
+                switch (_args[0])
                 {
                     case "--help":
                     case "-h": 
@@ -34,17 +31,20 @@ namespace TwinCAT.Ads.Cli
                     appArgs = new ApplicationArgs(version: true);
                     break;
 
-                    default: throw new Exception($"Unknwon argument: ${args[0]}");
+                    default: throw new Exception($"Unknwon argument: ${_args[0]}");
                 }
             }
-            else if(args.Length > 1)
+            else if(_args.Length > 1)
             {
+                bool verbosity = isVerboseSet();
+
                 appArgs = new ApplicationArgs(
-                    netId: tryParseNetId(args[0]),
-                    port: tryParsePort(args[0]),
-                    symbolType: tryParseType(args[1]),
-                    symbolName: tryParseSymbol(args[2]),
-                    value: tryParseValue(args[3]));
+                    netId: tryParseNetId(_args[0]),
+                    port: tryParsePort(_args[0]),
+                    symbolType: tryParseType(_args[1]),
+                    symbolName: tryParseSymbol(_args[2]),
+                    value: tryParseValue(_args[3]),
+                    verbosity: verbosity);
             }
 
             return appArgs;
@@ -52,16 +52,17 @@ namespace TwinCAT.Ads.Cli
 
         public static string printUsage(){
             return @"
-ads <NetID[:Port=851]> <Type> <Symbol> [Value] 
+ads [OPTIONS] <NetID[:Port=851]> <Type> <SymbolName> [Value] 
 
 PARAMS:
     NetID           The AMS target NetId
     Port            The optional AMS target port. Per default port 851 is set. Use the colon to seperate NetID and Port
     Type            PLC variable type of the given <SymbolyName>
     SymbolName      Specifies the ADS symbol name to be read or written
+    Value           If given, the value will be written to the set <SymbolyName>
 
 OPTIONS:
-    Value           If given, the value will be written to the passed symbol name
+    -v, --verbose   enable verbose log output
 
 EXAMPLES:
     Read examples:
@@ -107,15 +108,32 @@ EXAMPLES:
             }
             return arg;
         }
+
+        private static bool isVerboseSet()
+        {
+            bool isVerbose = false;
+            if(_args.Contains("-v"))
+            {
+                _args = _args.Where( item => item != "-v").ToArray();
+                isVerbose = true;
+            }
+            if(_args.Contains("--verbose")){
+                _args = _args.Where( item => item != "--verbose").ToArray();
+                isVerbose = true;
+            }
+
+            return isVerbose;
+        }
     }
 
     public class ApplicationArgs
     {
-        public ApplicationArgs(bool help = false, bool version = false){
+        public ApplicationArgs(bool help = false, bool version = false, bool verbosity = false){
             this.help = help;
             this.version = version;
+            this.verbosity = verbosity;
         }
-        public ApplicationArgs(AmsNetId netId, int port, string symbolType, string symbolName, string value)
+        public ApplicationArgs(AmsNetId netId, int port, string symbolType, string symbolName, string value, bool verbosity = false)
         {
             this.netId = netId;
             this.port = port;
@@ -124,6 +142,7 @@ EXAMPLES:
             this.value = value;
             this.help = false;
             this.version = false;
+            this.verbosity = verbosity;
         }
 
         public AmsNetId netId {get;}
@@ -133,5 +152,6 @@ EXAMPLES:
         public string value {get;}
         public bool help {get;}
         public bool version {get;}
+        public bool verbosity {get;}
     }
 }
