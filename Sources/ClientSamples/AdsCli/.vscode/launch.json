@@ -6,7 +6,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/src/bin/Debug/net5.0/AdsCliClient.dll",
-            "args": ["5.76.88.215.1.1", "INT", "MAIN.counter", "16"],
+            "args": ["5.76.88.215.1.1", "-v", "INT", "MAIN.counter", "16"],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
