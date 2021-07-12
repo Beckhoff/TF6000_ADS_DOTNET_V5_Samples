@@ -7,7 +7,10 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TwinCAT.Ads.AdsRouterConsole.csproj",
+                "${workspaceFolder}/src/AdsRouterConsoleApp.csproj",
+                "-c", "Debug",
+                "-o", "src/bin/Debug",
+                "--framework", "net5.0",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -45,14 +48,14 @@
                 "build"
             ],
             "dockerBuild": {
-                "tag": "twincatadsadsrouterconsole:dev",
+                "tag": "adsrouterconsoleapp:dev",
                 "target": "base",
                 "dockerfile": "${workspaceFolder}/Dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/TwinCAT.Ads.AdsRouterConsole.csproj"
+                "appProject": "${workspaceFolder}/src/AdsRouterConsoleApp.csproj"
             }
         },
         {
@@ -62,13 +65,13 @@
                 "build"
             ],
             "dockerBuild": {
-                "tag": "twincatadsadsrouterconsole:latest",
-                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "tag": "adsrouterconsoleapp:latest",
+                "dockerfile": "${workspaceFolder}/src/Dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/TwinCAT.Ads.AdsRouterConsole.csproj"
+                "appProject": "${workspaceFolder}/src/AdsRouterConsoleApp.csproj"
             }
         },
         {
@@ -77,11 +80,9 @@
             "dependsOn": [
                 "docker-build: debug"
             ],
-            "dockerRun": {
-                "os": "Windows"
-            },
+            "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/TwinCAT.Ads.AdsRouterConsole.csproj",
+                "appProject": "${workspaceFolder}/src/AdsRouterConsoleApp.csproj",
                 "enableDebugging": true
             }
         },
@@ -91,11 +92,9 @@
             "dependsOn": [
                 "docker-build: release"
             ],
-            "dockerRun": {
-                "os": "Windows"
-            },
+            "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/TwinCAT.Ads.AdsRouterConsole.csproj"
+                "appProject": "${workspaceFolder}/src/AdsRouterConsoleApp.csproj"
             }
         }
     ]
