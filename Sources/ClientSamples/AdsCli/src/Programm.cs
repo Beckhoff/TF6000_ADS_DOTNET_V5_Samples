@@ -36,17 +36,17 @@ namespace TwinCAT.Ads.Cli
             Logger.enableLogging = appArgs.verbosity;
 
             IPAddress ipEndpoint;
-            if(IPAddress.TryParse(System.Environment.GetEnvironmentVariable("AMS_ROUTER_IP_ENDPOINT"), out ipEndpoint))
+            if(IPAddress.TryParse(System.Environment.GetEnvironmentVariable("AmsConfiguration:LoopbackAddress"), out ipEndpoint))
             {
-                Logger.log($"AMS_ROUTER_IP_ENDPOINT={ipEndpoint.ToString()}");
+                Logger.log($"AmsConfiguration:LoopbackAddress={ipEndpoint.ToString()}");
             } else {
                 ipEndpoint = IPAddress.Loopback;
             }
 
             int port;
-            if(int.TryParse(System.Environment.GetEnvironmentVariable("AMS_ROUTER_PORT"), out port))
+            if(int.TryParse(System.Environment.GetEnvironmentVariable("AmsConfiguration:LoopbackPort"), out port))
             {
-                Logger.log($"AMS_ROUTER_PORT={port.ToString()}");
+                Logger.log($"AmsConfiguration:LoopbackPort={port.ToString()}");
             } else {
                 port = 48898;
             }

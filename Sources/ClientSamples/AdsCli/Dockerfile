@@ -15,6 +15,10 @@ RUN dotnet publish -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
+
+ENV AmsConfiguration:LoopbackAddress=127.0.0.1 \
+    AmsConfiguration:LoopbackPort=48898
+
 COPY --from=publish /app/publish .
 
 ENTRYPOINT ["dotnet", "AdsCli.dll"]
