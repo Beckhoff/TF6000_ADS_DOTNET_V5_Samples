@@ -30,23 +30,23 @@ PS> get-module TcXaeMgmt -listAvailable
 
 ### Getting AdsState
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 6000
+PS> $session = new-tcsession -NetId Local -port 0x8000
 PS> $session | Get-AdsState
 
 Name    State OK   Time (ms) Address
 ----    ----- --   --------- -------
-CX_1234 Run   True 20        172.17.60.167.1.1:6000
+CX_1234 Run   True 20        172.17.60.167.1.1:32768
 ```
 ### Reading/Writing Values
 
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 6000
+PS> $session = new-tcsession -NetId Local -port 0x8000
 PS> $session | Read-TcValue -path Main.string1
 Hello world!
 ```
 
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 6000
+PS> $session = new-tcsession -NetId Local -port 0x8000
 PS> $session | Write-TcValue -path Main.string1 -Value 'New written Value' -force
 ```
 
@@ -59,13 +59,13 @@ New written Value
 ```powershell
 PS> test-adsroute -port 6000
 
-Name                 Address           Port   Latency Result
+Name                 Address           Port    Latency Result
                                                (ms)
-----                 -------           ----   ------- ------
-CX_1234              172.17.60.167.1.1 6000   36      Ok
+----                 -------           -----   ------- ------
+CX_1234              172.17.60.167.1.1 32768   36      Ok
 ```
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 6000
+PS> $session = new-tcsession -NetId Local -port 0x8000
 PS> $session | get-tcDataType
 
 Name                      Size     Category   BaseType

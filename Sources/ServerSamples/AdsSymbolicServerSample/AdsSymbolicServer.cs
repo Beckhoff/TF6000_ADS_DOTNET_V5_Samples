@@ -19,7 +19,10 @@ namespace AdsSymbolicServerSample
         /// <summary>
         /// AmsPort of the SymbolicTestServer
         /// </summary>
-        static ushort s_Port = 6000;
+        /// <remarks>
+        /// User Server Ports must be >= 8000 !!!!
+        /// </remarks>
+        static ushort s_Port = 0x8000;
 
         /// <summary>
         /// Dictionary containing the Values of the Symbols (Symbol -- Value)

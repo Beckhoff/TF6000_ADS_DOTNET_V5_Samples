@@ -22,8 +22,10 @@ namespace Sample.Ads.AdsServerCore
         protected override async Task ExecuteAsync(CancellationToken cancel)
         {
             //ServerLogger logger = new ServerLogger(s_logger);
-            AdsSampleServer server1 = new AdsSampleServer(30000, "TestAdsServer1", _logger);
-            AdsSampleServer server2 = new AdsSampleServer(30001, "TestAdsServer2", _logger);
+
+            //!!! Start the Server Ports on the User Area beginning on Port 0x8000 !!!
+            AdsSampleServer server1 = new AdsSampleServer(0x8000, "TestAdsServer1", _logger);
+            AdsSampleServer server2 = new AdsSampleServer(0x8001, "TestAdsServer2", _logger);
 
             Task[] serverTasks = new Task[2];
 

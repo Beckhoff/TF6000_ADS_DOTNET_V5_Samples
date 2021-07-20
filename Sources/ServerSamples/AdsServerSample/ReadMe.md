@@ -6,19 +6,19 @@ The console application starts two local AdsServers on Port 30000, and 30001. If
 ![AdsServerConsleApp](./AdsServerConsoleApp.png)
 
 ```powershell
-PS> test-adsroute -netId 172.17.60.167.1.1 -port 30000
+PS> test-adsroute -netId 172.17.60.167.1.1 -port 0x8000
 
 Name                 Address           Port   Latency Result
                                                (ms)
 ----                 -------           ----   ------- ------
-CX_1234              172.17.60.167.1.1 30000  25      Ok
+CX_1234              172.17.60.167.1.1 32768  25      Ok
 
-PS> test-adsroute -netId 172.17.60.167.1.1 -port 30001
+PS> test-adsroute -netId 172.17.60.167.1.1 -port 0x8001
 
 Name                 Address           Port   Latency Result
                                                (ms)
 ----                 -------           ----   ------- ------
-CX_1234              172.17.60.167.1.1 30001  31      Ok
+CX_1234              172.17.60.167.1.1 32769  31      Ok
 ```
 
 ## AdsServerTester
@@ -83,18 +83,18 @@ PS> get-module TcXaeMgmt -listAvailable
 ## Testing the custom Ads Server in **AdsServerConsoleApp**
 ### Testing the AdsServer
 ```powershell
-test-adsroute -netId 172.17.60.167.1.1 -port 30000
+test-adsroute -netId 172.17.60.167.1.1 -port 0x8000
 
 Name                 Address           Port   Latency Result
                                                (ms)
 ----                 -------           ----   ------- ------
-CX_1234              172.17.60.167.1.1 30000  18      Ok
+CX_1234              172.17.60.167.1.1 32768  18      Ok
 ```
 ### Getting AdsState
 ```powershell
- get-adsstate -netId 172.17.60.167.1.1 -port 30000
+ get-adsstate -netId 172.17.60.167.1.1 -port 0x8000
 
 Name    State OK   Time (ms) Address
 ----    ----- --   --------- -------
-CX_1234 Run   True 23        172.17.60.167.1.1:30000
+CX_1234 Run   True 23        172.17.60.167.1.1:32768
 ```
