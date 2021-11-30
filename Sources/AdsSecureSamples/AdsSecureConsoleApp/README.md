@@ -155,11 +155,28 @@ configure the c:\twincat\3.1\target\StaticRoutes.xml file as follows:
 ```
 
 Restart or Reconfig the TwinCAT System Service to read the StaticRoutes.xml configuration.
+
+Deactivate the SelfSigned mode in source code:
+```csharp
+static async Task Main(string[] args)
+{
+    // Change this flag to change between SelfSigned and CA certificates!
+    bool selfSigned = false;
+	...
+}
+```
+
 Run this sample application and enter the Address the of the IPC target system (AmsNetId and Port 10000).
+Alternatively, the sample application can be started with arguments:
+
+```
+PS> AdsSecureConsoleApp [NETID] [PORT] [IPORHOSTNAME]
+```
 
 ## Using the sample with SelfSigned AdsSecure connection
 For SelfSigning, the access to the target system is authenticated by the Source system certificate plus the Target System credentials.
 Therefore the already included Certificate in the source sample application can be used and no changes are necessary at the target system AdsSecure configuration (StaticRoutes.xml).
+
 
 On the target IPC side, an empty StaticRoutes.xml should be enough:
 
@@ -170,6 +187,17 @@ On the target IPC side, an empty StaticRoutes.xml should be enough:
 	</RemoteConnections>
 </TcConfig>
 ```
+
+Activate the SelfSigned mode in source code:
+```csharp
+static async Task Main(string[] args)
+{
+    // Change this flag to change between SelfSigned and CA certificates!
+    bool selfSigned = true;
+	...
+}
+```
+Run the application.
 
 
 

@@ -1,6 +1,4 @@
-﻿#define TEST
-
-using System;
+﻿using System;
 using System.Buffers.Binary;
 using System.Net;
 using System.Net.Security;
@@ -14,13 +12,13 @@ using TwinCAT.Ams;
 using TwinCAT.Tls;
 
 
-namespace SimpleAdsSecureConsoleApp
+namespace AdsSecureConsoleApp
 {
-    public enum TlsType
-    {
-        SelfCert,
-        CA
-    }
+    //public enum TlsType
+    //{
+    //    SelfCert,
+    //    CA
+    //}
 
     class Program
     {
@@ -34,161 +32,139 @@ namespace SimpleAdsSecureConsoleApp
         /// SourceIPC Certificate as string (PEM-Format, copied from .\Certs\SourceIPC.crt)
         /// </summary>
         static string s_certificate = @"-----BEGIN CERTIFICATE-----
-MIIDNzCCAh8CFDFkqPhIY5TR1kSDldjD6YgIpBcpMA0GCSqGSIb3DQEBCwUAMFgx
+MIIDODCCAiACFDFkqPhIY5TR1kSDldjD6YgIpBcuMA0GCSqGSIb3DQEBCwUAMFcx
 CzAJBgNVBAYTAkRFMQwwCgYDVQQIDANOUlcxDTALBgNVBAcMBFZlcmwxCzAJBgNV
-BAoMAkJrMQ0wCwYDVQQLDARUQ1BNMRAwDgYDVQQDDAdSQUxGSDA0MB4XDTIxMTEy
-NTExMTQxMFoXDTIyMTEyMDExMTQxMFowWDELMAkGA1UEBhMCREUxDDAKBgNVBAgM
-A05SVzENMAsGA1UEBwwEVmVybDELMAkGA1UECgwCQmsxDTALBgNVBAsMBFRDUE0x
-EDAOBgNVBAMMB1JBTEZIMDQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
-AQDgsQQw0dlZxEtqmV27JppGEchMq2hj/o8eFPta08k126AW+miKpwnuZ1tfBp9N
-90+/VcVaEl3KermWpiyTcdLegVodvRqcj+K+qnoYyUE5uPDbDUQhRL8F+3nLbfiZ
-Ml1iwCVpwtY0eEh6lSgDU55zHTZstoQXdUpvkDlouj9GTo+Avip8m14wXKrlx/aQ
-uv9TLBioQJmzC7rXcuWJtBJg5PRzpbkKW9sONazEV7hY69i4igcMtzNIAYk+CZJq
-8x/SLM4RH+14MkagPnk/a7sbFzKaVvLBLLbTZZO/eb7BGXO98xpRv4ZIagEluQpX
-0D8MsQm83Sz6QOqBaAayqWaZAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAMS9SlDv
-vtjKkjfXECj17yev3GkL7b1KAdqy+ISnEYNBHl79SUqXVJu0rzebAcqrZR/UcuTm
-aAhX/qHGB0GOcfq3pEp36QEft82+I92tUjs4bA5OAIdQiyZ58RNi2PULullTNLjq
-nYY4yPh6pSqHwpBgXPK+ZkgRJiZrc3uzrJFzEZNxjHul9Hok2VabjhD7MI1os/rx
-DiF2I+mdl9jVCev5E7qWEg4OOheTz01Hy9tCisK5s3qPFHKcZxftzG8LwFunTSQH
-n/3B+5H3prYbmyOVpq+sMIhVUD0FcsTeJ++9uWNnh26njztG8eEvTEe06en9MLdc
-EU1wxU9DS36L3PQ=
+BAoMAkJrMQ0wCwYDVQQLDARUQ1BNMQ8wDQYDVQQDDAZSb290Q0EwHhcNMjExMTI2
+MTYzODAwWhcNMjIxMTIxMTYzODAwWjBaMQswCQYDVQQGEwJERTEMMAoGA1UECAwD
+TlJXMQ0wCwYDVQQHDARWZXJsMQswCQYDVQQKDAJCazENMAsGA1UECwwEVENQTTES
+MBAGA1UEAwwJU291cmNlSVBDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEA5QRND9VwXGuSM9AW7SsWPpLbCToi8MB1qOS/MZ25wJQUjblH+oeF4qHep5oe
+vSYE+dDkiDHQ2wqgnSL1sT0c0hd80GrUFDVwO65O/T2YNX2fw/dGCD8kfvdpIECE
+lQ+n8OFu55mhEauHHMEUV0tWlXS8Li5zVws+bkdGlJu4d3rnSDUmVSVtiNI801K5
+IBtBwHA6Mhs/0k2DCMaOk949NpzVUUhNLo83r6Zj3vC1gjXZetoMplly2gY4NRos
+Yxorr95WKcTPHBzsJcUvMqGKEHTkLnbG7DfTw4fPPack7uewFb2sbKVnJdkiGOAC
+oYZl9XQoPQWUIhMOylYU/Q2eTQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQBWxQ9A
+vtlKEpL5N/+h/4xahywayygRNMN6GAoZM2NE1OAm/nBNFbk6AS1hhczYppFG4f7U
+VqELjK0oUB9xUMCEidxDFOm3PDjtTu2h2Nx0C4LlT/YvEsX9WR+3Du7nZ+Z0+jd9
+v0jwbRn/t9xPOOZswo1I/p/OtQXH4tdbcWozG0pKeTpubkmMaBgFXUDv5ePPxrlH
+Gr+E6MYtlrZtDxEywt2JC2KK7Snr/528FBvArTdaS0B75nE28EuBiRDxs88iThql
+TKKtRdrkm/zqNYOYnTIQl5iXfyZrNFTPhrF+GpCGwyWqOLihQLoRNYb5B0q8d4vJ
+IcPKu8e1NRUosGUE
 -----END CERTIFICATE-----";
+
+       /// <summary>
+        /// RSA Private key as string (PEM format, copied from .\certs\SourceIPC.key)
+        /// </summary>
+        static string s_rsaPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA5QRND9VwXGuSM9AW7SsWPpLbCToi8MB1qOS/MZ25wJQUjblH
++oeF4qHep5oevSYE+dDkiDHQ2wqgnSL1sT0c0hd80GrUFDVwO65O/T2YNX2fw/dG
+CD8kfvdpIECElQ+n8OFu55mhEauHHMEUV0tWlXS8Li5zVws+bkdGlJu4d3rnSDUm
+VSVtiNI801K5IBtBwHA6Mhs/0k2DCMaOk949NpzVUUhNLo83r6Zj3vC1gjXZetoM
+plly2gY4NRosYxorr95WKcTPHBzsJcUvMqGKEHTkLnbG7DfTw4fPPack7uewFb2s
+bKVnJdkiGOACoYZl9XQoPQWUIhMOylYU/Q2eTQIDAQABAoIBAHihA1ZLvptvrdrM
+yMaz40uiXu1FShI1zcPgeTTRN35QgWMFLPyxVbxCNt1hOL+4vvY3KajzVGeL+X3L
+ZE6vOfcPmBbPrlXWr/8/mSuavgmu2fCG1sSRPdAC0cTDNxKs5HDkzV4Ade6wwsJK
+kURJ0pl2m4hXvzkiGwhLUsoEG+4SN4J57Oikuf0J0ZoVs3+TmzTclpbZ0JfSn2+0
+RHfad+nNpxrzwgD+Avybkvt7pnmVJeHuh09ICN3yV49Cu1zABf1BesCiFhEsFEuU
+RFwsMqhJ18bv1znGFQd2XqSu6AQfbfOkwRvxKy+Z4pEK/HYjLyH6GeD8VUEd9Utm
+fOmDfAECgYEA+RHkK+pefIsdmRS5vU8ruEb1+pnqA2dDUit7bsHJZLXT4unl1XWB
+lqkMQSAdKIlrwzTbzWGgtfEulcMPqLl8yH/40ZEdF7WA+SYATsLLqQt1KeNMR4aE
+NgoTCaVW6nnQneJ1i8acI445gmJPCwG4puH1FQ+Zm0lXYG3elYzKLO0CgYEA62OS
+qKToBt61TWS4kGS6avn7vFXrh6JAEO3CV61OVhGQKc/H0oTJBDPhRd/h1YznhILz
+FZPAVK9yy6qfd59x0ggmmcK9+VlsJlH+Tnylaq+2Geyo0gdzE4IyVrA9n7UrG8nl
+MVCHGuM6obVl2rkjrGiuoJehy6hbZ1XppHWKauECgYBIzSX4gCTmGnOoTxqLbxzE
+XFmByoNQQ1q2JeeKVDJdsZghd2SqpBIgy4C9eHmNY72P7V9iBOtIwxpuw/lLxAvp
+Px6ngtcSGwd7y9PDMcT9wE+a0sl1DqiOcxtlcmKZXsnPnGXnWUJCUkwVBE8+VF54
+yQsuAMVRUnqrwPGSnPhrcQKBgQDG6WTkmD3umEJTPVrtwgD6J3dABsc63bQP2isR
+VkVNXBgcDRaJ4mXP5FtoZbF8eU6nXtU2FZ5AseZrDyskthtD5llgM/2/eX53v3AM
+OS67wfI7ZA6hNWRcRvhs4w+gJ0NffzPrgWY6JWzFe/mvZCYuKmPvF1PFOubKowIG
+VMF8YQKBgE85Ht4dyEoNrVH+WlrCl9xB6HWdkXMl2ZFh+YFJlKwEUuheto4nTdWn
+p8rc2I9y9PX7u8kNYAKb9ppsX/Cq+0j89ahJl0QJkZZZYCIK1dHtpHUxNLgoWKyR
+2iP8DpIry0uuIoi/VkoG/M1c9+w4Ojn2x9E3a7PIBK7M4H1F6w1e
+-----END RSA PRIVATE KEY-----";
 
         /// <summary>
         /// RootCA certificate (PEM-Format, copied from .\certs\RootCA.pem)
         /// </summary>
         static string s_ca = @"-----BEGIN CERTIFICATE-----
-MIIDkTCCAnmgAwIBAgIUVMnOTt6UQ8fsn69ye5W/fgLMk/UwDQYJKoZIhvcNAQEL
-BQAwWDELMAkGA1UEBhMCREUxDDAKBgNVBAgMA05SVzENMAsGA1UEBwwEVmVybDEL
-MAkGA1UECgwCQmsxDTALBgNVBAsMBFRDUE0xEDAOBgNVBAMMB1JBTEZIMDQwHhcN
-MjExMTI1MTExMjA2WhcNMzExMDA0MTExMjA2WjBYMQswCQYDVQQGEwJERTEMMAoG
-A1UECAwDTlJXMQ0wCwYDVQQHDARWZXJsMQswCQYDVQQKDAJCazENMAsGA1UECwwE
-VENQTTEQMA4GA1UEAwwHUkFMRkgwNDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
-AQoCggEBAMVVAdKfFYTLgnJWLoU8V40NmmcGEWoA34Y86JcPJSykzlKmCnyTOrQl
-6A8m/JWnJNMp8GBgpBgtXzSQGVW9Nz4c2PiipHXVfvmqAk7DxwfjoyGc3zK3Sq3o
-uXOOLj2rna04ylYSJor7BgIdrWV60lOQXOirO6cd5+dGffYGBTtvbuKADbQvoUPK
-wl64Px8yGgtUB+Y4RWzgidUTXTT508eNflBIAKFvvaju0e1OaDd15EVV90KRD7eU
-J48jxdP3LwO2ha5RBdmZtx8drLCtAW96QUD0pgUKYL9woZoAOh2yjmgaVom4llOd
-V//riUNWrKB490YdYv2dQnXNM3wQYOsCAwEAAaNTMFEwHQYDVR0OBBYEFH52o2q3
-MK9aIxDehGvy6I7ZdtyzMB8GA1UdIwQYMBaAFH52o2q3MK9aIxDehGvy6I7Zdtyz
-MA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAC2AfP3JnhnPpaXI
-dsoPTrRMlkDWHWTe6psQedbzJWkTRyKBktTDnj8cVX6Vvjkiw/IfXgPiJun0cGKv
-kgRk1AYzUs0rGa3Q7jxb6WeN/vcuzgLxJ8Lue/dCs6zSAxtw/TKaZtTpyvY9CurF
-Q4SUUew74x6i0gnMGVTPtOL9cVuWa+eflxwGMYGqyakYjbDK/fPv+fRu/81Wz1+z
-S9I3Y3xrmWE3p184scgOxMzzQdN1c2gyqtf1v3aWgEYK3kVP+IOeDbCXhGTBq1/1
-KU74Jx5x7NqOLE3Y3mCyJzSHrZX6M8zKGhjJhlAYvlpXHByGdpxhIWB+q9NgOsnn
-SeJPHkU=
+MIIDjzCCAnegAwIBAgIULoxUT8ves7P+ftlFpdVrG7yOUTMwDQYJKoZIhvcNAQEL
+BQAwVzELMAkGA1UEBhMCREUxDDAKBgNVBAgMA05SVzENMAsGA1UEBwwEVmVybDEL
+MAkGA1UECgwCQmsxDTALBgNVBAsMBFRDUE0xDzANBgNVBAMMBlJvb3RDQTAeFw0y
+MTExMjYxNjM3NDRaFw0zMTEwMDUxNjM3NDRaMFcxCzAJBgNVBAYTAkRFMQwwCgYD
+VQQIDANOUlcxDTALBgNVBAcMBFZlcmwxCzAJBgNVBAoMAkJrMQ0wCwYDVQQLDARU
+Q1BNMQ8wDQYDVQQDDAZSb290Q0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQDufF+lO4Rv++ycuvMX7tiLoM3woWJmOxurzwr8YgTs89Fu129VC8jpRQhW
+FROLjRC7mtwM/EBjXHlPGrXKqL6jqBorAiA+j/pqfgBU5ciUm8FOAih2gpjDbj1A
+0jQ4RhPtXYVAB8zNVpMvNULZq4go9z1/xnGBzuCYTC92faP2PeOzESHmYG5/5+Hj
+CDu8xiFLtDZf/cPpyBd5YF3XYq6JZuvHRkYd4UQUTWgZ+hU5C5XapPfbGa+NGyOv
+OffjCL+gN6wve0el4G/3Le8jt6uvC3qZ+wgF5gUypFp0frwpWqfj9HDXeU9x4xEU
+XwLZDZEEAqmz9AoAnvWINCKrMOtPAgMBAAGjUzBRMB0GA1UdDgQWBBSVMYnuU5Z0
++hyFBvsLmH0mEdR/LTAfBgNVHSMEGDAWgBSVMYnuU5Z0+hyFBvsLmH0mEdR/LTAP
+BgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQA+MlgRpl49RmtDZyYW
+GayI3kstGq/YUYEI+5lkNXuJ8mWd36WzGBTDaQHALsxkXpkwv0V8ed7bGyJT4iOh
+wIdMaOU49e5uY1M7pjB3O/mI+Q2LJD6D8z1ENk4jK0H4EyYUsyNn5Tc5Uc8YCMxb
+P8bevlpCjDTYmeVcBREWc7M2P6nIW7IDjx9RaJO7nHgQFHtRtG+lpJwC2NcQhoGm
+3joECM5rQZt7jPY8SR9loo9iqR824zRAC2E+glDrd9cSlt8MV825wHed6W/6Cfsm
++X21yG7Z0ghzyba3WdKh9ByeIxFM6CYgTSfpn3ySowX/5vj4UUodMqbrWKjU8nn5
+ASqJ
 -----END CERTIFICATE-----";
 
+
         /// <summary>
-        /// RSA Private key as string (PEM format, copied from .\certs\SourceIPC.key)
+        /// Wrong RootCA certificate (PEM-Format, copied from .\certs\WrongRootCA.pem)
+        /// Use this, to do a negative test (different Root CAs on Source and target)
         /// </summary>
-        static string s_rsaPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEA4LEEMNHZWcRLaplduyaaRhHITKtoY/6PHhT7WtPJNdugFvpo
-iqcJ7mdbXwafTfdPv1XFWhJdynq5lqYsk3HS3oFaHb0anI/ivqp6GMlBObjw2w1E
-IUS/Bft5y234mTJdYsAlacLWNHhIepUoA1Oecx02bLaEF3VKb5A5aLo/Rk6PgL4q
-fJteMFyq5cf2kLr/UywYqECZswu613LlibQSYOT0c6W5ClvbDjWsxFe4WOvYuIoH
-DLczSAGJPgmSavMf0izOER/teDJGoD55P2u7GxcymlbywSy202WTv3m+wRlzvfMa
-Ub+GSGoBJbkKV9A/DLEJvN0s+kDqgWgGsqlmmQIDAQABAoIBAAPLmamFceltQmTb
-kFS/8y0p0btRzeKagypb6l7/Ys+xFQQuWKO27JkFT+rL/tbfTY6K0VmTI9huuEHO
-LsSS0KAHiVElR5TLbWYRFRzkEWD7Ob5JfBQfyCY+uDDye5eC3Ub0ve0KaHncakT/
-zfw4Zl3FaYzujE6lIYu+4Ole9ACo/PIfudXKk1tJEBLrcgIrs262SYFImrWAWx+0
-NMuRgsYYYYUUI79/Wpgiaxg+Stg4wUtwDUA+RYAcujp6hvn0Kg8/82jmCVoZlg1R
-AcPR1YVW2ZR/hPpgbSEx3zvUuoBsVK0xtqGIbdo9gOnEd7uu8tQn2vm4BwoNLujN
-DiWd8d0CgYEA+Dgk+grdrENmdZThmWyE3MhbMCHXONMpvtCPx28ZGvtmIc59PTcC
-Pq4cWX2Q8w/WnbVfv/I6GDMie2/E9SNRbn55ozQ3HmiVykr0VhmMNExabaCLH8nQ
-ElVAbrVZIHxGzzn6/1LlVBXHxsbl2fhYvBkKN0z7G+s0N0OcmcBN4CcCgYEA57wS
-JTlzbYGP6QF1hxZnQL3B05R+MXFT2VMgDbylEAArbbYeWTidz161Xq+tT+uEWFZW
-Sc9w6JQ9jwetCWVuWdEJvFuIx6EV3Bh0q2XK3bg4R1LOfTHGq/sF03mZ81X5eHSd
-uZR1+SdzepjINETyMJnEKUGhmizUg5s65yAf+z8CgYEAybh29G2YMMKlpbDUlmbG
-otaApOEbkyaoqlW8Qwtaj773BUpWJUVrIZ1FlMSi46VfeNNJeShVZg1IXKA8pCuL
-pgxKtgNdN+0urjOz1bT1aBsU8jqiVbcgzYVS06W1RN06fnZUMOMhU/BPZo+FhFp7
-YoHG96IsAEhpKvBbd+f8YckCgYB4DG8eB6Arh6Yk4FOhUtLUsDkcQd4KARqeCDkf
-xK2CF4RoBqO8Nt9SEU9GKR5Qu8LI/JkhDa0BX+JwGVrj9j7vmqI/iO/X8zRe2/B8
-5nPs3sWQ9W3xX3r7l0RSZLmDXPOrGkanYCiplW12gnWc1mbdFJuRf+WW+EhzkVQ3
-beYDgwKBgGCFgiCRaKLtqYkHcTolNLapPKmfOi4vhNHPSRuHeiK9Qk1zseYL7MGO
-hyybbJB0RgxX7ofiWItbJh9I06ENOBcvjyCReyLoJDoSaqsj0upxfpu2GiDxxRo/
-6+KQclfKaiQvD6kJnVT+zvZ/Gupx/TZcJu3/+uvToItGVvvftjoQ
------END RSA PRIVATE KEY-----";
+        static string s_wrongCa = @"-----BEGIN CERTIFICATE-----
+MIIDmTCCAoGgAwIBAgIUBUFgxVsj94RMfG9VRdEnMbnRy3gwDQYJKoZIhvcNAQEL
+BQAwXDELMAkGA1UEBhMCREUxDDAKBgNVBAgMA05SVzENMAsGA1UEBwwEVmVybDEL
+MAkGA1UECgwCQmsxDTALBgNVBAsMBFRDUE0xFDASBgNVBAMMC1dyb25nUm9vdENB
+MB4XDTIxMTEyOTEyMjYwMVoXDTMxMTAwODEyMjYwMVowXDELMAkGA1UEBhMCREUx
+DDAKBgNVBAgMA05SVzENMAsGA1UEBwwEVmVybDELMAkGA1UECgwCQmsxDTALBgNV
+BAsMBFRDUE0xFDASBgNVBAMMC1dyb25nUm9vdENBMIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEAx4vwp88gYxwN5jqUdxtobpJ56QVnwhbY7oeQd+XcPycd
+UTPxolK/lMYkjqisv6OwWKTBJjLTrczGeg37DzYtoTa6Av7wIOdMT/odUCxJM0PW
+wpUaEXQerCkPDsJL9AcMGMy88efPMurYhSv1dzJgDfzSiWoU+yI9EmntLk0tjLP6
+P2Z2AhLt5gRXGiZnYpYAi7/C+LOz1v9luUBZ207D5RfnS24gvMPBHpxfXv6opjMu
+mDlv/BBwD3mo0t+zYsHSzYuDwyrf7XWdZmgU6ObJk/oY73HVJDvq+uQ0XvQDK5oF
+lW3+C/NEUH7mBrQRkMXfnqyN3gDeL4voJOkq5gNmGwIDAQABo1MwUTAdBgNVHQ4E
+FgQUJYsmB+RTHNp3VHug+B6iodHI8UQwHwYDVR0jBBgwFoAUJYsmB+RTHNp3VHug
++B6iodHI8UQwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEARFrI
+2UDoOi2/2WEL9CNJ4f+9q92xmi/lOmL+NBNRoDj7gYsIG/PzwX+idm1xanO7wGca
+Pufq8aGTgK1f4eRNdx986apTFQ+dzSrOLoHJvc7e1EIdneWCVhEzVz+/0G5zikRD
+agJ1ZjLj7N6WNdviYFbb8EvxY29yBH0kjrr8UCNOC0uwwhMz5deK3Cw5hWyDnWWz
+p5MfVvouhzi2jHKIINhf5tWxhmB9OU+97H02Vr++dDiwJQiuGV41rnG12xkA9eUQ
+ceTFLVIXa+e7oyZxMZV+WC+nG6FApVAV2Hn7nuSK2xnVe8FLw1OzV6iioZMFXqRI
+Tb3cOEnlLuwCqOJb3g==
+-----END CERTIFICATE-----";
+
 
         static async Task Main(string[] args)
         {
-            bool selfSigned = true;
+            // Change this flag to change between SelfSigned and CA certificates!
+            bool selfSigned = false;
+
+            AmsAddress targetAddress;
+            string ipOrHostName;
+            bool parsed = ArgParser.TryParse(args, out targetAddress, out ipOrHostName);
 
             CancellationToken cancel = CancellationToken.None;
 
-            bool ok = false;
-            AmsNetId targetNetId;
-
-            do
+            if (!parsed)
             {
-                Console.Write("Enter Target NetId: ");
-                string targetNetIdStr = Console.ReadLine();
-                
-                ok = AmsNetId.TryParse(targetNetIdStr, out targetNetId);
-            } while (!ok);
-
-            int targetPort = 0;
-
-            do
-            {
-                Console.Write("Enter Target AdsPort: ");
-                string targetPortStr = Console.ReadLine();
-                ok = int.TryParse(targetPortStr, out targetPort);
-            } while (!ok);
-
-            
-            AmsAddress targetAddress = new AmsAddress(targetNetId, targetPort);
-
-            string hostOrIp;
-
-            do
-            {
-                Console.Write("Enter Target HostName/IPAddress: ");
-                hostOrIp = Console.ReadLine();
-            } while (string.IsNullOrEmpty(hostOrIp));
-
-
-
-            string? userName = null;
-            SecureString securePwd = new SecureString();
-
-            if (selfSigned)
-            {
-                Console.Write("UserName: ");
-
-                do
-                {
-                    userName = Console.ReadLine();
-                } while (string.IsNullOrEmpty(userName));
-
-                ConsoleKeyInfo key;
-
-                Console.Write("Enter password: ");
-                do
-                {
-                    key = Console.ReadKey(true);
-
-                    // Ignore any key out of range.
-                    //if (((int)key.Key) >= 65 && ((int)key.Key <= 90))
-                    if (((int)key.Key) >= 0x20 && ((int)key.Key <= 0x7E)) // Printable characters
-                    {
-                        // Append the character to the password.
-                        securePwd.AppendChar(key.KeyChar);
-                        Console.Write("*");
-                    }
-                    // Exit if Enter key is pressed.
-                } while (key.Key != ConsoleKey.Enter);
-                Console.WriteLine();
+                targetAddress = ReadAmsAddressFromConsole();
+                ipOrHostName = ReadIPOrHostNameFromConsole();
             }
 
+            // Create CA Certificate from PEM Formatted string
             X509Certificate2 caCert = X509CertificateHelper.CreateFromPem(s_ca);
-            //CAUTION: The TlsConnect, X509CertificateHelper, AdsReadStateResponseHeader objects are preliminary
-            //and are actually not documented. They could be changed in future!
+            
+            // Use an mismatching CARoot Certifcate for negative test.
+            //X509Certificate2 caCert = X509CertificateHelper.CreateFromPem(s_wrongCa);
 
             // Loading Cert from PEM Formatted strings:
             X509Certificate2 certFromStrings = X509CertificateHelper.CreateFromPem(s_certificate, s_rsaPrivateKey);
 
+#if FROM_STORE
             // Or alternatively (more convenient on Windows)
             // Get the Certificate (*.pfx) from Cert Store or from File:
             X509Certificate2 certFromStore;
@@ -201,29 +177,36 @@ hyybbJB0RgxX7ofiWItbJh9I06ENOBcvjyCReyLoJDoSaqsj0upxfpu2GiDxxRo/
                     certFromStore = cers[0];
                 };
             }
+#endif
 
-            TlsConnect connect = null;
-            try
-            {
+            TlsConnect connect = null; // Tls Connection object.
                 if (selfSigned)
                 {
-                    connect = new TlsConnectSelfSigned(hostOrIp, certFromStrings, userName, securePwd, s_localNetId);
+                    (string user, SecureString password) credentials = ReadCredentialsFromConsole();
+                    connect = new TlsConnectSelfSigned(s_localNetId, ipOrHostName, certFromStrings, credentials.user, credentials.password);
                 }
                 else
                 {
-                    connect = new TlsConnectCA(hostOrIp, caCert, certFromStrings, s_localNetId);
+                    connect = new TlsConnectCA(s_localNetId, ipOrHostName, caCert, certFromStrings);
                 }
-                await connect.ConnectAsync(targetAddress, cancel);
+            try
+            {
+                await connect.ConnectAsync(targetAddress, cancel); // Connect Asyncronously
 
                 SslStream sslStream = connect.GetStream();
 
-                string serverHostName = sslStream.TargetHostName;
+                string serverHostName = string.Empty;
+
+#if NET5_0_OR_GREATER
+                serverHostName = sslStream.TargetHostName;
+#endif
                 string serverSubject = sslStream.RemoteCertificate.Subject;
                 string serverIssuer = sslStream.RemoteCertificate.Issuer;
                 //string sha1Thumbprint = sslStream.RemoteCertificate.GetCertHashString();
                 string sha256FingerPrint = sslStream.RemoteCertificate.GetSha256Thumbprint();
 
-                Console.WriteLine($"Connected to Server '{serverHostName}' (Subject: {serverSubject}, Issuer: {serverIssuer}");
+                Console.WriteLine($"Connected to RemoteServer '{serverHostName}' (Subject: {serverSubject}, Issuer: {serverIssuer}");
+                Console.WriteLine($"RemoteServer Fingerprint: {sha256FingerPrint}");
 
                 bool trustTarget = false;
 
@@ -231,14 +214,7 @@ hyybbJB0RgxX7ofiWItbJh9I06ENOBcvjyCReyLoJDoSaqsj0upxfpu2GiDxxRo/
                 {
                     //Ensure that the Server/Target Fingerprint is correct.
                     //We have to compare the Fingerprint to trust the AdsServer/Target
-                    Console.WriteLine($"Fingerprint: {sha256FingerPrint}");
-                    Console.WriteLine($"Is the Server/Target Fingerprint correct (y/n)?");
-                    ConsoleKeyInfo consoleKey = Console.ReadKey();
-
-                    if (consoleKey.KeyChar == 'y' || consoleKey.KeyChar == 'Y')
-                    {
-                        trustTarget = true;
-                    }
+                    trustTarget = ValidateFingerprint(sha256FingerPrint);
                 }
                 else
                 {
@@ -248,10 +224,19 @@ hyybbJB0RgxX7ofiWItbJh9I06ENOBcvjyCReyLoJDoSaqsj0upxfpu2GiDxxRo/
 
                 if (trustTarget)
                 {
-                    AdsState state = await ReadStateAsync(connect, CancellationToken.None);
-
+                    // Timeout after 5 Seconds
+                    CancellationTokenSource timeoutCancelSource = new CancellationTokenSource(5000); 
                     Console.WriteLine("");
-                    Console.WriteLine($"SUCCESS: The Ads state of target {targetAddress} is '{state}'.");
+
+                    try
+                    {
+                        AdsState state = await ReadStateAsync(connect, timeoutCancelSource.Token);
+                        Console.WriteLine($"SUCCESS: The Ads state of target {targetAddress} is '{state}'.");
+                    }
+                    catch (ApplicationException ex)
+                    {
+                        Console.WriteLine($"FAILED: Cannot read AdsState from target {targetAddress}: {ex.Message}");
+                    }
                 }
             }
             catch (Exception ex)
@@ -261,41 +246,173 @@ hyybbJB0RgxX7ofiWItbJh9I06ENOBcvjyCReyLoJDoSaqsj0upxfpu2GiDxxRo/
             connect.Close();
         }
 
+        /// <summary>
+        /// Show and Validate the Fingerprint via Console.
+        /// </summary>
+        /// <param name="fingerprint">The fingerprint.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        private static bool ValidateFingerprint(string fingerprint)
+        {
+            bool trustTarget = false;
+            Console.WriteLine($"Is the Server/Target Fingerprint '{fingerprint}' correct (y/n)?");
+            ConsoleKeyInfo consoleKey = Console.ReadKey();
+
+            if (consoleKey.KeyChar == 'y' || consoleKey.KeyChar == 'Y')
+            {
+                trustTarget = true;
+            }
+            return trustTarget;
+        }
+
+        /// <summary>
+        /// Read the target system Credentials from the Console
+        /// </summary>
+        /// <returns>System.ValueTuple&lt;System.String, SecureString&gt;.</returns>
+        private static (string userName, SecureString pwd) ReadCredentialsFromConsole()
+        {
+            string userName;
+            SecureString password = new SecureString();
+
+            Console.Write("UserName: ");
+
+            do
+            {
+                userName = Console.ReadLine();
+            } while (string.IsNullOrEmpty(userName));
+
+            ConsoleKeyInfo key;
+
+            Console.Write("Enter password: ");
+            do
+            {
+                key = Console.ReadKey(true);
+
+                // Ignore any key out of range.
+                //if (((int)key.Key) >= 65 && ((int)key.Key <= 90))
+                if (((int)key.Key) >= 0x20 && ((int)key.Key <= 0x7E)) // Printable characters
+                {
+                    // Append the character to the password.
+                    password.AppendChar(key.KeyChar);
+                    Console.Write("*");
+                }
+                // Exit if Enter key is pressed.
+            } while (key.Key != ConsoleKey.Enter);
+            Console.WriteLine();
+            return (userName, password);
+        }
+
+        /// <summary>
+        /// Read the target IPAddress/HostName from Console Input
+        /// </summary>
+        /// <returns>System.String.</returns>
+        private static string ReadIPOrHostNameFromConsole()
+        {
+            string hostOrIp;
+
+            do
+            {
+                Console.Write("Enter Target HostName/IPAddress: ");
+                hostOrIp = Console.ReadLine();
+            } while (string.IsNullOrEmpty(hostOrIp));
+            return hostOrIp;
+        }
+
+        /// <summary>
+        /// Reads target AmsAddress from Console Input
+        /// </summary>
+        /// <returns>AmsAddress.</returns>
+        private static AmsAddress ReadAmsAddressFromConsole()
+        {
+            AmsNetId targetNetId = null;
+            int targetPort = 0;
+
+            bool ok = false;
+
+            do
+            {
+                Console.Write("Enter Target NetId: ");
+                string targetNetIdStr = Console.ReadLine();
+
+                ok = AmsNetId.TryParse(targetNetIdStr, out targetNetId);
+            } while (!ok);
+
+            targetPort = 0;
+            do
+            {
+                Console.Write("Enter Target AdsPort: ");
+                string targetPortStr = Console.ReadLine();
+                ok = int.TryParse(targetPortStr, out targetPort);
+            } while (!ok);
+
+            return new AmsAddress(targetNetId, targetPort);
+        }
+
+        /// <summary>
+        /// The ReadState Operation (asynchronous)
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="cancel">The cancel.</param>
+        /// <returns>AdsState.</returns>
+        /// <exception cref="ApplicationException">ReadStateAsync failed with '{adsError}'!</exception>
         static async Task<AdsState> ReadStateAsync(TlsConnect connection, CancellationToken cancel)
         {
-            //CAUTION: The TlsConnect, X509CertificateHelper, AdsReadStateResponseHeader objects are preliminary
-            //and are actually not documented. They could be changed in future!
-
             AdsState state = AdsState.Invalid;
+            
+            // Create AmsHeader
             AmsHeader header = new AmsHeader(connection.TargetAddress, connection.LocalAddress, AdsCommandId.ReadState, AmsStateFlags.AdsCommand, 0, 0, 1);
 
+            // Create the AmsCommand for ReadState (ReadState dosn't have data content)
             AmsCommand command = new AmsCommand(header, Array.Empty<byte>());
             int size = AmsCommandFrameMarshaller.MarshalSize(command);
 
             byte[] requestBuffer = new byte[size];
+            // Marshal Command Data to buffer
             int marshalledBytes = AmsCommandFrameMarshaller.Marshal(command, requestBuffer.AsSpan());
 
             SslStream securedStream = connection.GetStream();
             await securedStream.WriteAsync(requestBuffer, cancel).ConfigureAwait(false);
 
+            // Create Response Buffer of adequate size
             int length = AmsHeader.MarshalSize + AdsReadStateResponseHeader.StaticMarshalSize;
             byte[] responseBuffer = new byte[length];
+            
+            // Read the Response asynchrously
             int returnedBytes = await securedStream.ReadAsync(responseBuffer, cancel).ConfigureAwait(false);
 
             AmsHeader responseHeader;
+            
+            // Unmarshal data to AmsHeader
             int offset = AmsHeaderMarshaller.Unmarshal(responseBuffer.AsSpan(0), out responseHeader);
 
             AdsErrorCode adsError = (AdsErrorCode)BinaryPrimitives.ReadUInt32LittleEndian(responseBuffer.AsSpan(offset, 4));
             offset += 4;
-            state = (AdsState)BinaryPrimitives.ReadUInt16LittleEndian(responseBuffer.AsSpan(offset, 2));
-            offset += 2;
-            ushort deviceState = BinaryPrimitives.ReadUInt16LittleEndian(responseBuffer.AsSpan(offset, 2));
-            return state;
+
+            // Unmarshal the DataContent (here 4 Bytes)
+            if (adsError == AdsErrorCode.NoError)
+            {
+                state = (AdsState)BinaryPrimitives.ReadUInt16LittleEndian(responseBuffer.AsSpan(offset, 2));
+                offset += 2;
+                ushort deviceState = BinaryPrimitives.ReadUInt16LittleEndian(responseBuffer.AsSpan(offset, 2));
+                offset += 2;
+                return state;
+            }
+            else
+            {
+                throw new ApplicationException($"ReadStateAsync failed with '{adsError}'!");
+            }
         }
     }
 
+    /// <summary>
+    /// Extend the X509Certificate class
+    /// </summary>
     public static class X509CertificateExtension
     {
+        /// <summary>
+        /// Gets the sha256 thumbprint (fingerprint from the certificate)
+        /// </summary>
+        /// <param name="cert">The cert.</param>
+        /// <returns>System.String.</returns>
         public static string GetSha256Thumbprint(this X509Certificate cert)
         {
             byte[] buffer;
