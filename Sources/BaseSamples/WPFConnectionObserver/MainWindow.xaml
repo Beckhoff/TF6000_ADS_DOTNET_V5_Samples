@@ -7,9 +7,8 @@
         mc:Ignorable="d"
         Title="StateObserver" Height="350" Width="525" Loaded="Window_Loaded" Unloaded="Window_Unloaded">
     <Grid>
-        <Button x:Name="btnConfig" Content="Config" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="btnConfig_Click"/>
         <Button x:Name="bntRun" Content="Run" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="75" Click="bntRun_Click"/>
-        <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.467,2.122" Click="btnReset_Click"/>
+        <Button x:Name="btnConfig" Content="Config" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.467,2.122" Click="btnConfig_Click"/>
         <Label x:Name="lblConnectionState" Content="ConnectionState: " HorizontalAlignment="Left" Margin="204,32,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tbConnectionState" HorizontalAlignment="Left" Height="23" Margin="321,32,0,0" TextWrapping="Wrap" Text="None" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
         <Label x:Name="lblAdsState" Content="ADS State: " HorizontalAlignment="Left" Margin="204,63,0,0" VerticalAlignment="Top"/>

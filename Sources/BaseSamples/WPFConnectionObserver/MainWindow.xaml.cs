@@ -1,17 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using TwinCAT;
 using TwinCAT.Ads;
@@ -28,15 +16,17 @@ namespace WPFConnectionObserver
             InitializeComponent();
         }
 
-
-#region CODE_SAMPLE
         private DispatcherTimer _timer = null;
         private AdsSession _session = null;
-        //private AdsConnection _connection = null;
-
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _session = new AdsSession(AmsNetId.Local, 10000);
+            // Using the FastWriteThrough setting to detect recurring devices as fast as possible!
+            // Otherwise we could stay in the 'Lost' connection state for 21 Seconds by default before
+            // a reconnection is possible again.
+            SessionSettings settings = SessionSettings.FastWriteThrough;
+            _session = new AdsSession(AmsNetId.Local, 10000, settings);
+
             IConnection connection = _session.Connect();
             tbConnectionState.Text = connection.ConnectionState.ToString();
             _session.ConnectionStateChanged += _session_ConnectionStateChanged;
@@ -57,7 +47,8 @@ namespace WPFConnectionObserver
         private void _session_ConnectionStateChanged(object sender, TwinCAT.ConnectionStateChangedEventArgs e)
         {
             // ConnectionStateChanged will be triggered by communication Invokes
-            tbConnectionState.Text = e.NewState.ToString();
+            // or can be invoked by a router Notification. Therefore we must synchronize it into the UIThread!
+            this.Dispatcher.Invoke(() => tbConnectionState.Text = e.NewState.ToString());
         }
 
         private void TimerOnTick(object sender, EventArgs eventArgs)
@@ -74,30 +65,25 @@ namespace WPFConnectionObserver
                 tbAdsState.Text = "Invalid";
             }
         }
-#endregion
-
-        private void btnConfig_Click(object sender, RoutedEventArgs e)
-        {
-            StateInfo state = new StateInfo();
-            state.AdsState = AdsState.Reconfig;
-            AdsErrorCode error = _session.Connection.TryWriteControl(state);
-            MessageBox.Show(error.ToString());
-        }
 
         private void bntRun_Click(object sender, RoutedEventArgs e)
         {
             StateInfo state = new StateInfo();
-            state.AdsState = AdsState.Start;
+            state.AdsState = AdsState.Reset; // Restarting the SystemService (via Stop)
             AdsErrorCode error = _session.Connection.TryWriteControl(state);
-            MessageBox.Show(error.ToString());
+
+            if (error != AdsErrorCode.NoError)
+                MessageBox.Show(error.ToString());
         }
 
-        private void btnReset_Click(object sender, RoutedEventArgs e)
+        private void btnConfig_Click(object sender, RoutedEventArgs e)
         {
             StateInfo state = new StateInfo();
-            state.AdsState = AdsState.Reset;
+            state.AdsState = AdsState.Reconfig; // Go to config via Stop
             AdsErrorCode error = _session.Connection.TryWriteControl(state);
-            MessageBox.Show(error.ToString());
+
+            if (error != AdsErrorCode.NoError)
+                MessageBox.Show(error.ToString());
         }
     }
 }
