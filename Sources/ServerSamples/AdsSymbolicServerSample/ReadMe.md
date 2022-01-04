@@ -1,7 +1,7 @@
 ﻿# Using of the AdsSymbolServerSample
 
 Run the AdsSymbolicServerSample application
-The AmsPort is 6000. An easy way to test the server is using the **TcXaeMgmt** Powershell module.
+The AmsPort is 0x8000. An easy way to test the server is using the **TcXaeMgmt** Powershell module.
 
 ## Installing the **TcXaeMgmt** Powershell Module
 If the **TcXaeMgmt** Module is not already existing on the system, it 

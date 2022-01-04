@@ -20,7 +20,7 @@ namespace AdsSymbolicServerSample
         /// AmsPort of the SymbolicTestServer
         /// </summary>
         /// <remarks>
-        /// User Server Ports must be >= 8000 !!!!
+        /// User Server Ports must be >= 0x8000 to not conflict with Beckhoff prereserved servers!!!!
         /// </remarks>
         static ushort s_Port = 0x8000;
 

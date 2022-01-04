@@ -1,4 +1,4 @@
-﻿## Description
+﻿## Description of the **AdsRouterConsoleApp** Sample application
 The package **'Beckhoff.TwinCAT.Ads.AdsRouterConsole'** contains a lean TCP ADS Router as binary. It is a simple console application
 'ready-to-run'.
 
