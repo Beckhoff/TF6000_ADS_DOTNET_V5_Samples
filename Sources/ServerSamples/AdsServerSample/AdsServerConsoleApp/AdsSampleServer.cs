@@ -398,7 +398,7 @@ namespace TestServer
             return ReadRequestAsync(target, invokeId++, indexGroup, indexOffset, readLength, cancel);
         }
 
-        public Task<AdsErrorCode> TriggerWriteRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, ReadOnlySpan<byte> data, CancellationToken cancel)
+        public Task<AdsErrorCode> TriggerWriteRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> data, CancellationToken cancel)
         {
             return WriteRequestAsync(target, invokeId++, indexGroup, indexOffset, data, cancel);
         }
@@ -408,7 +408,7 @@ namespace TestServer
             return ReadDeviceStateRequestAsync(target, invokeId++, cancel);
         }
 
-        public Task<AdsErrorCode> TriggerWriteControlRequestAsync(AmsAddress target, AdsState state, ushort deviceState, ReadOnlySpan<byte> data, CancellationToken cancel)
+        public Task<AdsErrorCode> TriggerWriteControlRequestAsync(AmsAddress target, AdsState state, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
         {
             return WriteControlRequestAsync(target, invokeId++, state, deviceState, data, cancel);
         }
@@ -423,7 +423,7 @@ namespace TestServer
             return DeleteDeviceNotificationRequestAsync(target, invokeId++, handle, cancel);
         }
 
-        public Task<AdsErrorCode> TriggerReadWriteRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, int readLength, ReadOnlySpan<byte>data, CancellationToken cancel)
+        public Task<AdsErrorCode> TriggerReadWriteRequestAsync(AmsAddress target, uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte>data, CancellationToken cancel)
         {
             return ReadWriteRequestAsync(target, invokeId++, indexGroup, indexOffset, readLength, data, cancel);
         }
