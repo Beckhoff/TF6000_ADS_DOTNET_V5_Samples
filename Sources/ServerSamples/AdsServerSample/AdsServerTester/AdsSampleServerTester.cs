@@ -26,9 +26,11 @@ public partial class AdsSampleServerTester : Form, ILogger
     {
         InitializeComponent();
 
-        // Create a new AdsSampleServer instance listening on Ads port 32768.
-        // User Area for AmsPorts is >= 0x8000
-        _server = new AdsSampleServer(0x8000, "AdsSampleServer", this);
+        // Create a new AdsSampleServer instance listening on Ads port 2500.
+        // User Server Ports must be in between
+        // AmsPort.CUSTOMER_FIRST (25000) <= PORT <= AmsPort.CUSTOMER_LAST (25999)
+        // to not conflict with Beckhoff prereserved servers!
+        _server = new AdsSampleServer(25000, "AdsSampleServer", this);
         _server.ServerConnectionStateChanged+=ConnectionStatusChanged;
         enableDisableControls();
     }
