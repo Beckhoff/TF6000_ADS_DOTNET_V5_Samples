@@ -28,14 +28,38 @@ namespace AdsSymbolicServerSample
                 });
 
                 Task<AdsErrorCode> serverTask = server.ConnectServerAndWaitAsync(s_cts.Token);
-                Console.WriteLine($"Symbolic Test Server runnning on Address: '{server.ServerAddress}' ...\n");
-                Console.WriteLine($"For testing the server see the ReadMe.md file in project root");
-                Console.WriteLine($"or type the following command from Powrshell with installed 'TcXaeMgmt' module:\n");
-                Console.WriteLine($"PS> test-adsroute -NetId {server.ServerAddress.NetId} -port {server.ServerAddress.Port}\n\n");
-                Console.WriteLine("Press the ENTER key to cancel...\n");
+                //await Task.Delay(500);
+
+                if (serverTask.IsCompleted && serverTask.Result.Failed())
+                {
+                    Console.WriteLine("Couldn't start Server");
+                }
+                else
+                {
+                    Console.WriteLine($"Symbolic Test Server runnning on Address: '{server.ServerAddress}' ...\n");
+                    Console.WriteLine($"For testing the server see the ReadMe.md file in project root");
+                    Console.WriteLine($"or type the following command from Powrshell with installed 'TcXaeMgmt' module:\n");
+                    Console.WriteLine($"PS> test-adsroute -NetId {server.ServerAddress.NetId} -port {server.ServerAddress.Port}\n\n");
+                    Console.WriteLine("Press the ENTER key to cancel...\n");
+                }
 
                 await Task.WhenAny(new[] { cancelTask, serverTask });
-                Console.WriteLine("Application ending.");
+                
+                AdsErrorCode errorCode = await serverTask;
+
+                if (errorCode.Succeeded())
+                {
+                    Console.WriteLine("Server stopped without errors.");
+                }
+                else
+                {
+                    string message = string.Empty;
+
+                    if (serverTask.Exception != null)
+                        message = serverTask.Exception.InnerException.Message;
+
+                    Console.WriteLine($"Server stopped with AdsErrorCode: '{errorCode}' (Exception: {message})");
+                }
             }
         }
     }
