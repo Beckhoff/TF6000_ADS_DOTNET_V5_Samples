@@ -35,11 +35,13 @@ namespace TwinCAT.Ads.Cli
 
             if (_type.StartsWith("string"))
             {
-                if (! _type.Contains('('))
+                if (_type.Contains('(')){
+                    string size = _type.Split('(',2,StringSplitOptions.TrimEntries)[1].Replace(")","");
+                    int.TryParse(size, System.Globalization.NumberStyles.Integer, null, out result);
+                }
+                else {
                     result = 80;
-                
-                string size = _type.Split('(',2,StringSplitOptions.TrimEntries)[1].Replace(")","");
-                int.TryParse(size, System.Globalization.NumberStyles.Integer, null, out result);
+                }
             } else {
                 switch(_type){
                     case "bool":

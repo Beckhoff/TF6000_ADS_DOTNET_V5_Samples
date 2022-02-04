@@ -37,13 +37,18 @@ namespace TwinCAT.Ads.Cli
             else if(_args.Length > 1)
             {
                 bool verbosity = isVerboseSet();
+                string setValue = null;
+
+                if(_args.Length > 3){
+                    setValue = tryParseValue(_args[3]);
+                }
 
                 appArgs = new ApplicationArgs(
                     netId: tryParseNetId(_args[0]),
                     port: tryParsePort(_args[0]),
                     symbolType: tryParseType(_args[1]),
                     symbolName: tryParseSymbol(_args[2]),
-                    value: tryParseValue(_args[3]),
+                    value: setValue,
                     verbosity: verbosity);
             }
 
