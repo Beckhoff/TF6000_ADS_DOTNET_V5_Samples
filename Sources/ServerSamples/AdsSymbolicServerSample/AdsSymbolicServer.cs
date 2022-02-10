@@ -6,6 +6,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net;
+using TwinCAT.Ams;
 using TwinCAT.Ads;
 using TwinCAT.Ads.Server;
 using TwinCAT.Ads.Server.TypeSystem;
@@ -49,6 +51,22 @@ namespace AdsSymbolicServerSample
         public SymbolicTestServer()
             : base(s_Port, "SymbolicTestServer", null)
         {
+            /// AMS Router enpoint can be changed via envrionment variables which is
+            /// benefitial in containerized setups where the AMS router is not listening
+            /// at the default loopback address and port 
+            IPAddress ipEndpoint;
+            if( ! IPAddress.TryParse(System.Environment.GetEnvironmentVariable("ENV_AmsConfiguration__LoopbackAddress"), out ipEndpoint))
+            {
+                ipEndpoint = IPAddress.Loopback;
+            }
+
+            int port;
+            if( ! int.TryParse(System.Environment.GetEnvironmentVariable("ENV_AmsConfiguration__LoopbackPort"), out port))
+            {
+                port = 48898;
+            }
+
+            AmsConfiguration.RouterEndPoint = new IPEndPoint( ipEndpoint, port);
         }
 
         IDisposable _changeValueObserver = null;
