@@ -172,6 +172,7 @@ namespace AdsSessionTest
 
             _connection = (AdsConnection)_session.Connect();
             _connection.ConnectionStateChanged += _connection_ConnectionStatusChanged;
+            _connection.RouterStateChanged += _connection_RouterStateChanged;
 
             try
             {
@@ -185,6 +186,16 @@ namespace AdsSessionTest
             }
             _timer.Start();
             //AddMessage(string.Format("Connected to {0} Port: {1}", netId, port));
+        }
+
+        private void _connection_RouterStateChanged(object sender, AmsRouterNotificationEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Update();
+                EnableDisableControls();
+                AddMessage($"Router: RouterStateChanged changed to '{e.State}'!");
+            });
         }
 
         private void _timer_Tick(object sender, EventArgs e)
