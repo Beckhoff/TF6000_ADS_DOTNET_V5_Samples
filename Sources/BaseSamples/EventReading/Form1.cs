@@ -282,7 +282,7 @@ namespace Sample03
             using (AdsClient client = new AdsClient())
             {
                 // Add the Notification event handler
-                client.AdsNotification += Client_AdsNotification;
+                client. AdsNotification += Client_AdsNotification;
 
                 // Connect to target
                 client.Connect(AmsNetId.Local, 851);
@@ -339,7 +339,6 @@ namespace Sample03
                 // Notification to a DINT Type (UINT32)
                 // Check for change every 200 ms
 
-                //byte[] notificationBuffer = new byte[sizeof(UInt32)];
                 int size = sizeof(UInt32);
 
                 ResultHandle result = await client.AddDeviceNotificationAsync("MAIN.nCounter", size, new NotificationSettings(AdsTransMode.OnChange, 200, 0), null, cancel);
@@ -385,8 +384,6 @@ namespace Sample03
 
                 // Notification to a DINT Type (UINT32)
                 // Check for change every 200 ms
-
-                //byte[] notificationBuffer = new byte[sizeof(UInt32)];
 
                 ResultHandle result = await client.AddDeviceNotificationAsync("MAIN.nCounter", sizeof(UInt32), new NotificationSettings(AdsTransMode.OnChange, 200, 0), null, cancel);
 
@@ -465,46 +462,44 @@ namespace Sample03
         }
         #endregion
 
+        SynchronizationContext _context = null;
+
         private void Form1_Load(object sender, System.EventArgs e)
-		{
-            //byte[] notificationBuffer = new byte[33];
+        {
+            // Get the WindowsFormSynchronizationContext.
+            _context = SynchronizationContext.Current;
 
-            //AdsBinaryReader uses Encoding.ASCII internally for strings.
-            //using (binRead = new AdsBinaryReader(dataStream))
+            // Create AdsClient instance
+            _client = new AdsClient(); // Don't forget to dispose when finish using
+
+            // Connection to Port 851 on the local system
+            _client.Connect(851);
+            hConnect = new uint[7];
+
+            try
             {
-                // Create AdsClient instance
-                _client = new AdsClient(); // Don't forget to dispose when finish using
+                hConnect[0] = _client.AddDeviceNotification("MAIN.boolVal", 1,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbBool);
+                hConnect[1] = _client.AddDeviceNotification("MAIN.intVal", 2,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbInt);
+                hConnect[2] = _client.AddDeviceNotification("MAIN.dintVal", 4,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbDint);
+                hConnect[3] = _client.AddDeviceNotification("MAIN.sintVal", 1,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbSint);
+                hConnect[4] = _client.AddDeviceNotification("MAIN.lrealVal", 8,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbLreal);
+                hConnect[5] = _client.AddDeviceNotification("MAIN.realVal", 4,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbReal);
+                hConnect[6] = _client.AddDeviceNotification("MAIN.stringVal", 13,
+                    new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbString);
 
-                // Connection to Port 851 on the local system
-                _client.Connect(851);
-                hConnect = new uint[7];
-
-                try
-                {
-                    hConnect[0] = _client.AddDeviceNotification("MAIN.boolVal", 1,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbBool);
-                    hConnect[1] = _client.AddDeviceNotification("MAIN.intVal", 2,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbInt);
-                    hConnect[2] = _client.AddDeviceNotification("MAIN.dintVal", 4,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbDint);
-                    hConnect[3] = _client.AddDeviceNotification("MAIN.sintVal", 1,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbSint);
-                    hConnect[4] = _client.AddDeviceNotification("MAIN.lrealVal", 8,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbLreal);
-                    hConnect[5] = _client.AddDeviceNotification("MAIN.realVal", 4,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbReal);
-                    hConnect[6] = _client.AddDeviceNotification("MAIN.stringVal", 13,
-                        new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbString);
-
-                    _client.AdsNotification += new EventHandler<AdsNotificationEventArgs>(OnNotification);
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show(err.Message);
-                }
+                _client.AdsNotification += new EventHandler<AdsNotificationEventArgs>(OnNotification);
             }
-			
-		}
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+        }
 
 		private void OnNotification(object sender, AdsNotificationEventArgs e)
 		{

@@ -1,19 +1,14 @@
 #region CODE_SAMPLE
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.IO;
-using TwinCAT.Ads;
 using System.Buffers.Binary;
+using System.Threading;
+using TwinCAT.Ads;
 
 namespace TwinCATAds_Sample08
 {
-	public partial class Form1 : Form
+    public partial class Form1 : Form
 	{
 		private AdsClient	_tcClient = null;
 		private uint _notificationHandle = 0;
@@ -23,10 +18,13 @@ namespace TwinCATAds_Sample08
 			InitializeComponent();
 		}
 
+		SynchronizationContext _context = null;
+
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			try
 			{
+				_context = SynchronizationContext.Current;
 				_tcClient = new AdsClient();
 
 				/* connect the client to the local PLC */
@@ -60,20 +58,21 @@ namespace TwinCATAds_Sample08
 		}
 
 		/* callback function called on state changes of the PLC */
-				void OnAdsNotification(object sender, AdsNotificationEventArgs e)
+		void OnAdsNotification(object sender, AdsNotificationEventArgs e)
 		{
 			if (e.Handle == _notificationHandle)
 			{
 				BinaryPrimitives.ReadUInt16LittleEndian(e.Data.Span);
 				AdsState plcState = (AdsState)BinaryPrimitives.ReadUInt16LittleEndian(e.Data.Span); /* Unmarshal received Data to AdsState object */
-				_plcLabelValue.Text = plcState.ToString();
+
+				_context.Post((s) => _plcLabelValue.Text = s.ToString(), plcState);
 			}
 		}
 
 		/* callback function called on state changes of the local AMS Router */
 		void OnRouterStateChanged(object sender, AmsRouterNotificationEventArgs e)
 		{
-			_routerLabelValue.Text = e.State.ToString();
+			_context.Post((s) => _routerLabelValue.Text = s.ToString(), e.State);
 		}
 
 		private void _exitButton_Click(object sender, EventArgs e)
