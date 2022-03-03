@@ -17,39 +17,23 @@ namespace _30_ADS.NET_MethodCall
     public partial class Form1 : Form
     {
         AdsClient tcClient;
-        //AdsStream readStream, writeStream;
-        //AdsBinaryReader binReader;
-        //AdsBinaryWriter binWriter;
 
-        byte[] _readBuffer = null;
-        byte[] _writeBuffer = null;
-
-        uint hMethod = 0;
+        //Update the AMSNetId for your target
+        string targetAmsNetId = "5.95.143.126.1.1";
 
         public Form1()
         {
             //Create a new instance of class AdsClient
             tcClient = new AdsClient();
-            //Allocate memory [2 bytes] for read parameter (sum in this case)
-            //readStream = new AdsStream(sizeof(int));
-            _readBuffer = new byte[sizeof(int)];
-            //binReader = new AdsBinaryReader(readStream);
 
-            //Allocate memory [4 bytes] for write parameter (summands A and B in this case)
-            //writeStream = new AdsStream(2 * sizeof(int));
-            //binWriter = new AdsBinaryWriter(writeStream);
-            _writeBuffer = new byte[2 * sizeof(int)];
             InitializeComponent();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
             try
             {
-                //Connect to local PLC - Port 851
-                tcClient.Connect(851);
-
-                //Get the handle of the PLC method "Addition" of POU MAIN.fbMath
-                hMethod = tcClient.CreateVariableHandle("MAIN.fbMath#Addition");
+                //Connect to target PLC - Port 851
+                tcClient.Connect(targetAmsNetId,851);
             }
             catch (Exception ex)
             {
@@ -60,48 +44,43 @@ namespace _30_ADS.NET_MethodCall
         {
             try
             {
-                MemoryStream writerStream = new MemoryStream(_writeBuffer);
-                BinaryWriter binWriter = new BinaryWriter(writerStream);
+                //Get the values entered into the form
+                short first = Convert.ToInt16(tbValueA.Text);
+                short second = Convert.ToInt16(tbValueB.Text);
 
-                //Write value A to stream
-                binWriter.Write(Convert.ToInt32(tbValueA.Text));
-                //Set stream position for next value
-                //writeStream.Position = sizeof(int);
-                //Write value B to stream
-                binWriter.Write(Convert.ToInt32(tbValueB.Text));
-                
-                //Call PLC method via handle
-                tcClient.ReadWrite((uint)AdsReservedIndexGroup.SymbolValueByHandle, (uint)hMethod, _readBuffer.AsMemory(), _writeBuffer.AsMemory());
+                //Add a function block FB_Math in TwinCAT
+                //Create a method called mAdd on FB_Math, with the following signature
 
-                //Read sum
-                MemoryStream readerStream = new MemoryStream(_readBuffer);
-                BinaryReader binReader = new BinaryReader(readerStream);
-                tbSumAB.Text = Convert.ToString(binReader.ReadInt32());
+                /*  {attribute 'TcRpcEnable'}
+                METHOD PUBLIC mAdd : INT
+                VAR_INPUT
+                    i1 : INT := 0;
+                    i2 : INT := 0;
+                END_VAR 
+                */
+
+                //Instance the function block in main call it fbMath
+
+                //Call the method mAdd of fbMath in MAIN
+                short result = (short)tcClient.InvokeRpcMethod("MAIN.fbMath", "mAdd", new object[] { first, second });
+
+                //Display the result
+                tbSumAB.Text = result.ToString();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                // Reset stream position
-                //readStream.Position = 0;
-                //writeStream.Position = 0;
             }
         }
         private void Form1_Closing(object sender, FormClosingEventArgs e)
         {
             try
             {
-                tcClient.DeleteVariableHandle(hMethod);
+                tcClient.Dispose();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                tcClient.Dispose();
             }
         }
     }
