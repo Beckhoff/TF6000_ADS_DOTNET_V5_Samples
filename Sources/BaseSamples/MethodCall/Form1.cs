@@ -16,30 +16,24 @@ namespace _30_ADS.NET_MethodCall
     #region CODE_SAMPLE
     public partial class Form1 : Form
     {
-        AdsClient tcClient;
+        AdsClient tcClient = null;
 
         //Update the AMSNetId for your target
-        string targetAmsNetId = "5.95.143.126.1.1";
+        AmsNetId targetAmsNetId = AmsNetId.Local;
 
         public Form1()
         {
-            //Create a new instance of class AdsClient
-            tcClient = new AdsClient();
-
             InitializeComponent();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            try
-            {
-                //Connect to target PLC - Port 851
-                tcClient.Connect(targetAmsNetId,851);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            //Create a new instance of class AdsClient
+            tcClient = new AdsClient();
+
+            //Connect to target PLC - Port 851
+            tcClient.Connect(targetAmsNetId, 851);
         }
+
         private void btnMethodCall_Click(object sender, EventArgs e)
         {
             try
@@ -72,16 +66,24 @@ namespace _30_ADS.NET_MethodCall
                 MessageBox.Show(ex.Message);
             }
         }
-        private void Form1_Closing(object sender, FormClosingEventArgs e)
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
         {
-            try
+            if (disposing)
             {
+                // Dispose the Client during Form Cleanup
                 tcClient.Dispose();
+
+                if (components != null)
+                {
+                    components.Dispose();
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            base.Dispose(disposing);
         }
     }
     #endregion
