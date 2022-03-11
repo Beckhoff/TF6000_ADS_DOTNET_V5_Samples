@@ -9,15 +9,15 @@ namespace AdsRouterAndClientConsoleApp
 {
     internal abstract class AdsBaseService : BackgroundService
     {
-        protected readonly ILogger _logger;
-        protected readonly AmsAddress _address;
+        protected readonly ILogger logger;
+        protected readonly AmsAddress address;
 
         protected AdsClient _client = null;
 
         public AdsBaseService(AmsAddress address, ILogger logger)
         {
-            _address = address;
-            _logger = logger;
+            this.address = address;
+            this.logger = logger;
         }
 
         ~AdsBaseService()
@@ -54,10 +54,10 @@ namespace AdsRouterAndClientConsoleApp
 
             // Establish connection and read State
             _client = new AdsClient { Timeout = 5000 };
-            _client.Connect(_address);
+            _client.Connect(address);
 
             ResultReadDeviceState result = await _client.ReadStateAsync(CancellationToken.None);
-            _logger.LogInformation($"Target system '{_address}' is in state '{result.State.AdsState}'");
+            logger.LogInformation($"Target system '{address}' is in state '{result.State.AdsState}'");
 
             // Execute the Work handler!
             await OnExecuteAsync(cancel);

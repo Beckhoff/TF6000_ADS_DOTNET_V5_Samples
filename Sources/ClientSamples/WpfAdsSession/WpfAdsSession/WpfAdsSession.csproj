@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>    
+    <TargetFramework>net6.0-windows</TargetFramework>    
     <UseWPF>true</UseWPF>    
     <StartupObject>AdsSessionTest.App</StartupObject>
   </PropertyGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="5.0.379" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
   </ItemGroup>
 
   <ItemGroup>

@@ -76,12 +76,11 @@ namespace AdsSymbolicServerSample
         /// </summary>
         protected override void OnConnected()
         {
-            OnCreateSymbols();
-            OnCreateNotificationTrigger();
+            this.AddSymbols()
+                .AddNotificationTrigger();
 
+            // An Observable.Interval is used to simulate changed values (on a 1 Second base)
             IObservable<long> changeValueTrigger = Observable.Interval(TimeSpan.FromSeconds(1.0), Scheduler.Default);
-
-            //Action<long> act = toggleValues;
             _changeValueObserver = changeValueTrigger.Subscribe(toggleValues);
             base.OnConnected();
         }
@@ -101,13 +100,16 @@ namespace AdsSymbolicServerSample
         /// <summary>
         /// Creates an Notification tigger for the Notifications base tick.
         /// </summary>
-        private void OnCreateNotificationTrigger()
+        private SymbolicTestServer AddNotificationTrigger()
         {
-            base._notificationTrigger.Add(new BaseTickTrigger(TimeSpan.FromMilliseconds(100)));
+            base.notificationTrigger.Add(new BaseTickTrigger(TimeSpan.FromMilliseconds(100)));
+            return this;
         }
 
-
-        private void OnCreateSymbols()
+        /// <summary>
+        /// Create the Symbolic information DataAreas, DataTypes and Symbols.
+        /// </summary>
+        private SymbolicTestServer AddSymbols()
         {
             PrimitiveType dtBool = new PrimitiveType("BOOL", typeof(bool));
             PrimitiveType dtInt = new PrimitiveType("INT", typeof(short));
@@ -126,13 +128,6 @@ namespace AdsSymbolicServerSample
                 .AddDimension(new Dimension(0, 2));
 
             ArrayType dtArray = new ArrayType(dtInt, dims);
-
-            //ArrayIndexIterator iter = new ArrayIndexIterator(dtArray);
-
-            //foreach(int[] indices in iter)
-            //{
-            //    string str = ArrayIndexConverter.IndicesToString(indices);
-            //}
 
             EnumValueCollection<int> enumValues = new EnumValueCollection<int>()
                 .AddValue("None", 0)
@@ -158,12 +153,6 @@ namespace AdsSymbolicServerSample
                 .AddType(dtAlias)
                 .AddType(dtPointer)
                 .AddType(dtReference);
-
-            //ISymbol globals = base.symbolFactory.CreateVirtualRoot("Globals", 0x100, 0);
-            //ISymbol main = base.symbolFactory.CreateVirtualRoot("Main", 0x200, 0);
-
-            //uint indexOffset = 0;
-            //ISymbol created;
 
             DataArea general = new DataArea("General", 0x01, 0x1000, 0x1000);
             DataArea globals = new DataArea("Globals", 0x02, 0x1000, 0x1000);
@@ -217,14 +206,36 @@ namespace AdsSymbolicServerSample
             _symbolValues.Add(this.Symbols["Main.myAlias1"], "Red");
             _symbolValues.Add(this.Symbols["Main.pointer1"], 0);
             _symbolValues.Add(this.Symbols["Main.reference1"], 0);
+
+            return this;
         }
 
-        protected override Task<AdsErrorCode> ReadDeviceStateIndicationAsync(AmsAddress sender, uint invokeId, CancellationToken cancel)
+        /// <summary>
+        /// Called when an ADS Read State indication is received.
+        /// </summary>
+        /// <param name="cancel">The cancellation token.</param>
+        /// <returns>A task that represents the asynchronous <see cref="M:TwinCAT.Ads.Server.AdsServer.ReadDeviceStateIndicationAsync(TwinCAT.Ads.AmsAddress,System.UInt32,System.Threading.CancellationToken)" /> operation. The <see cref="T:System.Threading.Tasks.Task`1" /> parameter contains the <see cref="T:TwinCAT.Ads.AdsErrorCode" /> as
+        /// <see cref="P:System.Threading.Tasks.Task`1.Result" />.</returns>
+        /// <remarks>Overwrite this method in derived classes to react on ADS Read State indications.
+        /// The default implementation replies with an ADS ServiceNotSupported error code (0x701).</remarks>
+        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(CancellationToken cancel)
         {
-            return ReadDeviceStateResponseAsync(sender, invokeId, AdsErrorCode.Succeeded, AdsState.Run, 0, cancel);
+            AdsState adsState = AdsState.Run;
+            ushort deviceState = 0;
+            StateInfo state = new StateInfo(adsState, deviceState);
+            ResultReadDeviceState result = ResultReadDeviceState.CreateSuccess(state);
+            return Task.FromResult(result);
         }
 
-        protected override AdsErrorCode OnGetRawValue(ISymbol symbol, Span<byte> span)
+        /// <summary>
+        /// Handler function for Reading the internal value data in raw format.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="span">The span.</param>
+        /// <returns>AdsErrorCode.</returns>
+        /// <remarks>This method is called, when a Read request was received to read the symbols value.
+        /// Implement this handler to Read and marshal the value data.</remarks>
+        protected override AdsErrorCode OnReadRawValue(ISymbol symbol, Span<byte> span)
         {
             object value;
             if (_symbolValues.TryGetValue(symbol, out value))
@@ -240,6 +251,14 @@ namespace AdsSymbolicServerSample
                 return AdsErrorCode.DeviceSymbolNotFound;
         }
 
+        /// <summary>
+        /// Handler function for writing the symbol value data in raw format.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="span">The span.</param>
+        /// <returns>AdsErrorCode.</returns>
+        /// <remarks>This method is called, when a Write request was received to overwrite the symbols value.
+        /// Implement this handler to overwrite the Ads Servers internal value data.</remarks>
         protected override AdsErrorCode OnWriteRawValue(ISymbol symbol, ReadOnlySpan<byte> span)
         {
             object value;
@@ -248,42 +267,24 @@ namespace AdsSymbolicServerSample
             return AdsErrorCode.NoError;
         }
 
+        /// <summary>
+        /// Handler function to store a new Symbol value within internal caches of the <see cref="T:TwinCAT.Ads.Server.AdsSymbolicServer" />.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="value">The value.</param>
         protected override void OnSetValue(ISymbol symbol, object value)
         {
             _symbolValues[symbol] = value;
         }
 
+        /// <summary>
+        /// Handler function to determine the (stored) value of the symbol from the internal caches of the <see cref="T:TwinCAT.Ads.Server.AdsSymbolicServer" />.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <returns>System.Object.</returns>
         protected override object OnGetValue(ISymbol symbol)
         {
             return _symbolValues[symbol];
         }
-
-        //private Task SendNotifications(CancellationToken cancel)
-        //{
-        //    IList<NotificationSettings> settings = _notificationTable.WeightedSettings;
-
-        //    foreach(NotificationSettings s in settings)
-        //    {
-        //        AmsAddress[] notificationReceivers = _notificationTable.GetAddresses(s);
-
-        //        foreach(AmsAddress a in notificationReceivers)
-        //        {
-        //            uint[] handles = _notificationTable.GetNotificationHandles(s, a);
-        //            ISymbol[] symbols = _notificationTable.GetSymbols(a, s);
-        //        }
-        //    }
-
-        //    //TODO:
-        //    AmsAddress target = AmsAddress.Empty;
-        //    uint invokeId = 42;
-
-        //    uint handle = 0;
-        //    byte[] data = new byte[4];
-
-        //    NotificationSamplesStamp[] stamps = new NotificationSamplesStamp[1];
-        //    NotificationDataSample sample = new NotificationDataSample(handle,data);
-
-        //    return DeviceNotificationRequestAsync(target, invokeId, 1, stamps, cancel);
-        //}
     }
 }

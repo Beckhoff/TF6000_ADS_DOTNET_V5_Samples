@@ -3,7 +3,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net461;netstandard2.0;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net461;netstandard2.0;net6.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(BuildHelp)' == 'true'">netcoreapp3.1</TargetFrameworks>
     <PackageId>Beckhoff.TwinCAT.Ads.CustomSessionProvider</PackageId>
     <Authors>Ralf Heitmann</Authors>
@@ -11,36 +11,6 @@
     <RootNamespace>Beckhoff.CustomSymbolProvider</RootNamespace>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|net461|AnyCPU'">
-    <DefineConstants>DEBUG;NETFULL</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|net461|AnyCPU'">
-    <DefineConstants>NETFULL</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
-    <DefineConstants>DEBUG;NETCORE2</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
-    <DefineConstants>NETCORE2</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <DefineConstants>DEBUG;NETCORE3</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
-    <DefineConstants>NETCORE3</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|net50|AnyCPU'">
-    <DefineConstants>DEBUG;NETCORE5</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|net50|AnyCPU'">
-    <DefineConstants>NETCORE5</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DefineConstants>DEBUG;NETSTANDARD</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <DefineConstants>NETSTANDARD</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="mscorlib" />
@@ -58,8 +28,8 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="5.0.479" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.Abstractions" Version="5.0.479" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.Abstractions" Version="6.0.72" />
     <PackageReference Include="Nullable" Version="1.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

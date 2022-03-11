@@ -361,6 +361,9 @@ namespace Beckhoff.CustomSymbolProvider
             get { return false; }
         }
 
+        public string[] InterfaceImplementationNames => new string[] { };
+        public IInterfaceType?[]? InterfaceImplementations => new IInterfaceType?[] { };
+
         public IMemberCollection Members
         {
             get { return _members.AsReadOnly(); }

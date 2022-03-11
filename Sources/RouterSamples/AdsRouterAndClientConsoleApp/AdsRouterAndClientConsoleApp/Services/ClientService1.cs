@@ -17,9 +17,9 @@ namespace AdsRouterAndClientConsoleApp
             ResultAnyValue result = await _client.ReadValueAsync(symbolName, typeof(string), cancel);
 
             if (result.Succeeded)
-                _logger.LogInformation($"ProjectName of target '{_address}' is: '{result.Value}'");
+                logger.LogInformation($"ProjectName of target '{address}' is: '{result.Value}'");
             else
-                _logger.LogError("Cannot get ProjectName from target '{address}'");
+                logger.LogError($"Cannot get ProjectName from target '{address}'");
         }
     }
 }
