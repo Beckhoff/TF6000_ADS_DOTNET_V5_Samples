@@ -117,3 +117,7 @@ Main.pointer1       Pointer   POINTER TO INT            8    False  False      1
 Main.pointer1^      Primitive INT                       2    False  False      F014 0
 Main.reference1     Reference REFERENCE TO INT          8    False  False      1    10D0
 ```
+
+### Invoking Rpc methods
+```powershell
+```

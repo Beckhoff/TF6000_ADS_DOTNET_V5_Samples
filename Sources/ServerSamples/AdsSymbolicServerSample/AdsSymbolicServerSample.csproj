@@ -4,6 +4,5 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.SymbolicServer" Version="6.0.72" />
-  </ItemGroup>
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.SymbolicServer" Version="6.0.90" />  </ItemGroup>
 </Project>
