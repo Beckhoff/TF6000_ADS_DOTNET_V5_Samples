@@ -1,12 +1,10 @@
-#region CODE_SAMPLE
-
 using System;
 using System.Windows.Forms;
 using System.Buffers.Binary;
 using System.Threading;
 using TwinCAT.Ads;
 
-namespace TwinCATAds_Sample08
+namespace S23_TcStateChange
 {
     public partial class Form1 : Form
 	{
@@ -97,4 +95,3 @@ namespace TwinCATAds_Sample08
 		}
 	}
 }
-#endregion

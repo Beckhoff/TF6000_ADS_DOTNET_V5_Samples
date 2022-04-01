@@ -11,7 +11,7 @@ using TwinCAT.TypeSystem;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sample10
+namespace S10_ReadWriteString
 {
 	public class Form1 : System.Windows.Forms.Form
 	{
@@ -40,8 +40,7 @@ namespace Sample10
 			base.Dispose( disposing );
 		}
 
-		#region Windows Form Designer generated code
-		/// <summary>
+        /// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
@@ -102,9 +101,8 @@ namespace Sample10
             this.PerformLayout();
 
 		}
-		#endregion
 
-		[STAThread]
+        [STAThread]
 		static void Main() 
 		{
 			Application.Run(new Form1());
@@ -163,7 +161,6 @@ namespace Sample10
 
         private void CodeSampleReadString()
         {
-            #region CODE_SAMPLE_STRING
             using (AdsClient client = new AdsClient())
             {
                 client.Connect(AmsNetId.Local, 851); // Connect to local port 851 (PLC)
@@ -192,13 +189,10 @@ namespace Sample10
                     client.DeleteVariableHandle(handle);
                 }
             }
-            #endregion
         }
 
         private async Task CodeSampleReadStringAsync()
         {
-            #region CODE_SAMPLE_STRING_ASYNC
-
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -236,12 +230,10 @@ namespace Sample10
                     }
                 }
             }
-            #endregion
         }
 
         private void CodeSampleReadWString()
         {
-            #region CODE_SAMPLE_WSTRING
             using (AdsClient client = new AdsClient())
             {
                 client.Connect(AmsNetId.Local, 851); // Connect to local port 851 (PLC)
@@ -272,12 +264,10 @@ namespace Sample10
                     client.DeleteVariableHandle(handle);
                 }
             }
-            #endregion
         }
 
         private async Task CodeSampleReadWStringAsync()
         {
-            #region CODE_SAMPLE_WSTRING_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -315,12 +305,10 @@ namespace Sample10
                     }
                 }
             }
-            #endregion
         }
 
         private void CodeSampleStringAny()
         {
-            #region CODE_SAMPLE_ANYSTRING
             using (AdsClient client = new AdsClient())
             {
                 client.Connect(AmsNetId.Local, 851); // Connect to local port 851 (PLC)
@@ -345,12 +333,10 @@ namespace Sample10
                     client.DeleteVariableHandle(wStringHandle);
                 }
             }
-            #endregion
         }
 
         private async Task CodeSampleStringAnyAsync()
         {
-            #region CODE_SAMPLE_ANYSTRING_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -380,7 +366,6 @@ namespace Sample10
                     }
                 }
             }
-            #endregion
         }
     }
 }

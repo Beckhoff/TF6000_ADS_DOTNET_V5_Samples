@@ -10,10 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TwinCAT.Ads;
 
-namespace _30_ADS.NET_MethodCall
+namespace S30_MethodCall
 {
 
-    #region CODE_SAMPLE
     public partial class Form1 : Form
     {
         AdsClient tcClient = null;
@@ -86,5 +85,4 @@ namespace _30_ADS.NET_MethodCall
             base.Dispose(disposing);
         }
     }
-    #endregion
 }

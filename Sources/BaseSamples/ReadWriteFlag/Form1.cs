@@ -15,7 +15,7 @@ using System.Threading;
 using TwinCAT.ValueAccess;
 using System.Text.RegularExpressions;
 
-namespace Sample01
+namespace S01_ReadWriteFlag
 {
 	public class Form1 : System.Windows.Forms.Form
 	{
@@ -43,8 +43,7 @@ namespace Sample01
 			base.Dispose( disposing );
 		}
 
-		#region Windows Form Designer generated code
-		/// <summary>
+        /// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
@@ -105,9 +104,8 @@ namespace Sample01
             this.PerformLayout();
 
 		}
-		#endregion
 
-		[STAThread]
+        [STAThread]
 		static void Main() 
 		{
 			Application.Run(new Form1());
@@ -130,8 +128,6 @@ namespace Sample01
 		{
 			adsClient.Dispose();
 		}		
-
-    #region CODE_SAMPLE
 
 		private void btnRead_Click(object sender, System.EventArgs e)
 		{
@@ -162,11 +158,9 @@ namespace Sample01
 				MessageBox.Show(err.Message);
 			}
 		}
-        #endregion
 
         public void ReadIndexGroupIndexOffset()
         {
-            #region CODE_SAMPLE_READWRITE_IGIO
 
             using (AdsClient client = new AdsClient())
             {
@@ -191,9 +185,6 @@ namespace Sample01
                 BinaryReader reader = new BinaryReader(readStream);
                 valueToRead = reader.ReadUInt32();
             }
-            #endregion
-
-            #region CODE_SAMPLE_READWRITE_BYHANDLE
 
             using (AdsClient client = new AdsClient())
             {
@@ -229,14 +220,10 @@ namespace Sample01
                     client.DeleteVariableHandle(varHandle);
                 }
             }
-            #endregion
-
         }
 
         public void ReadAny()
         {
-            #region CODE_SAMPLE_READWRITE_ANY
-
             using (AdsClient client = new AdsClient())
             {
                 uint valueToRead = 0;
@@ -246,10 +233,6 @@ namespace Sample01
                 adsClient.WriteAny(0x4020, 0x0, valueToWrite);
                 valueToRead = (uint)adsClient.ReadAny(0x4020, 0x0, typeof(uint));
             }
-            #endregion
-
-
-            #region CODE_SAMPLE_BYHANDLE
 
             using (AdsClient client = new AdsClient())
             {
@@ -270,9 +253,6 @@ namespace Sample01
                     client.DeleteVariableHandle(varHandle);
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_BYPATH
 
             using (AdsClient client = new AdsClient())
             {
@@ -283,9 +263,6 @@ namespace Sample01
                 client.WriteValue("MAIN.nCounter", valueToWrite);
                 valueToRead = (uint)client.ReadValue("MAIN.nCounter", typeof(uint));
             }
-            #endregion
-
-            #region CODE_SAMPLE_SYMBOL
 
             using (AdsClient client = new AdsClient())
             {
@@ -298,9 +275,6 @@ namespace Sample01
                 adsClient.WriteValue(symbol, valueToWrite);
                 valueToRead = (uint)adsClient.ReadValue(symbol);
             }
-            #endregion
-
-            #region CODE_SAMPLE_SYMBOLBROWSER
 
             using (AdsClient client = new AdsClient())
             {
@@ -329,9 +303,6 @@ namespace Sample01
                     Console.WriteLine(filteredSymbol.InstancePath);
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_DYNAMIC
 
             using (AdsClient client = new AdsClient())
             {
@@ -357,9 +328,6 @@ namespace Sample01
                 nCounter.WriteValue(valueToWrite);
                 valueToRead = (uint)nCounter.ReadValue();
             }
-            #endregion
-
-            #region CODE_SAMPLE_DYNAMIC_COMPLEX
 
             using (AdsClient client = new AdsClient())
             {
@@ -406,12 +374,10 @@ namespace Sample01
                 //wait for notifications for 5 seconds
                 Thread.Sleep(5000);
             }
-            #endregion
         }
 
         public async Task ReadIndexGroupIndexOffsetAsync()
         {
-            #region CODE_SAMPLE_READWRITE_IGIO_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -437,9 +403,6 @@ namespace Sample01
                 BinaryReader reader = new BinaryReader(readStream);
                 valueToRead = reader.ReadUInt32();
             }
-            #endregion
-
-            #region CODE_SAMPLE_READWRITE_BYHANDLE_ASYNC
 
             CancellationToken cancelT = CancellationToken.None;
             using (AdsClient client = new AdsClient())
@@ -486,14 +449,10 @@ namespace Sample01
                     }
                 }
             }
-            #endregion
-
         }
 
         public async Task ReadAnyAsync()
         {
-            #region CODE_SAMPLE_READWRITE_ANY_ASYNC
-
             using (AdsClient client = new AdsClient())
             {
                 CancellationToken cancel = CancellationToken.None;
@@ -512,9 +471,6 @@ namespace Sample01
                     valueToRead = (uint)resultRead.Value;
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_BYHANDLE_ASYNC
 
             using (AdsClient client = new AdsClient())
             {
@@ -545,9 +501,6 @@ namespace Sample01
                     }
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_BYPATH_ASYNC
 
             using (AdsClient client = new AdsClient())
             {
@@ -563,9 +516,6 @@ namespace Sample01
                 if (resultRead.Succeeded)
                     valueToRead = resultRead.Value;
             }
-            #endregion
-
-            #region CODE_SAMPLE_SYMBOL_ASYNC
 
             using (AdsClient client = new AdsClient())
             {
@@ -589,9 +539,6 @@ namespace Sample01
                         valueToRead = resultValue.Value;
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_SYMBOLBROWSER_ASYNC
 
             using (AdsClient client = new AdsClient())
             {
@@ -631,9 +578,6 @@ namespace Sample01
                     }
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_DYNAMIC_ASYNC
 
             using (AdsClient client = new AdsClient())
             {
@@ -672,9 +616,6 @@ namespace Sample01
                     }
                 }
             }
-            #endregion
-
-            #region CODE_SAMPLE_DYNAMIC_COMPLEX_ASYNC
 
             using (AdsClient client = new AdsClient())
             {
@@ -738,10 +679,8 @@ namespace Sample01
                     Thread.Sleep(5000);
                 }
             }
-            #endregion
         }
 
-        #region CODE_SAMPLE_DYNAMIC_COMPLEX2
         private void NCounter_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             var uintVal = e.Value;
@@ -751,6 +690,5 @@ namespace Sample01
         {
             dynamic structValue = e.Value; // Snapshot of the whole Struct and all its contents
         }
-        #endregion
     }
 }

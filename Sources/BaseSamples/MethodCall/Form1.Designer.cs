@@ -1,4 +1,4 @@
-﻿namespace _30_ADS.NET_MethodCall
+﻿namespace S30_MethodCall
 {
     partial class Form1
     {

@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using TwinCAT.Ads;
 
-namespace PLCStartStop
+namespace S20_PLCStartStop
 {
     class PLCStartStop
     {
         static void Main(string[] args)
         {
-            #region CODE_SAMPLE
-
             //Create a new instance of class AdsClient
             AdsClient tcClient = new AdsClient();
 
@@ -44,7 +42,6 @@ namespace PLCStartStop
             {
                 tcClient.Dispose();
             }
-            #endregion
         }
     }
 }

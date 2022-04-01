@@ -10,7 +10,7 @@ using TwinCAT.TypeSystem;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sample11
+namespace S11_ReadWriteDateTime
 {
 	/// <summary>
 	/// Summary description for Form1.
@@ -50,8 +50,7 @@ namespace Sample11
 			base.Dispose( disposing );
 		}
 
-		#region Windows Form Designer generated code
-		/// <summary>
+        /// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
@@ -132,9 +131,8 @@ namespace Sample11
 			this.ResumeLayout(false);
 
 		}
-		#endregion
 
-		/// <summary>
+        /// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
@@ -221,7 +219,6 @@ namespace Sample11
 
         private void ReadWritePlcOpenTypes()
         {
-            #region CODE_SAMPLE_PLCOPEN_STREAMED
             using (AdsClient client = new AdsClient())
             {
                 client.Connect(AmsNetId.Local, 851); // Connect to local plc
@@ -282,12 +279,10 @@ namespace Sample11
                     client.DeleteVariableHandle(handleDate);
                 }
             }
-            #endregion
         }
 
         private async Task ReadWritePlcOpenTypesAsync()
         {
-            #region CODE_SAMPLE_PLCOPEN_STREAMED_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -349,12 +344,10 @@ namespace Sample11
                     }
                 }
             }
-            #endregion
         }
 
         private void ReadWritePlcOpenTypesAny()
         {
-            #region CODE_SAMPLE_PLCOPEN_ANY
             using (AdsClient client = new AdsClient())
             {
                 client.Connect(AmsNetId.Local, 851); // Connect to local plc
@@ -388,12 +381,10 @@ namespace Sample11
                     client.DeleteVariableHandle(handleLTime);
                 }
             }
-            #endregion
         }
 
         private async Task ReadWritePlcOpenTypesAnyAsync()
         {
-            #region CODE_SAMPLE_PLCOPEN_ANY_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -435,7 +426,6 @@ namespace Sample11
                     }
                 }
             }
-            #endregion
         }
     }
 }

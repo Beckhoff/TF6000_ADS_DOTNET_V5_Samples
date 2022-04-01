@@ -3,8 +3,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>S01_ReadWriteFlag.Form1</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.90" />
   </ItemGroup>
 </Project>

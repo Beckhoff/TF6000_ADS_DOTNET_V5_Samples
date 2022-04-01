@@ -1,6 +1,3 @@
-#region CODE_SAMPLE
-
-
 using System;
 using System.Drawing;
 using System.Collections;
@@ -10,7 +7,7 @@ using System.Data;
 using System.IO;
 using TwinCAT.Ads;
 
-namespace Sample22
+namespace S22_AdsSumReadWrite
 {
     // Structure declaration for values
     internal struct MyStruct
@@ -91,7 +88,6 @@ namespace Sample22
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
@@ -251,7 +247,6 @@ namespace Sample22
             this.PerformLayout();
 
         }
-        #endregion
 
         /// <summary>
         /// The main entry point for the application.
@@ -419,4 +414,3 @@ namespace Sample22
         }
     }
 }
-#endregion

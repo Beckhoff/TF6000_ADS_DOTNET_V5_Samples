@@ -4,7 +4,7 @@ using System.Windows.Threading;
 using TwinCAT;
 using TwinCAT.Ads;
 
-namespace WPFConnectionObserver
+namespace S40_WPFConnectionObserver
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

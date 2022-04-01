@@ -7,10 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TwinCAT.Ads.Server;
 
-namespace TestServer
+namespace S60_Server
 {
-
-    #region CODE_SAMPLE_SERVERMAIN
 
     public class ServerWorker : BackgroundService
     {
@@ -29,5 +27,4 @@ namespace TestServer
             await server.ConnectServerAndWaitAsync(cancel); 
         }
     }
-    #endregion
 }

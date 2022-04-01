@@ -1,4 +1,3 @@
-#region CODE_SAMPLE
 using System;
 using System.Drawing;
 using System.Collections;
@@ -10,7 +9,7 @@ using TwinCAT.Ads;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sample14
+namespace S14_ReadWriteAnyType
 {
 	/// <summary>
 	/// Summary description for Form1.
@@ -95,8 +94,7 @@ namespace Sample14
 			base.Dispose( disposing );
 		}
 
-		#region Windows Form Designer generated code
-		/// <summary>
+        /// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
@@ -458,9 +456,8 @@ namespace Sample14
             this.ResumeLayout(false);
 
 		}
-		#endregion
 
-		/// <summary>
+        /// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
@@ -494,8 +491,6 @@ namespace Sample14
 
         private void ReadWriteAnyType()
         {
-            #region CODE_READWRITEANY
-
             using (AdsClient client = new AdsClient())
             {
                 client.Connect(AmsNetId.Local, 851);
@@ -545,12 +540,10 @@ namespace Sample14
                 client.DeleteVariableHandle(handleStringArr);
 
             }
-            #endregion
         }
 
         private async Task ReadWriteAnyTypeAsync()
         {
-            #region CODE_READWRITEANY_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -633,10 +626,7 @@ namespace Sample14
                 }
 
             }
-            #endregion
         }
-
-        #region CODE_READWRITEANY2
 
         // Attention: Dependent of the System where the PLC runs, the StructLayout of the exchanged
         // Structures must match. With the ANY_TYPE concept this is realized with 'blittable' objects,
@@ -681,12 +671,9 @@ namespace Sample14
             [MarshalAs(UnmanagedType.U4)]
             public uint dtVal; // DT
         }
-        #endregion
 
         void RegisterAnyNotifications()
         {
-            #region CODE_READWRITEANYNOT
-
             using (AdsClient client = new AdsClient())
             {
                 client.AdsNotificationEx += Client_AdsNotificationEx; 
@@ -697,12 +684,10 @@ namespace Sample14
                 Thread.Sleep(5000); // ...
                 client.DeleteDeviceNotification(notificationHandle); // Unregister Event
             }
-            #endregion
         }
 
         async Task RegisterAnyNotificationsAsync()
         {
-            #region CODE_READWRITEANYNOT_ASYNC
             CancellationToken cancel = CancellationToken.None;
 
             using (AdsClient client = new AdsClient())
@@ -715,22 +700,17 @@ namespace Sample14
                 await Task.Delay(5000, cancel); // Wait ....
                 ResultAds resultHandleDelete = await client.DeleteDeviceNotificationAsync(resultHandle.Handle,cancel); // Unregister Event
             }
-            #endregion
         }
 
-        #region CODE_READWRITEANYNOT2
         private void Client_AdsNotificationEx(object sender, AdsNotificationExEventArgs e)
         {
             uint value = (uint)e.Value; // Marshalled value as .NET Type
         }
-        #endregion
 
         private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			adsClient.Dispose();
 		}
-
-        #region CODE_SAMPLE_NOTIFICATIONEX
 
         //AdsStream readStream = new AdsStream(sizeof(UInt32));
 
@@ -772,7 +752,6 @@ namespace Sample14
             /*SynchronizationContext syncContext = SynchronizationContext.Current;
               _context.Post(status => someLabel.Text = nCounter.ToString(), null); // Non-blocking post */
         }
-        #endregion
 
 
         private void btnRead_Click(object sender, System.EventArgs e)
@@ -924,5 +903,4 @@ namespace Sample14
 		public SimpleStruct simpleStruct1 =new SimpleStruct();
 	}
 }
-#endregion
 

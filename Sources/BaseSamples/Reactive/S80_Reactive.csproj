@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RootNamespace>HeartbeatTest</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>HeartbeatTest.Program</StartupObject>
+    <StartupObject>S80_Reactive.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.90" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.Reactive" Version="6.0.90" />
   </ItemGroup>
 </Project>

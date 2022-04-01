@@ -9,7 +9,7 @@ using TwinCAT.Ads.Reactive;
 using TwinCAT.Ads.TypeSystem;
 using TwinCAT.TypeSystem;
 
-namespace ReactiveTest
+namespace S80_Reactive
 {
     class Program
     {
@@ -25,7 +25,6 @@ namespace ReactiveTest
         public static void SubscribeReactiveAnyType()
         {
 
-            #region CODE_SAMPLE_ANYTYPE
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -46,9 +45,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_ANYTYPES
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -85,9 +82,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_POLLANYTYPE
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -111,9 +106,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_WRITEANYTYPE
             using (AdsClient client = new AdsClient())
             {
                 // Connect to target
@@ -132,12 +125,10 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 dispose.Dispose(); // Dispose the Subscription
             }
-            #endregion
         }
 
         public static void SubscribeReactiveStateChanges()
         {
- #region CODE_SAMPLE_STATECHANGE
             // To Test the observer, Start/Stop the local PLC
 
             using (AdsClient client = new AdsClient())
@@ -164,11 +155,8 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_STATECHANGEPOLLING
             // To Test the observer, Start/Stop the local PLC
-
             using (AdsClient client = new AdsClient())
             {
                 // Connect to target
@@ -193,13 +181,11 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
         }
 
         public static void SubscribeReactiveSymbolChanges()
         {
 
-#region CODE_SAMPLE_SYMBOLS
             // To Test the Observer run a project on the local PLC System (Port 851)
 
             using (AdsClient client = new AdsClient())
@@ -239,9 +225,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_READSYMBOL
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -268,9 +252,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_READSYMBOLDYNAMIC
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -300,9 +282,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_READSYMBOLS
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -334,9 +314,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_POLLSYMBOLS
             // To Test the Observer run a project on the local PLC System (Port 851)
             using (AdsClient client = new AdsClient())
             {
@@ -360,9 +338,7 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
 
-            #region CODE_SAMPLE_WRITESYMBOLS
             using (AdsClient client = new AdsClient())
             {
                 // Connect to target
@@ -381,14 +357,12 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 dispose.Dispose(); // Dispose the Subscription
             }
-            #endregion
         }
 
 
         public static void SubscribeReactiveValueChanges()
         {
 
-            #region CODE_SAMPLE_VALUES
             // To Test the Observer run a project on the local PLC System (Port 851)
 
             using (AdsClient client = new AdsClient())
@@ -422,7 +396,6 @@ namespace ReactiveTest
                 Console.ReadKey(); // Wait for Key press
                 subscription.Dispose(); // Dispose the Subscription
             }
-            #endregion
         }
     }
 }

@@ -5,14 +5,12 @@ using System.Linq;
 using System.Text;
 using TwinCAT.Ads;
 
-namespace AccessByVarName
+namespace S02_AccessByVarName
 {
     class AccessByVarName
     {
         static void Main(string[] args)
         {
-    #region CODE_SAMPLE
-
             //Create a new instance of class AdsClient
             AdsClient tcClient = new AdsClient();
             MemoryStream dataStream = new MemoryStream(4);
@@ -52,7 +50,6 @@ namespace AccessByVarName
                 tcClient.DeleteVariableHandle(iHandle);
                 tcClient.Dispose();
             }
-            #endregion
         }
     }
 }

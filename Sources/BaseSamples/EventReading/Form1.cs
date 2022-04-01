@@ -15,7 +15,7 @@ using TwinCAT.Ads.TypeSystem;
 using TwinCAT;
 using System.Collections.Generic;
 
-namespace Sample03
+namespace S03_EventReading
 {
     /// <summary>
     /// Summary description for Form1.
@@ -70,7 +70,6 @@ namespace Sample03
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
@@ -264,7 +263,6 @@ namespace Sample03
             this.PerformLayout();
 
         }
-        #endregion
 
         /// <summary>
         /// The main entry point for the application.
@@ -274,8 +272,6 @@ namespace Sample03
         {
             Application.Run(new Form1());
         }
-
-        #region CODE_SAMPLE_NOTIFICATIONS
 
         private void RegisterNotifications()
         {
@@ -319,9 +315,6 @@ namespace Sample03
             /*SynchronizationContext syncContext = SynchronizationContext.Current;
               _context.Post(status => someLabel.Text = nCounter.ToString(), null); // Non-blocking post */
         }
-        #endregion
-
-        #region CODE_SAMPLE_NOTIFICATIONS_ASYNC
 
         private async Task RegisterNotificationsAsync()
         {
@@ -365,9 +358,6 @@ namespace Sample03
             /*SynchronizationContext syncContext = SynchronizationContext.Current;
               _context.Post(status => someLabel.Text = nCounter.ToString(), null); // Non-blocking post */
         }
-        #endregion
-
-        #region CODE_SAMPLE_SUMNOTIFICATIONS_ASYNC
 
         private async Task RegisterSumNotificationsAsync()
         {
@@ -412,10 +402,7 @@ namespace Sample03
                 // handler and can be transformed/synchronized in one step compared to AdsClient.AdsNotifcation events.
             }
         }
-        #endregion
 
-
-        #region CODE_SAMPLE_VALUECHANGED
 
         private void SymbolValueChanged()
         {
@@ -460,7 +447,6 @@ namespace Sample03
             /*SynchronizationContext syncContext = SynchronizationContext.Current;
               _context.Post(status => someLabel.Text = iVal.ToString(), null); // Non-blocking post */
         }
-        #endregion
 
         SynchronizationContext _context = null;
 

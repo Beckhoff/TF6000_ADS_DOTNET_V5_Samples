@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RootNamespace>PLCStartStop</RootNamespace>
-    <AssemblyName>PLCStartStop</AssemblyName>
+    <RootNamespace>AccessByVarName</RootNamespace>
+    <AssemblyName>AccessByVarName</AssemblyName>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.90" />
   </ItemGroup>
 </Project>

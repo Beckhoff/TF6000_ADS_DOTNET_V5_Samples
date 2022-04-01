@@ -2,10 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace TestServer
+namespace S60_Server
 {
-    #region CODE_SAMPLE_SERVERMAIN
-
     class Program
     {
         public static void Main(string[] args)
@@ -20,5 +18,4 @@ namespace TestServer
                     services.AddHostedService<ServerWorker>();
                 });
     }
-    #endregion
 }

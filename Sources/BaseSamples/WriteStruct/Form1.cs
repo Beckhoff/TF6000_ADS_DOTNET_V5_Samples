@@ -7,7 +7,7 @@ using System.Data;
 using System.IO;
 using TwinCAT.Ads;
 
-namespace Sample13
+namespace S13_WriteStruct
 {
 	/// <summary>
 	/// Summary description for Form1.
@@ -52,8 +52,7 @@ namespace Sample13
 			base.Dispose( disposing );
 		}
 
-		#region Windows Form Designer generated code
-		/// <summary>
+        /// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
@@ -197,9 +196,8 @@ namespace Sample13
             this.ResumeLayout(false);
 
 		}
-		#endregion
 
-		/// <summary>
+        /// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
@@ -207,8 +205,8 @@ namespace Sample13
 		{
 			Application.Run(new Form1());
 		}
-        #region CODE_SAMPLE
-		private void Form1_Load(object sender, System.EventArgs e)
+
+        private void Form1_Load(object sender, System.EventArgs e)
 		{
 			try
 			{
@@ -263,6 +261,5 @@ namespace Sample13
 			}
 			tcClient.Dispose();	
 		}
-        #endregion
     }
 }

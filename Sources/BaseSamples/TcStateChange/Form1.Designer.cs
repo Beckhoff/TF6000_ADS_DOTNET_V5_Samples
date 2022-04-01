@@ -1,4 +1,4 @@
-namespace TwinCATAds_Sample08
+namespace S23_TcStateChange
 {
 	partial class Form1
 	{

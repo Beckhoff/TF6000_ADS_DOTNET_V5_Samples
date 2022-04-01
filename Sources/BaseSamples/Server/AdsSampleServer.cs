@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TwinCAT.Ads;
 using TwinCAT.Ads.Server;
 
-namespace TestServer
+namespace S60_Server
 {
     /*
      * Extend the AdsServer class to implement your own ADS server.

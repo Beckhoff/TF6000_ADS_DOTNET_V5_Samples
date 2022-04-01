@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace _30_ADS.NET_MethodCall
+namespace S30_MethodCall
 {
     static class Program
     {

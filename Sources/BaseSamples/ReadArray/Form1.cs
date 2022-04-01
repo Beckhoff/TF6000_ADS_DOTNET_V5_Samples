@@ -10,16 +10,17 @@ using TwinCAT;
 using TwinCAT.TypeSystem;
 using TwinCAT.Ads.TypeSystem;
 
-namespace _12_ReadArray
+namespace S12_ReadArray
 {
-	#region CODE_SAMPLE
 	public partial class Form1 : Form
 	{
-		AdsClient tcClient = null;
-		ISymbolLoader loader = null;
-		string arrayVar = "";
-		 //Update the AMSNetId for your target
-		AmsNetId targetAmsNetId = AmsNetId.Local;
+		AdsClient _client = null;
+		ISymbolLoader _symbolLoader = null;
+		string _arrayVar = "";
+		 
+        //Update the AMSNetId for your target
+		AmsNetId _targetAmsNetId = AmsNetId.Local;
+
 		 public Form1()
         {
             InitializeComponent();
@@ -27,17 +28,17 @@ namespace _12_ReadArray
 		private void Form1_Load(object sender, System.EventArgs e)
 		{
 			//Create a new instance of class AdsClient
-			tcClient = new AdsClient();
+			_client = new AdsClient();
 
 			//Connect to target PLC - Port 851
-			tcClient.Connect("169.254.139.155.1.1", 851);
+			_client.Connect(_targetAmsNetId, 851);
 			
 			try
 			{
 				//Load symbols form target system
 				SymbolLoaderSettings settings = new SymbolLoaderSettings(SymbolsLoadMode.DynamicTree);
-				loader = SymbolLoaderFactory.Create(tcClient, settings);
-				arrayVar = "MAIN.PLCArray";
+				_symbolLoader = SymbolLoaderFactory.Create(_client, settings);
+				_arrayVar = "MAIN.PLCArray";
 			}
 			catch(Exception err)
 			{
@@ -50,7 +51,7 @@ namespace _12_ReadArray
 			try
 			{
 				//Get Array values
-				DynamicSymbol arrayRead = (DynamicSymbol)loader.Symbols[arrayVar]; 
+				DynamicSymbol arrayRead = (DynamicSymbol)_symbolLoader.Symbols[_arrayVar]; 
 				short[] readBuffer = (short[])arrayRead.ReadValue();
 
 				foreach (short i in readBuffer)
@@ -72,7 +73,7 @@ namespace _12_ReadArray
 			if( disposing )
 			{
 				// Dispose the Client during Form Cleanup
-				tcClient.Dispose();
+				_client.Dispose();
 
 				if (components != null) 
 				{
@@ -81,8 +82,5 @@ namespace _12_ReadArray
 			}
 			base.Dispose( disposing );
 		}
-        #endregion
 	}
-	
-    
 }

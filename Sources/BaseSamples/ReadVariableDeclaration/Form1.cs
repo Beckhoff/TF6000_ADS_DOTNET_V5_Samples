@@ -1,5 +1,3 @@
-#region CODE_SAMPLE
-
 using System;
 using System.Drawing;
 using System.Collections;
@@ -13,7 +11,7 @@ using System.Collections.Generic;
 using TwinCAT.Ads.TypeSystem;
 using TwinCAT.TypeSystem;
 
-namespace Sample21
+namespace S21_ReadVariableDeclaration
 {	
 	/// <summary>
 	/// Summary description for Form1.
@@ -73,8 +71,7 @@ namespace Sample21
 			base.Dispose( disposing );
 		}
 
-		#region Windows Form Designer generated code
-		/// <summary>
+        /// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
@@ -343,9 +340,8 @@ namespace Sample21
             this.PerformLayout();
 
 		}
-		#endregion
 
-		/// <summary>
+        /// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
@@ -501,4 +497,4 @@ namespace Sample21
 		}
 	}
 }
-#endregion
+
