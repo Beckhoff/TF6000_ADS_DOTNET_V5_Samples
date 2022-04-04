@@ -32,25 +32,20 @@ namespace S12_ReadArray
 
 			//Connect to target PLC - Port 851
 			_client.Connect(_targetAmsNetId, 851);
-			
-			try
-			{
-				//Load symbols form target system
-				SymbolLoaderSettings settings = new SymbolLoaderSettings(SymbolsLoadMode.DynamicTree);
-				_symbolLoader = SymbolLoaderFactory.Create(_client, settings);
-				_arrayVar = "MAIN.PLCArray";
-			}
-			catch(Exception err)
-			{
-				MessageBox.Show(err.Message);
-			}
 		}
 		
 		private void btnRead_Click(object sender, System.EventArgs e)
 		{
 			try
 			{
+				// 1. Alternative, Read the values by Symbol Loader
+				// Using the Dynamic Tree automatically marshalls the values to .net types - even if they are complex types
 				//Get Array values
+				//Load symbols form target system
+				SymbolLoaderSettings settings = new SymbolLoaderSettings(SymbolsLoadMode.DynamicTree);
+				_symbolLoader = SymbolLoaderFactory.Create(_client, settings);
+				_arrayVar = "MAIN.PLCArray";
+
 				DynamicSymbol arrayRead = (DynamicSymbol)_symbolLoader.Symbols[_arrayVar]; 
 				short[] readBuffer = (short[])arrayRead.ReadValue();
 
@@ -58,8 +53,26 @@ namespace S12_ReadArray
 				{
 					lbArray.Items.Add(i.ToString());
 				}
+
+				// 2. Alternative, read the data without SymbolLoader in a raw buffer.
+				//hVar = _client.CreateVariableHandle("MAIN.PLCArray"); // Create the variable handle by name
+				//byte[] readBuffer = new byte[100 * 2];
+
+				////Read complete array (200 bytes == 100 ushorts)
+				//_client.Read(hVar, readBuffer.AsMemory());
+
+				//MemoryStream dataStream = new MemoryStream(readBuffer);
+				//BinaryReader binRead = new BinaryReader(dataStream);
+
+				//lbArray.Items.Clear();
+				//dataStream.Position = 0;
+				//for (int i = 0; i < 100; i++)
+				//{
+				//	lbArray.Items.Add(binRead.ReadInt16().ToString());
+				//}
+				//_client.DeleteVariableHandle(hVar); // Free the handle after use
 			}
-			catch(Exception err)
+			catch (Exception err)
 			{
 				MessageBox.Show(err.Message);
 			}
