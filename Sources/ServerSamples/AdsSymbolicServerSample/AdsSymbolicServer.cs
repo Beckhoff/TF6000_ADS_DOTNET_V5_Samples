@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using TwinCAT.Ams;
 using TwinCAT.Ads;
 using TwinCAT.Ads.Server;
@@ -132,6 +134,7 @@ namespace AdsSymbolicServerSample
                 .AddAligned(new Member("a", dtBool))
                 .AddAligned(new Member("b", dtInt))
                 .AddAligned(new Member("c", dtDInt));
+
 
             // Create an RPC Invokable Type
             // Firstly the methods ...
@@ -272,7 +275,7 @@ namespace AdsSymbolicServerSample
             _symbolValues.Add(this.Symbols["Globals.int1"], (short)42);
             _symbolValues.Add(this.Symbols["Globals.dint1"], 42);
             _symbolValues.Add(this.Symbols["Globals.string1"], "Hello world!");
-            _symbolValues.Add(this.Symbols["Globals.myStruct1"], null);
+            _symbolValues.Add(this.Symbols["Globals.myStruct1"], new MyStruct(true,42,99));
             _symbolValues.Add(this.Symbols["Globals.myArray1"], new short[4, 2]); ;
             _symbolValues.Add(this.Symbols["Globals.myEnum1"], "Yellow");
             _symbolValues.Add(this.Symbols["Globals.myAlias1"], "Red");
@@ -283,7 +286,7 @@ namespace AdsSymbolicServerSample
             _symbolValues.Add(this.Symbols["Main.int1"], (short)42);
             _symbolValues.Add(this.Symbols["Main.dint1"], 42);
             _symbolValues.Add(this.Symbols["Main.string1"], "Hello world!");
-            _symbolValues.Add(this.Symbols["Main.myStruct1"], null);
+            _symbolValues.Add(this.Symbols["Main.myStruct1"], new MyStruct(true, 42, 99));
             _symbolValues.Add(this.Symbols["Main.myArray1"], new short[4, 2]);
             _symbolValues.Add(this.Symbols["Main.myEnum1"], "Yellow");
             _symbolValues.Add(this.Symbols["Main.myAlias1"], "Red");
@@ -437,5 +440,22 @@ namespace AdsSymbolicServerSample
             returnValue = null;
             return AdsErrorCode.DeviceServiceNotSupported;
         }
+    }
+
+    [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi, Pack = 1)]
+    public class MyStruct
+    {
+        public MyStruct(bool a, short b, int c)
+        {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+        [FieldOffset(0)]
+        public bool a;
+        [FieldOffset(1)]
+        public short b;
+        [FieldOffset(3)]
+        public int c;
     }
 }
