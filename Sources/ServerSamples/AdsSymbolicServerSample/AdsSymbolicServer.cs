@@ -74,7 +74,7 @@ namespace AdsSymbolicServerSample
         IDisposable _changeValueObserver = null;
 
         /// <summary>
-        /// Called when [connected].
+        /// Handler function when the SymbolicTestServer gets connected.
         /// </summary>
         protected override void OnConnected()
         {
@@ -114,9 +114,9 @@ namespace AdsSymbolicServerSample
         private SymbolicTestServer AddSymbols()
         {
             // Create some Primitive types
-            PrimitiveType dtBool = new PrimitiveType("BOOL", typeof(bool));
-            PrimitiveType dtInt = new PrimitiveType("INT", typeof(short));
-            PrimitiveType dtDInt = new PrimitiveType("DINT", typeof(int));
+            PrimitiveType dtBool = new PrimitiveType("BOOL", typeof(bool)); // 1-Byte size
+            PrimitiveType dtInt = new PrimitiveType("INT", typeof(short)); // 2-Byte size
+            PrimitiveType dtDInt = new PrimitiveType("DINT", typeof(int)); // 4-Byte size
 
             // Create an TwinCAT specific Type PCCH (for testing purposes)
             // Which is used for interop to C++ TCOM Modules
@@ -129,8 +129,12 @@ namespace AdsSymbolicServerSample
             StringType dtString = new StringType(80, Encoding.Unicode);
 
             // Struct Type
+            // Associated to this struct Type, we use a corresponding 'ValueType' within our ServerValues
+            // to hold the StructInstance value. This class/value is used to marshal/unmarshal struct types.
+            // See the C# class 'MyStruct' at the bottom of this example. 
             StructType dtStruct = new StructType("MYSTRUCT", null)
                 // Add Members
+                .AddAligned(new Member("name",dtString))
                 .AddAligned(new Member("a", dtBool))
                 .AddAligned(new Member("b", dtInt))
                 .AddAligned(new Member("c", dtDInt));
@@ -175,7 +179,8 @@ namespace AdsSymbolicServerSample
             // ... Create the RpcStructType itself and bind the Members/Methods
             RpcStructType dtStructRpc = new RpcStructType("MYRPCSTRUCT");
             dtStructRpc
-                // Add Members (Fields)
+                 // Add Members (Fields)
+                .AddAligned(new Member("name", dtString))
                 .AddAligned(new Member("a", dtBool))
                 .AddAligned(new Member("b", dtInt))
                 .AddAligned(new Member("c", dtDInt))
@@ -199,7 +204,7 @@ namespace AdsSymbolicServerSample
             // Create an Enumeration Type
             // Define the Enum Fields/Values
             EnumValueCollection<int> enumValues = new EnumValueCollection<int>()
-                // Add Enumeration Fields/Enry
+                // Add Enumeration Fields/Entry
                 .AddValue("None", 0)
                 .AddValue("Red", 1)
                 .AddValue("Yellow", 2)
@@ -275,24 +280,24 @@ namespace AdsSymbolicServerSample
             _symbolValues.Add(this.Symbols["Globals.int1"], (short)42);
             _symbolValues.Add(this.Symbols["Globals.dint1"], 42);
             _symbolValues.Add(this.Symbols["Globals.string1"], "Hello world!");
-            _symbolValues.Add(this.Symbols["Globals.myStruct1"], new MyStruct(true,42,99));
+            _symbolValues.Add(this.Symbols["Globals.myStruct1"], new MyStruct("Globals.myStruct1",true,42,99));
             _symbolValues.Add(this.Symbols["Globals.myArray1"], new short[4, 2]); ;
             _symbolValues.Add(this.Symbols["Globals.myEnum1"], "Yellow");
             _symbolValues.Add(this.Symbols["Globals.myAlias1"], "Red");
             _symbolValues.Add(this.Symbols["Globals.pointer1"], 0);
             _symbolValues.Add(this.Symbols["Globals.reference1"], 0);
-            _symbolValues.Add(this.Symbols["Globals.rpcInvoke1"], 0);
+            _symbolValues.Add(this.Symbols["Globals.rpcInvoke1"], new MyStruct("Globals.rpcInvoke1",false, 555, 666));
             _symbolValues.Add(this.Symbols["Main.bool1"], true);
             _symbolValues.Add(this.Symbols["Main.int1"], (short)42);
             _symbolValues.Add(this.Symbols["Main.dint1"], 42);
             _symbolValues.Add(this.Symbols["Main.string1"], "Hello world!");
-            _symbolValues.Add(this.Symbols["Main.myStruct1"], new MyStruct(true, 42, 99));
+            _symbolValues.Add(this.Symbols["Main.myStruct1"], new MyStruct("Main.myStruct1",true, 42, 99));
             _symbolValues.Add(this.Symbols["Main.myArray1"], new short[4, 2]);
             _symbolValues.Add(this.Symbols["Main.myEnum1"], "Yellow");
             _symbolValues.Add(this.Symbols["Main.myAlias1"], "Red");
             _symbolValues.Add(this.Symbols["Main.pointer1"], 0);
             _symbolValues.Add(this.Symbols["Main.reference1"], 0);
-            _symbolValues.Add(this.Symbols["Main.rpcInvoke1"], 0);
+            _symbolValues.Add(this.Symbols["Main.rpcInvoke1"], new MyStruct("Main.rpcInvoke1",false,555,666));
 
             return this;
         }
@@ -388,74 +393,124 @@ namespace AdsSymbolicServerSample
         {
             // Here we implement or handler for the RPC Call.
 
-            // Switch for the different struct Instances
-            // For keeping the code simple we just do it here via InstancePath string.
-            switch (structInstance.InstancePath)
+            object val;
+            // Select the right RpcStructInstance and get its value object.
+            if (_symbolValues.TryGetValue(structInstance, out val))
             {
-                case "Globals.rpcInvoke1":
-                case "Main.rpcInvoke1":
+                MyStruct myStructValue = val as MyStruct;
+
+                if (myStructValue != null)
+                {
+                    // For demo simplification, we choose the Method simply by name.
+                    // This could be done in a more generic way, e.g with Reflection or whatever custom infrastructure.
+                    switch (method.Name)
                     {
-                        if (method.Name == "Method1")
+                        case "Method1":
                         {
-                            // INT Method1([in] INT i1, [in] i2)
-                            returnValue = (short)parameterValues[0] + (short)parameterValues[1];
+                            returnValue = myStructValue.Method1((short)parameterValues[0], (short)parameterValues[1]);
                             return AdsErrorCode.NoError;
                         }
-                        else if (method.Name == "Method2")
+                        case "Method2":
                         {
-                            // INT Method2([in] INT in1, [out] INT out1)
-                            parameterValues[1] = ((short)parameterValues[0]) + 1;
-                            returnValue = ((short)parameterValues[0]) + 2;
+                            returnValue = myStructValue.Method2((short)parameterValues[0], out var out1);
+                            parameterValues[1] = out1;
                             return AdsErrorCode.NoError;
                         }
-                        else if (method.Name == "Method3")
+                        case "Method3":
                         {
-                            // STRING[80] Method3([in] INT len, [in][LengthIs = 1] PCCH str)
-                            short len = (short)parameterValues[0];
-                            returnValue = parameterValues[1];
+                            returnValue = myStructValue.Method3((short)parameterValues[0], (string)parameterValues[1]);
                             return AdsErrorCode.NoError;
                         }
-                        else if (method.Name == "Method4")
+                        case "Method4":
                         {
-                            // STRING[80] Method4([in] INT len, [out][LengthIs = 1] PCCH str)
-                            string str = "Method4Method4Method4Method4Method4Method4Method4Method4";
-                            short len = (short)parameterValues[0];
-                            parameterValues[1] = str;
-                            returnValue = str;
+                            returnValue = myStructValue.Method4((short)parameterValues[0], out var out1);
+                            parameterValues[1] = out1;
                             return AdsErrorCode.NoError;
                         }
-                        else if (method.Name == "Method5")
+                        case "Method5":
                         {
-                            // STRING[80] Method5([in] INT len, [out][LengthIs = 1] PCCH str)
-                            short len = (short)parameterValues[0];
-                            string str = "Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5";
-                            byte[] pcch = Encoding.UTF8.GetBytes(str);
-                            parameterValues[1] = pcch;
-                            returnValue = Encoding.UTF8.GetString(pcch, 0, len);
+                            returnValue = myStructValue.Method5((short)parameterValues[0], out var out1);
+                            parameterValues[1] = out1;
                             return AdsErrorCode.NoError;
                         }
+                        default:
+                            returnValue = null;
+                            return AdsErrorCode.DeviceServiceNotSupported;
                     }
-                    break;
+                }
+                else
+                {
+                    returnValue = null;
+                    return AdsErrorCode.DeviceServiceNotSupported;
+                }
             }
-            returnValue = null;
-            return AdsErrorCode.DeviceServiceNotSupported;
+            else
+            {
+                returnValue = null;
+                return AdsErrorCode.DeviceServiceNotSupported;
+            }
         }
     }
 
-    [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi, Pack = 1)]
+    // Necessary helper struct to use the .NET Default Interop marshaler which is used by the
+    // SymbolicAnyTypeMarshaler to Marshal/Unmarshal Struct values.
+    // The Layout must exactly map the 'dtMyStruct' DataType definition, so that
+    // the .NET Interop default marshaler is able to 'blit' the value in its own data buffers.
+    // MyStruct als implements the RpcInvoke Methods in this example.
+    [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 1)]
     public class MyStruct
     {
-        public MyStruct(bool a, short b, int c)
+        // Constructor
+        public MyStruct(string name, bool a, short b, int c)
         {
+            this.name = name;
             this.a = a;
             this.b = b;
             this.c = c;
         }
+
         [FieldOffset(0)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 81)]
+        public string name;
+        [FieldOffset(162)]
+        [MarshalAs(UnmanagedType.U1)] // Boolean is Marshaled as UnmanagedType.I4 otherwise
         public bool a;
-        [FieldOffset(1)]
+        [FieldOffset(163)]
+        // [MarshalAs(UnmanagedType.I2)] (Default)
         public short b;
-        [FieldOffset(3)]
+        [FieldOffset(165)]
+        // [MarshalAs(UnmanagedType.I4)] (Default)
         public int c;
+
+
+        // Definition of the RpcMethods
+
+        public short Method1(short i1, short i2)
+        {
+            // Just return the addition of both inputs
+            return (short)(i1 + i2);
+        }
+        public short Method2(short i1, out short i2)
+        {
+            i2 = (short)(i1 + 1);
+            return (short)(i1 + 2);
+        }
+
+        public string Method3(short len, string str)
+        {   //str should have len always
+            return str;
+        }
+        public string Method4(short len, out string str)
+        {
+            str = "Method4Method4Method4Method4Method4Method4Method4Method4";
+            // Will only return len bytes!
+            return str;
+        }
+        public string Method5(short len, out byte[] pcch)
+        {
+            string str = "Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5";
+            pcch = Encoding.UTF8.GetBytes(str);
+            return Encoding.UTF8.GetString(pcch, 0, len);
+        }
     }
 }
