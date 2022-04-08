@@ -48,18 +48,49 @@ namespace AdsSymbolicServerSample
 
                     // Beneath the external access from an out-of-process ADS client
                     // We could also access the server from within this process
-                    // What is done in the following for demonstration purposes
+                    // What is done in the following for demonstration and testing purposes
 
                     // Instantiate ADS Session / Client
                     SessionSettings settings = new SessionSettings(120000);
                     using (AdsSession session = new AdsSession(AmsNetId.Local, server.ServerPort, settings))
                     {
+                        IAdsConnection connection = (IAdsConnection)session.Connection;
+
                         session.Connect();
                         ISymbolLoader factory = SymbolLoaderFactory.Create(session.Connection, SymbolLoaderSettings.Default);
 
                         // Access Symbols
                         var types = factory.DataTypes;
                         var symbols = factory.Symbols;
+
+                        // Reading Value By symbol
+                        var sym1 = (IValueSymbol)symbols["Main.bool1"];
+                        var sym2 = (IValueSymbol)symbols["Main.string1"];
+                        bool val1 = (bool)sym1.ReadValue();
+                        string val2 = (string)sym2.ReadValue();
+
+                        // Writing Value By symbol
+                        val2 = "WrittenBySymbol";
+                        sym2.WriteValue(val2);
+
+                        // Reading Value by Name/InstancePath (Any_Type)
+                        bool b1 = (bool)session.Connection.ReadValue("Main.bool1", typeof(bool));
+                        string s1 = (string) session.Connection.ReadValue("Main.string1", typeof(string));
+
+                        // Reading Value by Name/InstancePath (Any_Type)
+                        s1 = "WrittenByName";
+                        session.Connection.WriteValue("Main.string1",s1);
+
+                        // Reading by IndexGroup/IndexOffset
+                        byte[] data = new byte[162];
+                        var adsSymbol = session.Connection.ReadSymbol("Main.string1");
+                        session.Connection.Read(adsSymbol.IndexGroup, adsSymbol.IndexOffset, data.AsMemory());
+                        PrimitiveTypeMarshaler.Default.Unmarshal(data, Encoding.Unicode, out var s2);
+
+                        // Writing by IndexGroup/IndexOffset
+                        byte[] writeData = new byte[162];
+                        PrimitiveTypeMarshaler.Default.Marshal("WrittingByIGIO", writeData.AsSpan());
+                        session.Connection.Write(adsSymbol.IndexGroup, adsSymbol.IndexOffset,writeData.AsMemory() );
 
                         // Call RPC Methods with different variants of Parameters.
 

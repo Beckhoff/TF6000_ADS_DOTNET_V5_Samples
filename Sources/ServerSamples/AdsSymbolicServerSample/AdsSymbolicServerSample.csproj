@@ -4,12 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <!--<PackageReference Include="Beckhoff.TwinCAT.Ads.SymbolicServer" Version="6.0.91" />-->
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\git\Base\AdsApiDotNetCore\Sources\TwinCAT.Ads.Abstractions\TwinCAT.Ads.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\git\Base\AdsApiDotNetCore\Sources\TwinCAT.Ads.AdsClient\TwinCAT.Ads.AdsClient.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\git\Base\AdsApiDotNetCore\Sources\TwinCAT.Ads.AdsServer\TwinCAT.Ads.AdsServer.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\git\Base\AdsApiDotNetCore\Sources\TwinCAT.Ads.AdsSymbolicServer\TwinCAT.Ads.AdsSymbolicServer.csproj" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.SymbolicServer" Version="6.0.93" />
   </ItemGroup>
 </Project>
