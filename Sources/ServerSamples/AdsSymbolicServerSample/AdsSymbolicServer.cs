@@ -91,6 +91,7 @@ namespace AdsSymbolicServerSample
         {
             if (_changeValueObserver != null)
                 _changeValueObserver.Dispose();
+
             return base.OnDisconnect();
         }
 
@@ -100,7 +101,7 @@ namespace AdsSymbolicServerSample
         }
 
         /// <summary>
-        /// Creates an Notification tigger for the Notifications base tick.
+        /// Creates an Notification trigger for the Notifications base tick.
         /// </summary>
         private SymbolicTestServer AddNotificationTrigger()
         {
