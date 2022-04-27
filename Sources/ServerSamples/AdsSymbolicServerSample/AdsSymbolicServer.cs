@@ -95,9 +95,16 @@ namespace AdsSymbolicServerSample
             return base.OnDisconnect();
         }
 
+        private static bool s_toggledBoolValue = false;
         private void toggleValues(long count)
         {
             SetValue("Globals.int1", (short)count);
+            SetValue("Main.int1", (short)count);
+            SetValue("Globals.bool1", s_toggledBoolValue);
+            SetValue("Main.bool1",s_toggledBoolValue);
+            SetValue("Globals.myStruct1", new MyStruct("Main.myStruct1", s_toggledBoolValue, (short)count, (short)count + 1));
+            SetValue("Main.myStruct1", new MyStruct("Main.myStruct1", s_toggledBoolValue, (short)count, (short)count+1));
+            s_toggledBoolValue = !s_toggledBoolValue;
         }
 
         /// <summary>
@@ -461,6 +468,11 @@ namespace AdsSymbolicServerSample
     [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 1)]
     public class MyStruct
     {
+        // Parameterless Constructor needed to deserialize instances from Network
+        public MyStruct()
+        {
+        }
+
         // Constructor
         public MyStruct(string name, bool a, short b, int c)
         {
@@ -512,6 +524,14 @@ namespace AdsSymbolicServerSample
             string str = "Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5Method5";
             pcch = Encoding.UTF8.GetBytes(str);
             return Encoding.UTF8.GetString(pcch, 0, len);
+        }
+
+        public override string ToString()
+        {
+            // Dumping the Structs Value
+            StringBuilder sb = new StringBuilder();
+            sb.AppendJoin(",", $"Name:{name}",$"a:{a}", $"b:{b}",$"c:{c}");
+            return sb.ToString();
         }
     }
 }
