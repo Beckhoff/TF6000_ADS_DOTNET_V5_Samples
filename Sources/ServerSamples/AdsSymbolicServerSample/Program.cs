@@ -168,7 +168,7 @@ namespace AdsSymbolicServerSample
         {
             symbols.TryGetInstance("Main.rpcInvoke1", out var s);
 
-            IRpcStructInstance rpcInvoke = (IRpcStructInstance)s;
+            IInterfaceInstance rpcInvoke = (IInterfaceInstance)s; // Could also be IStructInstance
 
             // INT Method1([in] INT i1, [in] i2)
             object m1ReturnValue = rpcInvoke.InvokeRpcMethod("Method1", new object[] { (short)44, (short)55 });

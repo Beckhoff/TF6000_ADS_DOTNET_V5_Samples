@@ -184,8 +184,8 @@ namespace AdsSymbolicServerSample
                 .AddParameter("str", dtPCCH, MethodParamFlags.Out, 1)
                 .SetReturnType(dtString);
 
-            // ... Create the RpcStructType itself and bind the Members/Methods
-            RpcStructType dtStructRpc = new RpcStructType("MYRPCSTRUCT");
+            // ... Create the StructType itself and bind the Members/Methods
+            StructType dtStructRpc = new StructType("MYRPCSTRUCT");
             dtStructRpc
                  // Add Members (Fields)
                 .AddAligned(new Member("name", dtString))
@@ -387,23 +387,24 @@ namespace AdsSymbolicServerSample
             return _symbolValues[symbol];
         }
 
+
         /// <summary>
         /// Handler function called when an RpcInvoke occurs.
         /// </summary>
-        /// <param name="structInstance">The structure instance.</param>
+        /// <param name="rpcInstance">The structure instance.</param>
         /// <param name="method">The method.</param>
         /// <param name="parameterValues">The parameter values.</param>
         /// <param name="returnValue">The return value.</param>
         /// <returns>AdsErrorCode.</returns>
         /// <remarks>Overwrite this method to react on RpcInvokes within your custom <see cref="AdsSymbolicServer" />.
         /// The default implementation returns <see cref="AdsErrorCode.DeviceServiceNotSupported" />.</remarks>
-        protected override AdsErrorCode OnRpcInvoke(IRpcStructInstance structInstance, IRpcMethod method, object[] parameterValues, out object returnValue)
+        protected override AdsErrorCode OnRpcInvoke(IInterfaceInstance rpcInstance, IRpcMethod method, object[] parameterValues, out object returnValue)
         {
             // Here we implement or handler for the RPC Call.
 
             object val;
             // Select the right RpcStructInstance and get its value object.
-            if (_symbolValues.TryGetValue(structInstance, out val))
+            if (_symbolValues.TryGetValue(rpcInstance, out val))
             {
                 MyStruct myStructValue = val as MyStruct;
 
