@@ -1,7 +1,9 @@
 ﻿# Using of the AdsSymbolServerSample
 
 Run the AdsSymbolicServerSample application
-The AmsPort is 0x8000. An easy way to test the server is using the **TcXaeMgmt** Powershell module.
+The AmsPort is 25000.
+
+An easy way to test the server is using the **TcXaeMgmt** Powershell module.
 
 ## Installing the **TcXaeMgmt** Powershell Module
 
@@ -36,12 +38,12 @@ PS> get-module TcXaeMgmt -listAvailable
 ### Getting AdsState
 
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 0x8000
+PS> $session = new-tcsession -NetId Local -port 25000
 PS> $session | Get-AdsState
 
 Name    State OK   Time (ms) Address
 ----    ----- --   --------- -------
-CX_1234 Run   True 20        172.17.60.167.1.1:32768
+CX_1234 Run   True 20        172.17.60.167.1.1:25000
 ```
 
 ### Reading/Writing Values
@@ -49,7 +51,7 @@ CX_1234 Run   True 20        172.17.60.167.1.1:32768
 Read a primitive value:
 
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 0x8000
+PS> $session = new-tcsession -NetId Local -port 25000
 PS> $session | Read-TcValue -path Main.string1
 Hello world!
 ```
@@ -57,7 +59,7 @@ Hello world!
 Writing a primitive value:
 
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 0x8000
+PS> $session = new-tcsession -NetId Local -port 25000
 PS> $session | Write-TcValue -path Main.string1 -Value 'New written Value' -force
 ```
 
@@ -78,18 +80,32 @@ c       : 666
 PSValue : ...
 ```
 
+### Notifications
+In this sample all Symbols are registered for AdsNotifactions by default. Therefore, every write should create a notification output in the console.
+
+```powershell
+$session | write-tcValue -path 'Main.string1' -Value 'New Value!' -force
+```
+
+Output in console window:
+
+```cmd
+WhenNotification Symbol 'Main.string1' changed to value 'New Value!'
+```
+
 ### Browsing DataTypes and Symbols/Instances
 
 ```powershell
-PS> test-adsroute -port 6000
+PS> test-adsroute -port 25000
 
 Name                 Address           Port    Latency Result
                                                (ms)
 ----                 -------           -----   ------- ------
-CX_1234              172.17.60.167.1.1 32768   36      Ok
+CX_1234              172.17.60.167.1.1 25000   36      Ok
 ```
+
 ```powershell
-PS> $session = new-tcsession -NetId Local -port 0x8000
+PS> $session = new-tcsession -NetId Local -port 25000
 PS> $session | get-tcDataType
 
 Name                      Size     Category   BaseType

@@ -15,6 +15,8 @@ using TwinCAT.Ads.Server;
 using TwinCAT.Ads.Server.TypeSystem;
 using TwinCAT.Ads.TypeSystem;
 using TwinCAT.TypeSystem;
+using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace AdsSymbolicServerSample
 {
@@ -47,12 +49,17 @@ namespace AdsSymbolicServerSample
         /// </summary>
         SymbolicAnyTypeMarshaler _symbolMarshaler = new SymbolicAnyTypeMarshaler();
 
+
+        bool _toggleValues = false;
+        TimeSpan _toggleValuesTime = TimeSpan.FromMilliseconds(1000);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolicTestServer"/> class.
         /// </summary>
         public SymbolicTestServer()
             : base(s_Port, "SymbolicTestServer", null)
         {
+
             /// AMS Router enpoint can be changed via envrionment variables which is
             /// benefitial in containerized setups where the AMS router is not listening
             /// at the default loopback address and port 
@@ -69,6 +76,8 @@ namespace AdsSymbolicServerSample
             }
 
             AmsConfiguration.RouterEndPoint = new IPEndPoint( ipEndpoint, port);
+
+            _toggleValues = true; // Simulates a value change
         }
 
         IDisposable _changeValueObserver = null;
@@ -81,8 +90,8 @@ namespace AdsSymbolicServerSample
             this.AddSymbols()
                 .AddNotificationTrigger();
 
-            // An Observable.Interval is used to simulate changed values (on a 1 Second base)
-            IObservable<long> changeValueTrigger = Observable.Interval(TimeSpan.FromSeconds(1.0), Scheduler.Default);
+            // An Observable.Interval is used to simulate changed values 
+            IObservable<long> changeValueTrigger = Observable.Interval(_toggleValuesTime, Scheduler.Default);
             _changeValueObserver = changeValueTrigger.Subscribe(toggleValues);
             base.OnConnected();
         }
@@ -96,15 +105,18 @@ namespace AdsSymbolicServerSample
         }
 
         private static bool s_toggledBoolValue = false;
+        /// <summary>
+        /// Toggle values as simulation for a changing process image.
+        /// </summary>
+        /// <param name="count">The count.</param>
         private void toggleValues(long count)
         {
-            SetValue("Globals.int1", (short)count);
-            SetValue("Main.int1", (short)count);
-            SetValue("Globals.bool1", s_toggledBoolValue);
-            SetValue("Main.bool1",s_toggledBoolValue);
-            SetValue("Globals.myStruct1", new MyStruct("Main.myStruct1", s_toggledBoolValue, (short)count, (short)count + 1));
-            SetValue("Main.myStruct1", new MyStruct("Main.myStruct1", s_toggledBoolValue, (short)count, (short)count+1));
-            s_toggledBoolValue = !s_toggledBoolValue;
+
+            if (_toggleValues)
+            {
+                s_toggledBoolValue = !s_toggledBoolValue;
+                SetValue("Globals.bool1", s_toggledBoolValue);
+            }
         }
 
         /// <summary>
@@ -318,7 +330,8 @@ namespace AdsSymbolicServerSample
         /// <see cref="P:System.Threading.Tasks.Task`1.Result" />.</returns>
         /// <remarks>Overwrite this method in derived classes to react on ADS Read State indications.
         /// The default implementation replies with an ADS ServiceNotSupported error code (0x701).</remarks>
-        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(CancellationToken cancel)
+        //protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(CancellationToken cancel)
+        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(AmsAddress sender, uint invokeId, CancellationToken cancel)
         {
             AdsState adsState = AdsState.Run;
             ushort deviceState = 0;
@@ -337,18 +350,26 @@ namespace AdsSymbolicServerSample
         /// Implement this handler to Read and marshal the value data.</remarks>
         protected override AdsErrorCode OnReadRawValue(ISymbol symbol, Span<byte> span)
         {
+            // Everything below here is dependant on how the values are stored
+            // Here we use a very simplistic Dictionary and have to parse the SubElements
+            // Use here your own strategy !!!
             object value;
-            if (_symbolValues.TryGetValue(symbol, out value))
+            AdsErrorCode ret = OnGetValue(symbol, out value);
+
+            if (value != null)
             {
                 int bytes = 0;
                 if (_symbolMarshaler.TryMarshal(symbol, value, span, out bytes))
-                    return AdsErrorCode.NoError;
+                {
+                    ret = AdsErrorCode.NoError;
+                }
                 else
-                    return AdsErrorCode.DeviceInvalidSize;
+                {
+                    ret = AdsErrorCode.DeviceInvalidSize;
+                }
 
             }
-            else
-                return AdsErrorCode.DeviceSymbolNotFound;
+            return ret;
         }
 
         /// <summary>
@@ -362,9 +383,10 @@ namespace AdsSymbolicServerSample
         protected override AdsErrorCode OnWriteRawValue(ISymbol symbol, ReadOnlySpan<byte> span)
         {
             object value;
+
             _symbolMarshaler.Unmarshal(symbol, span, null, out value);
-            SetValue(symbol, value);
-            return AdsErrorCode.NoError;
+            AdsErrorCode errorCode = SetValue(symbol, value);
+            return errorCode;
         }
 
         /// <summary>
@@ -372,9 +394,51 @@ namespace AdsSymbolicServerSample
         /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <param name="value">The value.</param>
-        protected override void OnSetValue(ISymbol symbol, object value)
+        protected override AdsErrorCode OnSetValue(ISymbol symbol, object value, out bool valueChanged)
         {
-            _symbolValues[symbol] = value;
+            AdsErrorCode ret = AdsErrorCode.DeviceSymbolNotFound; // Haven't found the value
+            valueChanged = false;
+
+            // Everything below here is dependant on how the values are stored
+            // Here we use a very simplistic Dictionary and have to parse the SubElements
+            // Use here your own strategy !!!
+
+            if (!_symbolValues.ContainsKey(symbol)) // Try to get the value directly from dictionary
+            {
+                // Check for a complex value that is stored as a blob in the value dictionary
+                // (Struct or Array in this sample)
+
+                string[] split = splitAccessPath(symbol.InstancePath);
+                ISymbol rootSymbol = getValueRoot(symbol); // Getting the symbol key that stores our value as complex object
+
+                if (rootSymbol != null)
+                {
+                    object rootValue = _symbolValues[rootSymbol];
+                    string[] rootSplit = rootSymbol.InstancePath.Split('.');
+
+                    Span<string> delta = split.AsSpan(rootSplit.Length); // Calculate the relative splits
+                    valueChanged = SetSubValue(delta, rootSymbol, rootValue,value); // Set the Value relative to the rootValue
+                    ret = AdsErrorCode.NoError;
+                }
+            }
+            else
+            {
+                // Value is in the SymbolValues dictionary and we can simply exchange the full value
+
+                object oldValue = _symbolValues[symbol];
+
+                // Be sure to have an appropriate Equals overload for Equality check!
+                // It is necessary to do an Value Equals (not reference equals to work properly)
+                if (!oldValue.Equals(value))
+                {
+                    _symbolValues[symbol] = value;
+                    valueChanged = true;
+                }
+                ret = AdsErrorCode.NoError;
+            }
+
+
+            return ret;
         }
 
         /// <summary>
@@ -382,10 +446,339 @@ namespace AdsSymbolicServerSample
         /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <returns>System.Object.</returns>
-        protected override object OnGetValue(ISymbol symbol)
+        protected override AdsErrorCode OnGetValue(ISymbol symbol, out object value)
         {
-            return _symbolValues[symbol];
+            // Everything below here is dependant on how the values are stored
+            // Here we use a very simplistic Dictionary and have to parse the SubElements
+            // Use here your own strategy !!!
+
+            AdsErrorCode ret = AdsErrorCode.DeviceSymbolNotFound; // Haven't found the value
+            value = null;
+
+            // Everything below here is dependant on how the values are stored
+            // Here we use a very simplistic Dictionary and have to parse the SubElements
+            // Use here your own strategy !!!
+
+            if (!_symbolValues.TryGetValue(symbol, out value)) // Try to get the value directly from dictionary
+            {
+                // Check for a complex value that is stored as a blob in the value dictionary
+                // (Struct or Array in this sample)
+
+                string[] split = splitAccessPath(symbol.InstancePath);
+                ISymbol rootSymbol = getValueRoot(symbol); // Getting the symbol key that stores our value as complex object
+
+                if (rootSymbol != null)
+                {
+                    object rootValue = _symbolValues[rootSymbol];
+                    string[] rootSplit = rootSymbol.InstancePath.Split('.');
+
+                    Span<string> delta = split.AsSpan(rootSplit.Length); // Calculate the relative splits
+                    value = GetSubValue(delta, rootSymbol, rootValue); // Get the Value relative to the rootValue
+                    ret = AdsErrorCode.NoError;
+                }
+            }
+            else
+            {
+                ret = AdsErrorCode.NoError;
+            }
+            return ret;
         }
+
+        /// <summary>
+        /// Splits the access path to a string array
+        /// </summary>
+        /// <param name="instancePath">The instance path.</param>
+        /// <returns>System.String[].</returns>
+        string[] splitAccessPath(string instancePath)
+        {
+            List<string> list = new List<string>();
+            string[] strings = instancePath.Split('.');
+
+            foreach (string s in strings)
+            {
+                Match match = s_regInstanceAccess.Match(s);
+
+                if (match.Success)
+                {
+                    string fieldName = match.Groups["name"].Value;
+                    string arrayIndex = null;
+                    bool isArrayIndex = false;
+
+                    list.Add(fieldName);
+
+                    arrayIndex = match.Groups["jaggedArray"].Value;
+
+                    if (!string.IsNullOrEmpty(arrayIndex))
+                    {
+                        isArrayIndex = true;
+
+                        var dimGroup = match.Groups["subArray"];
+                        var dimensions = match.Groups["subArray"].Captures;
+
+                        foreach (Capture dim in dimensions)
+                            list.Add(dim.Value);
+
+                        var boundCaptures = match.Groups["index"].Captures;
+                    }
+                }
+            }
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// Gets a SubValue from the rootValue object (resolves the relative access path)
+        /// </summary>
+        /// <param name="delta">Splitted access path relative to the rootvalue symbol</param>
+        /// <param name="rootSymbol">The root value symbol (Symbol that belongs to the value stored in the value dictionary)</param>
+        /// <param name="rootValue">The root value.</param>
+        /// <returns>System.Object.</returns>
+        object GetSubValue(Span<string> delta, ISymbol rootSymbol, object rootValue)
+        {
+            object actValue = rootValue;
+            foreach (string member in delta)
+            {
+                bool isArrayIndex = member.StartsWith("[");
+
+                if (isArrayIndex)
+                {
+                    Match match = s_regJaggedArray.Match(member);
+
+                    if (match.Success)
+                    {
+                        Group indicesGroup = match.Groups["jaggedArray"];
+                        //int jagCount = indicesGroup.Captures.Count;
+
+                        var jagCaptures = match.Groups["subArray"].Captures;
+                        int jagCount = jagCaptures.Count;
+
+                        foreach(Capture dimCapture in jagCaptures)
+                        {
+                            Match matchDim = s_regSubArray.Match(dimCapture.Value);
+
+                            if (matchDim.Success)
+                            {
+                                var boundCaptures = matchDim.Groups["index"].Captures;
+                                int dimensions = boundCaptures.Count;
+
+                                int[] indices = new int[dimensions];
+
+                                for (int i=0; i<dimensions; i++)
+                                {
+                                    indices[i] = int.Parse(boundCaptures[i].Value);
+                                }
+
+                                Array array = (Array)rootValue;
+                                GetArrayBounds(array, out int[] lowerBounds, out int[] upperBounds);
+
+                                actValue = array.GetValue(indices);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    string fieldName = member;
+                    // We have a struct here, we access it via Reflection in this example (might not the most efficent)
+                    FieldInfo fieldInfo = rootValue.GetType().GetField(member);
+                    actValue = fieldInfo.GetValue(rootValue);
+                }
+            }
+            return actValue;
+        }
+
+        /// <summary>
+        /// Gets a SubValue from the rootValue object (resolves the relative access path)
+        /// </summary>
+        /// <param name="delta">Splitted access path relative to the rootvalue symbol</param>
+        /// <param name="rootSymbol">The root value symbol (Symbol that belongs to the value stored in the value dictionary)</param>
+        /// <param name="rootValue">The root value.</param>
+        /// <returns>System.Object.</returns>
+        bool SetSubValue(Span<string> delta, ISymbol rootSymbol, object rootValue, object value)
+        {
+            object? oldValue = null;
+            bool changed = false;
+
+            object actValue = rootValue;
+            bool last = false;
+            
+            for(int m=0; m<delta.Length; m++)
+            {
+                string member = delta[m];
+                last = m == delta.Length - 1;
+
+                bool isArrayIndex = member.StartsWith("[");
+
+                if (isArrayIndex)
+                {
+                    Match match = s_regJaggedArray.Match(member);
+
+                    if (match.Success)
+                    {
+                        Group indicesGroup = match.Groups["jaggedArray"];
+                        //int jagCount = indicesGroup.Captures.Count;
+
+                        var jagCaptures = match.Groups["subArray"].Captures;
+                        int jagCount = jagCaptures.Count;
+
+                        foreach (Capture dimCapture in jagCaptures)
+                        {
+                            Match matchDim = s_regSubArray.Match(dimCapture.Value);
+
+                            if (matchDim.Success)
+                            {
+                                var boundCaptures = matchDim.Groups["index"].Captures;
+                                int dimensions = boundCaptures.Count;
+
+                                int[] indices = new int[dimensions];
+
+                                for (int i = 0; i < dimensions; i++)
+                                {
+                                    indices[i] = int.Parse(boundCaptures[i].Value);
+                                }
+
+                                Array array = (Array)rootValue;
+                                GetArrayBounds(array, out int[] lowerBounds, out int[] upperBounds);
+
+                                if (last)
+                                {
+                                    oldValue = array.GetValue(indices);
+
+                                    if (!oldValue.Equals(value))
+                                    {
+                                        array.SetValue(value, indices);
+                                        changed = true;
+                                    }
+                                }
+                                else
+                                {
+                                    actValue = array.GetValue(indices);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    string fieldName = member;
+                    // We have a struct here, we access it via Reflection in this example (might not the most efficent)
+                    FieldInfo fieldInfo = rootValue.GetType().GetField(member);
+
+                    if (last)
+                    {
+                        oldValue = fieldInfo.GetValue(rootValue);
+
+                        if (!oldValue.Equals(value))
+                        {
+                            fieldInfo.SetValue(rootValue, value);
+                            changed = true;
+                        }
+                    }
+                    else
+                    {
+                        actValue = fieldInfo.GetValue(rootValue);
+                    }
+                }
+            }
+            return changed;
+        }
+
+        /// <summary>
+        /// Gets the array bounds of an array value
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="lowerBounds">The lower bounds.</param>
+        /// <param name="lengths">The lengths.</param>
+        private static void GetArrayBounds(Array array, out int[] lowerBounds, out int[] lengths)
+        {
+            int rank = array.GetType().GetArrayRank();
+
+            lengths = new int[rank];
+            lowerBounds = new int[rank];
+
+            for (int r = 0; r < rank; r++)
+            {
+                lengths[r] = array.GetLength(r);
+                lowerBounds[r] = array.GetLowerBound(r);
+            }
+        }
+
+        /// <summary>
+        /// Pattern for parsing a symbol name
+        /// </summary>
+        const string patternInstanceName = @"(?<name>[a-z0-9_]+)";
+        /// <summary>
+        /// Pattern for parsing a single array index
+        /// </summary>
+        const string patternIndex = @$"(?<index>-?\d+)";
+        /// <summary>
+        /// Pattern for parsing the element indices of a single (Sub)Array
+        /// </summary>
+        const string patternSubArray = @$"(?<subArray>\[{patternIndex}(?:,{patternIndex}*)\])";
+        /// <summary>
+        /// Pattern for parsing jagged array indices
+        /// </summary>
+        const string patternJaggedArray = @$"(?<jaggedArray>{patternSubArray}*)";
+
+        /// <summary>
+        /// Regex pattern for Parsing InstancePath/InstanceName
+        /// </summary>
+        const string patternInstanceAccess = @$"{patternInstanceName}{patternJaggedArray}$";
+
+        private static Regex s_regSubArray = new Regex(patternSubArray, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+        /// <summary>
+        /// Regular expression for parsing a full Array index specification for a jagged array
+        /// </summary>
+        /// <remarks>e.g '[0,1,2][3,4,5]' (two jagged arrays)</remarks>
+        private static Regex s_regJaggedArray = new Regex(patternJaggedArray, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+        
+        /// <summary>
+        /// Regex for parsing InstanceAccess path
+        /// </summary>
+        /// <remarks>
+        /// e.g 'myStruct1.a' or 'myArray1[0,1]
+        /// </remarks>
+        private static Regex s_regInstanceAccess = new Regex(patternInstanceAccess, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+
+        /// <summary>
+        /// Gets the root symbol that is stored in the value dictionary
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <returns>ISymbol.</returns>
+        private ISymbol getValueRoot(ISymbol symbol)
+        {
+            string[] split = symbol.InstancePath.Split('.');
+            return getValueRoot(split);
+        }
+
+        private ISymbol getValueRoot(string[] split)
+        {
+            for (int i = split.Length - 1; i >= 0; i--)
+            {
+                Match match = s_regInstanceAccess.Match(split[i]);
+
+                if (match.Success)
+                {
+                    string instanceName = match.Groups["name"].Value;
+                    string[] temp = new string[i+1];
+
+                    for (int j = 0; j < i; j++)
+                    {
+                        temp[j] = split[j];
+                    }
+                    temp[i] = instanceName;
+
+                    string instancePath = string.Join(".", temp);
+
+                    ISymbol symbol =_symbolValues.Keys.FirstOrDefault(s => s.InstancePath.Equals(instancePath, StringComparison.OrdinalIgnoreCase));
+
+                    if (symbol != null)
+                        return symbol;
+                }
+            }
+            return null;
+        }
+
+        
 
 
         /// <summary>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -37,6 +39,8 @@ namespace AdsSymbolicServerSample
                     s_cts.Cancel();
                 });
 
+                AdsErrorCode errorCode = AdsErrorCode.None;
+
                 // Connect the SymbolicServer in its own task asynchronously
                 Task<AdsErrorCode> serverTask = server.ConnectServerAndWaitAsync(s_cts.Token);
 
@@ -60,6 +64,8 @@ namespace AdsSymbolicServerSample
                     // and execute some operations against the SymbolicServer
 
                     SessionSettings settings = new SessionSettings(120000);
+                    List<IDisposable> disposables = new List<IDisposable>();
+
                     using (AdsSession session = new AdsSession(AmsNetId.Local, server.ServerPort, settings))
                     {
                         IAdsConnection connection = (IAdsConnection)session.Connection;
@@ -93,15 +99,18 @@ namespace AdsSymbolicServerSample
                         // Call RPC Methods with different variants of Parameters.
                         CallRpcMethods(symbols);
 
-                        // Receiving notifications
-                        ReceiveNotifications(session,symbols);
+                        // Receiving notifications on all Symbols
+                        SymbolIterator iter = new SymbolIterator(symbols,true);
+                        IList<ISymbol> allSymbols = iter.ToList();
+                        disposables = ReceiveNotifications(session,allSymbols);
+
+                        // Wait for stopping Server Task or cancellation
+                        await Task.WhenAny(new[] { cancelTask, serverTask });
+                        errorCode = await serverTask;
                     }
                 }
 
-                // Wait for stopping Server Task or cancellation
-                await Task.WhenAny(new[] { cancelTask, serverTask });
-                
-                AdsErrorCode errorCode = await serverTask;
+                //AdsErrorCode errorCode = await serverTask;
 
                 if (errorCode.Succeeded())
                 {
@@ -192,21 +201,38 @@ namespace AdsSymbolicServerSample
             object m5ReturnValue = rpcInvoke.InvokeRpcMethod("Method5", new object[] { (short)14 }, out m5OutParameters);
         }
 
-        private static void ReceiveNotifications(AdsSession session, ISymbolCollection<ISymbol> symbols)
+        private static List<IDisposable> ReceiveNotifications(AdsSession session, IList<ISymbol> symbols)
         {
-            // Receive 10 Notifications, that should take 10 Seconds.
+            List<IDisposable> result = new List<IDisposable>();
 
-            //var symbol = symbols["Main.myStruct1"];
+            IDisposable subscription = SubscribeNotifications(session, symbols, NotificationSettings.Default);
+            
+            // Take care not to GC the subscription - keeping notifications alive.
+            result.Add(subscription);
+            return result;
+        }
 
+
+        /// <summary>
+        /// Subscribe to Notifications and Write Value changes into the Console output.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <param name="symbols">The symbols.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns>IDisposable subscription.</returns>
+        private static IDisposable SubscribeNotifications(AdsSession session, IList<ISymbol> symbols, NotificationSettings settings)
+        {
             var observable = session.Connection
-                //.WhenNotification(symbol, NotificationSettings.Default)
-                .WhenNotificationEx(new AnySymbolSpecifier("Main.myStruct1", new AnyTypeSpecifier(typeof(MyStruct))), NotificationSettings.Default, null)
-                .Take(10);
+                .WhenNotification(symbols, settings);
+            //.Take(10);
 
-            var subscription = observable.Subscribe(a =>
-                Console.WriteLine($"Symbol 'Main.myStruct1' changed to value '{a.Value}'"));
+            var subscription = observable.Subscribe(
+                c => Console.WriteLine($"WhenNotification Symbol '{c.Symbol.InstancePath}' changed to value '{c.Value}'"),
+                ex => Console.WriteLine($"WhenNotification failed: {ex.Message}"),
+                () => Console.WriteLine($"WhenNotification completed!")
+                );
 
-            observable.Wait();
+            return subscription;
         }
     }
 }
