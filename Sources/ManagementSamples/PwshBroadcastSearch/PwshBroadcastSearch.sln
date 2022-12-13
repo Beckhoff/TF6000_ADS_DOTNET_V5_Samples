@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PwshBroadcastSearch", "PwshBroadcastSearch.csproj", "{4A1EF723-5363-4BD5-ADBB-E0AB07B2DEB2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A1EF723-5363-4BD5-ADBB-E0AB07B2DEB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A1EF723-5363-4BD5-ADBB-E0AB07B2DEB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A1EF723-5363-4BD5-ADBB-E0AB07B2DEB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A1EF723-5363-4BD5-ADBB-E0AB07B2DEB2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A215B7F-C4CA-4B4D-96CF-DE773EF4FB2C}
+	EndGlobalSection
+EndGlobal
