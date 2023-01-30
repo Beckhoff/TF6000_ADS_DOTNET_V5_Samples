@@ -17,12 +17,20 @@ namespace S60_Server
         /// <summary>
         /// Fixed ADS Port (to be changed ...)
         /// </summary>
-        const ushort ADS_PORT = 42;
+        /// <remarks>
+        /// User Server Ports must be in between
+        /// AmsPortRange.CUSTOMER_FIRST (25000) <= PORT <= AmsPort.CUSTOMER_LAST (25999)
+        /// or
+        /// AmsPortRange.CUSTOMERPRIVATE_FIRST (26000) <= PORT <= AmsPort.CUSTOMERPRIVATE_LAST (26999)
+        /// to not conflict with Beckhoff prereserved servers!
+        /// see https://infosys.beckhoff.com/content/1033/tc3_ads.net/9408352011.html?id=1801810347107555608
+        /// </remarks>
+        const ushort ADS_PORT = 26000;
 
         /// <summary>
         /// Fixed Name for the ADS Port (change this ...)
         /// </summary>
-        const string ADS_PORT_NAME = "AdsSampleServer_Port42";
+        const string ADS_PORT_NAME = "AdsSampleServer_Port25000";
 
         /// <summary>
         /// Some simple data / ProcessImage

@@ -23,11 +23,15 @@ namespace Sample.Ads.AdsServerCore
         {
             //ServerLogger logger = new ServerLogger(s_logger);
 
-            /// User Server Ports must be in between
-            /// AmsPort.CUSTOMER_FIRST (25000) <= PORT <= AmsPort.CUSTOMER_LAST (25999)
-            /// to not conflict with Beckhoff prereserved servers!
-            AdsSampleServer server1 = new AdsSampleServer(25000, "TestAdsServer1", _logger);
-            AdsSampleServer server2 = new AdsSampleServer(25001, "TestAdsServer2", _logger);
+            // User Server Ports must be in between
+            // AmsPortRange.CUSTOMER_FIRST (25000) <= PORT <= AmsPort.CUSTOMER_LAST (25999)
+            // or
+            // AmsPortRange.CUSTOMERPRIVATE_FIRST (26000) <= PORT <= AmsPort.CUSTOMERPRIVATE_LAST (26999)
+            // to not conflict with Beckhoff prereserved servers!
+            // see https://infosys.beckhoff.com/content/1033/tc3_ads.net/9408352011.html?id=1801810347107555608
+
+            AdsSampleServer server1 = new AdsSampleServer(26000, "TestAdsServer1", _logger);
+            AdsSampleServer server2 = new AdsSampleServer(26001, "TestAdsServer2", _logger);
 
             Task[] serverTasks = new Task[2];
 
