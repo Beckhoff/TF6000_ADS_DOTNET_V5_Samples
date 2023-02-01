@@ -33,7 +33,7 @@ namespace AdsSymbolicServerSample
         static ushort s_Port = 25000;
 
         /// <summary>
-        /// Dictionary containing the Values of the Symbols (Symbol -- Value)
+        /// Dictionary containing the Values of the Symbols (Symbol --> Value)
         /// </summary>
         Dictionary<ISymbol, object> _symbolValues = new Dictionary<ISymbol, object>();
 

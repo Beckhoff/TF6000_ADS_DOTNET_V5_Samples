@@ -169,8 +169,10 @@ namespace AdsSymbolicServerSample
         {
             var bSymbol = (IValueSymbol) symbols["Main.bool1"];
             var sSymbol = (IValueSymbol) symbols["Main.string1"];
+            var cSymbol = (IValueSymbol)symbols["Main.mystruct1.name"];
             bool bValue = (bool) bSymbol.ReadValue();
             string sValue = (string) sSymbol.ReadValue();
+            string cValue = (string) cSymbol.ReadValue();
         }
 
         private static void CallRpcMethods(ISymbolCollection<ISymbol> symbols)

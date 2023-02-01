@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.0.26">
-  <POU Name="MAIN" Id="{5b8b105e-ebeb-4fa9-bab8-986ca93559f8}">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{5b8b105e-ebeb-4fa9-bab8-986ca93559f8}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
 	//Sample 01 and 02
@@ -16,6 +16,8 @@ VAR
 	 lrealVal  : LREAL;
 	 realVal   : REAL;
 	 stringVal : STRING(20);
+	 
+	 myComplexStruct : MyComplexStruct;
 	 
 	//Sample10
 	text : STRING[30] := 'Hello TwinCAT';
@@ -58,7 +60,9 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//Sample 01 and 02
+      <ST><![CDATA[
+
+//Sample 01 and 02
 nCounter := nCounter + 1;
 
 //Sample 03
@@ -81,8 +85,16 @@ END_IF
 //Sample12
 FOR Index := 0 TO 99 DO
   PLCArray[Index] := 3500 + INDEX;
-END_FOR]]></ST>
+END_FOR
+
+myComplexStruct.a := true;]]></ST>
     </Implementation>
-    <ObjectProperties />
+    <LineIds Name="MAIN">
+      <LineId Id="81" Count="1" />
+      <LineId Id="3" Count="22" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="85" Count="0" />
+    </LineIds>
   </POU>
 </TcPlcObject>

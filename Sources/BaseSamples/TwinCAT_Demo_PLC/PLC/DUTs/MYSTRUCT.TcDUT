@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="MYSTRUCT" Id="{292a9d60-527d-4dac-9e6e-0220928ad7a5}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'} 
+TYPE MYSTRUCT :
+STRUCT
+	a : BOOL;
+	b : INT;
+	c : DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

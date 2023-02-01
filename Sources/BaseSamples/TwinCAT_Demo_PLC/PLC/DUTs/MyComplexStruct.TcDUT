@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="MyComplexStruct" Id="{963e9a46-dd62-4eeb-9687-bff01310cc20}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'} 
+TYPE MyComplexStruct :
+STRUCT
+	a : BOOL;
+	b : INT;
+	c : DINT;
+	d : MYSTRUCT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
