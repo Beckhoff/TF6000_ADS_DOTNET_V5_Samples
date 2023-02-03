@@ -99,8 +99,8 @@ namespace AdsSymbolicServerSample
                         // Call RPC Methods with different variants of Parameters.
                         CallRpcMethods(symbols);
 
-                        // Receiving notifications on all Symbols
-                        SymbolIterator iter = new SymbolIterator(symbols,true);
+                        // Receiving notifications on all Symbols (that are not virtual, have a value)
+                        SymbolIterator iter = new SymbolIterator(symbols,true,s => ((IValueSymbol)s).HasValue);
                         IList<ISymbol> allSymbols = iter.ToList();
                         disposables = ReceiveNotifications(session,allSymbols);
 
@@ -209,6 +209,9 @@ namespace AdsSymbolicServerSample
 
             IDisposable subscription = SubscribeNotifications(session, symbols, NotificationSettings.Default);
             
+            //Enable for different Notification strategy
+            //IDisposable subscription = SubscribeNotifications(session, symbols, NotificationSettings.ImmediatelyOnChange);
+
             // Take care not to GC the subscription - keeping notifications alive.
             result.Add(subscription);
             return result;
