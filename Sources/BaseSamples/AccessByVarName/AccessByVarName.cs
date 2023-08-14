@@ -13,8 +13,6 @@ namespace S02_AccessByVarName
         {
             //Create a new instance of class AdsClient
             AdsClient tcClient = new AdsClient();
-            MemoryStream dataStream = new MemoryStream(4);
-            BinaryReader binReader = new BinaryReader(dataStream);
 
             uint iHandle = 0;
             int iValue = 0;
@@ -30,9 +28,11 @@ namespace S02_AccessByVarName
                 for(int i = 0; i < 5; i++)
                 {
                     //Use the handle to read PLCVar
-                    tcClient.Read(iHandle, dataStream.GetBuffer().AsMemory());
-                    iValue = binReader.ReadInt32();
-                    dataStream.Position = 0;
+                    byte[] readData = new byte[sizeof(UInt32)];
+                    tcClient.Read(iHandle, readData.AsMemory());
+                    MemoryStream dataStream = new MemoryStream(readData);
+                    BinaryReader binReader = new BinaryReader(dataStream);
+                    iValue = binReader.ReadUInt32();
                     Console.WriteLine("Value: " + iValue);
                     Console.ReadKey();
                 }
