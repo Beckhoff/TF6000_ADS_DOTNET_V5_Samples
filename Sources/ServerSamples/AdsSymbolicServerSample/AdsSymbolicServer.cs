@@ -218,8 +218,17 @@ namespace AdsSymbolicServerSample
                 .AddDimension(new Dimension(0, 4))
                 .AddDimension(new Dimension(0, 2));
 
-            // Create the Array Type itself
+            // Create the Array of Struct Type itself
             ArrayType dtArray = new ArrayType(dtInt, dims);
+
+            // Create an Array of STRUCT Type
+            // Create the Dimensions
+            IDimensionCollection dims2 = new DimensionCollection()
+                // Add Dimension
+                .AddDimension(new Dimension(0, 10));
+
+            // Create the Complex Array Type itself
+            ArrayType dtComplexArray = new ArrayType(dtStruct, dims2);
 
             // Create an Enumeration Type
             // Define the Enum Fields/Values
@@ -250,6 +259,7 @@ namespace AdsSymbolicServerSample
                 .AddType(dtString)
                 .AddType(dtStruct)
                 .AddType(dtArray)
+                .AddType(dtComplexArray)
                 .AddType(dtEnum)
                 .AddType(dtAlias)
                 .AddType(dtPointer)
@@ -278,6 +288,7 @@ namespace AdsSymbolicServerSample
                 .AddSymbol("Globals.string1", dtString, globals)
                 .AddSymbol("Globals.myStruct1", dtStruct, globals)
                 .AddSymbol("Globals.myArray1", dtArray, globals)
+                .AddSymbol("Globals.myComplexArray", dtComplexArray, globals)
                 .AddSymbol("Globals.myEnum1", dtEnum, globals)
                 .AddSymbol("Globals.myAlias1", dtAlias, globals)
                 .AddSymbol("Globals.pointer1", dtPointer, globals)
@@ -289,6 +300,7 @@ namespace AdsSymbolicServerSample
                 .AddSymbol("Main.string1", dtString, general)
                 .AddSymbol("Main.myStruct1", dtStruct, general)
                 .AddSymbol("Main.myArray1", dtArray, general)
+                .AddSymbol("Main.myComplexArray", dtComplexArray, general)
                 .AddSymbol("Main.myEnum1", dtEnum, general)
                 .AddSymbol("Main.myAlias1", dtAlias, general)
                 .AddSymbol("Main.pointer1", dtPointer, general)
@@ -318,6 +330,25 @@ namespace AdsSymbolicServerSample
             _symbolValues.Add(this.Symbols["Main.pointer1"], 0);
             _symbolValues.Add(this.Symbols["Main.reference1"], 0);
             _symbolValues.Add(this.Symbols["Main.rpcInvoke1"], new MyStruct("Main.rpcInvoke1",false,555,666));
+
+
+            // Adding Values for Complex Arrays
+            MyStruct[] complexArrayValueGlobal = new MyStruct[10];
+
+            for (int i = 0; i < 10; i++)
+            {
+                complexArrayValueGlobal[i] = new MyStruct($"Globals.myComplexArray[i]", true, (short)i, i);
+            }
+
+            MyStruct[] complexArrayValueMain = new MyStruct[10];
+
+            for (int i = 0; i < 10; i++)
+            {
+                complexArrayValueMain[i] = new MyStruct($"Main.myComplexArray[i]", true, (short)i, i);
+            }
+
+            _symbolValues.Add(this.Symbols["Globals.myComplexArray"], complexArrayValueGlobal);
+            _symbolValues.Add(this.Symbols["Main.myComplexArray"], complexArrayValueMain);
 
             return this;
         }

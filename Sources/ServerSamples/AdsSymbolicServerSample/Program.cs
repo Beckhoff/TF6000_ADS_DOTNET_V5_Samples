@@ -12,6 +12,7 @@ using TwinCAT.Ads;
 using TwinCAT.Ads.Reactive;
 using TwinCAT.Ads.TypeSystem;
 using TwinCAT.TypeSystem;
+using System.Runtime.CompilerServices;
 
 namespace AdsSymbolicServerSample
 {
@@ -167,12 +168,22 @@ namespace AdsSymbolicServerSample
 
         private static void CallReadBySymbol(ISymbolCollection<ISymbol> symbols)
         {
-            var bSymbol = (IValueSymbol) symbols["Main.bool1"];
-            var sSymbol = (IValueSymbol) symbols["Main.string1"];
-            var cSymbol = (IValueSymbol)symbols["Main.mystruct1.name"];
-            bool bValue = (bool) bSymbol.ReadValue();
-            string sValue = (string) sSymbol.ReadValue();
-            string cValue = (string) cSymbol.ReadValue();
+            var bSymbol = (Symbol)symbols["Main.bool1"];
+            var sSymbol = (Symbol)symbols["Main.string1"];
+            var cSymbol = (Symbol)symbols["Main.mystruct1.name"];
+
+            var structSymbol = (Symbol)symbols["Main.mystruct1"];
+            var complexSymbol = (Symbol)symbols["Main.myComplexArray"];
+
+            bool bValue = (bool)bSymbol.ReadValue();
+            string sValue = (string)sSymbol.ReadValue();
+            string cValue = (string)cSymbol.ReadValue();
+
+            var structValue = structSymbol.ReadValue(); // Will Read Raw Value
+            var complexValue = complexSymbol.ReadValue(); // Will Read Raw Value
+
+            var myStructValue = structSymbol.ReadAnyValue<MyStruct>(); // Reading as ANY Type
+            var myComplexArrayValue = complexSymbol.ReadAnyValue<MyStruct[]>(); // Reading as ANY TYPE
         }
 
         private static void CallRpcMethods(ISymbolCollection<ISymbol> symbols)
