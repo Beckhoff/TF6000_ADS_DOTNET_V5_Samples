@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net60-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <StartupObject>S01_ReadWriteFlag.Form1</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.90" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
   </ItemGroup>
 </Project>

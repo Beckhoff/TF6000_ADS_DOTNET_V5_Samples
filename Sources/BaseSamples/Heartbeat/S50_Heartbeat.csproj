@@ -2,12 +2,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net60</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>S50_Heartbeat.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.90" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
   </ItemGroup>
 </Project>

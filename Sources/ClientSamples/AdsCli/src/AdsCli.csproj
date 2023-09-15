@@ -8,6 +8,6 @@
     <AssemblyName>AdsCli</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
   </ItemGroup>
 </Project>

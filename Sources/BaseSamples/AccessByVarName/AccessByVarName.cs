@@ -15,7 +15,7 @@ namespace S02_AccessByVarName
             AdsClient tcClient = new AdsClient();
 
             uint iHandle = 0;
-            int iValue = 0;
+            uint iValue = 0;
             
             try
             {

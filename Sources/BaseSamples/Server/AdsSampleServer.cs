@@ -114,7 +114,7 @@ namespace S60_Server
          */
 
         /* Handler function for Write Indication */
-        protected override Task<ResultWrite> OnWriteAsync(uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
+        protected override Task<ResultWrite> OnWriteAsync(AmsAddress address, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
         {
             LogTrace($"OnWriteAsync(IG:{indexGroup}, IO:{indexOffset}, Length:{writeData.Length})");
 
@@ -156,7 +156,7 @@ namespace S60_Server
         }
 
         /* Handler function for Read Indication */
-        protected override Task<ResultReadBytes> OnReadAsync(uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
+        protected override Task<ResultReadBytes> OnReadAsync(AmsAddress address, uint invokeId, uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
         {
             LogTrace($"OnReadAsync(IG:{indexGroup}, IO:{indexOffset}, Length:{readLength})");
             ResultReadBytes result;
@@ -170,7 +170,7 @@ namespace S60_Server
         }
 
         /* Handler function for ReadWrite Indication */
-        protected override Task<ResultReadWriteBytes> OnReadWriteAsync(uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
+        protected override Task<ResultReadWriteBytes> OnReadWriteAsync(AmsAddress address, uint invokeId, uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
         {
             LogTrace($"OnReadWriteAsync(IG:{indexGroup}, IO:{indexOffset}, ReadLen:{readLength}, WriteLen:{writeData.Length})");
 
@@ -191,7 +191,7 @@ namespace S60_Server
         }
 
         /* Handler function for ReadDeviceState Indication */
-        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(CancellationToken cancel)
+        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(AmsAddress address, uint invokeId, CancellationToken cancel)
         {
             LogTrace("OnReadDeviceStateAsync()");
 
@@ -201,7 +201,7 @@ namespace S60_Server
         }
 
         /* Handler function for WriteControl Indication */
-        protected override Task<ResultAds> OnWriteControlAsync(AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
+        protected override Task<ResultAds> OnWriteControlAsync(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
         {
             LogTrace($"OnWriteControlAsync(AdsState:{adsState}, DeviceState:{deviceState}, Length:{data.Length})");
 
@@ -215,7 +215,7 @@ namespace S60_Server
         }
 
         /* Handler function for AddDeviceNotification Indication */
-        protected override Task<ResultHandle> OnAddDeviceNotificationAsync(uint indexGroup, uint indexOffset, int dataLength, AmsAddress receiver, NotificationSettings settings, CancellationToken cancel)
+        protected override Task<ResultHandle> OnAddDeviceNotificationAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int dataLength, AmsAddress receiver, NotificationSettings settings, CancellationToken cancel)
         {
             LogTrace($"OnAddDeviceNotificationAsync(IG:{indexGroup}, IO:{indexOffset}, Length:{dataLength}");
 
@@ -231,7 +231,7 @@ namespace S60_Server
         }
 
         /* Handler function for DeleteDeviceNotification Indication */
-        protected override Task<ResultAds> OnDeleteDeviceNotificationAsync(uint hNotification, CancellationToken cancel)
+        protected override Task<ResultAds> OnDeleteDeviceNotificationAsync(AmsAddress sender, uint invokeId, uint hNotification, CancellationToken cancel)
         {
             LogTrace("OnDeleteDeviceNotificationAsync(Handle:{2})", hNotification);
 

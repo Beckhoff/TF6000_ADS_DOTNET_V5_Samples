@@ -92,19 +92,19 @@ namespace Beckhoff.CustomSymbolProvider
 
         protected override ISymbol OnCreateArrayElement(IArrayType arrayType, int[] currentIndex, ISymbol parent)
         {
-            IArrayInstance arrayInstance = (IArrayInstance) parent;
+            IArrayInstance arrayInstance = (IArrayInstance)parent;
             string indicesString = ArrayIndexConverter.IndicesToString(currentIndex);
             string instancePath = parent.InstancePath + indicesString;
 
             ISymbolInfo info = new CustomSymbolInfo(instancePath, arrayInstance.ElementType!.Name);
-            ISymbol ret = this.CreateInstance(info,parent);
+            ISymbol ret = this.CreateInstance(info, parent);
             return ret;
         }
 
         protected override IArrayInstance OnCreateArrayInstance(ISymbolInfo entry, IArrayType type, ISymbol? parent)
         {
-            CustomSymbolInfo info = (CustomSymbolInfo) entry;
-            IArrayInstance ret = new CustomArrayInstance(info.GetInstanceName(), info.GetInstancePath(), type,parent, base.FactoryServices!);
+            CustomSymbolInfo info = (CustomSymbolInfo)entry;
+            IArrayInstance ret = new CustomArrayInstance(info.GetInstanceName(), info.GetInstancePath(), type, parent, base.FactoryServices!);
             return ret;
         }
 
@@ -115,15 +115,15 @@ namespace Beckhoff.CustomSymbolProvider
 
             if (member.DataType!.Category == DataTypeCategory.Primitive)
             {
-                ret = new CustomSymbol(member.InstanceName, path, member.DataType,parent, base.FactoryServices!);
+                ret = new CustomSymbol(member.InstanceName, path, member.DataType, parent, base.FactoryServices!);
             }
             else if (member.DataType.Category == DataTypeCategory.Struct)
             {
-                ret = new CustomStructInstance(member.InstanceName, path, (IStructType) member.DataType, parent, base.FactoryServices!);
+                ret = new CustomStructInstance(member.InstanceName, path, (IStructType)member.DataType, parent, base.FactoryServices!);
             }
             else if (member.DataType.Category == DataTypeCategory.Array)
             {
-                ret = new CustomArrayInstance(member.InstanceName, path, (IArrayType) member.DataType, parent, base.FactoryServices!);
+                ret = new CustomArrayInstance(member.InstanceName, path, (IArrayType)member.DataType, parent, base.FactoryServices!);
             }
             else
             {
@@ -139,13 +139,13 @@ namespace Beckhoff.CustomSymbolProvider
 
         protected override ISymbol OnCreateString(ISymbolInfo entry, IStringType stringType, ISymbol? parent)
         {
-            CustomSymbolInfo info = (CustomSymbolInfo) entry;
+            CustomSymbolInfo info = (CustomSymbolInfo)entry;
             return new CustomStringInstance(info.GetInstanceName(), info.GetInstancePath(), stringType, parent, base.FactoryServices!);
         }
 
         protected override ISymbol OnCreatePrimitive(ISymbolInfo entry, IDataType? dataType, ISymbol? parent)
         {
-            CustomSymbolInfo info = (CustomSymbolInfo) entry;
+            CustomSymbolInfo info = (CustomSymbolInfo)entry;
             return new CustomSymbol(info.GetInstanceName(), info.GetInstancePath(), dataType!, null, base.FactoryServices!);
         }
 
@@ -166,8 +166,13 @@ namespace Beckhoff.CustomSymbolProvider
 
         protected override IStructInstance OnCreateStruct(ISymbolInfo entry, IStructType structType, ISymbol? parent)
         {
-            CustomSymbolInfo info = (CustomSymbolInfo) entry;
+            CustomSymbolInfo info = (CustomSymbolInfo)entry;
             return new CustomStructInstance(info.GetInstanceName(), info.GetInstancePath(), structType, parent, base.FactoryServices!);
+        }
+
+        protected override IInterfaceInstance OnCreateInterface(ISymbolInfo entry, IInterfaceType interfaceType, ISymbol? parent)
+        {
+            throw new NotImplementedException();
         }
 
         protected override IUnionInstance OnCreateUnion(ISymbolInfo entry, IUnionType structType, ISymbol? parent)
@@ -177,7 +182,7 @@ namespace Beckhoff.CustomSymbolProvider
 
         protected override ISymbol OnCreateVirtualStruct(string instanceName, string instancePath, ISymbol? parent)
         {
-            return new CustomVirtualStructInstance(instanceName, instancePath,  null, parent, (ISymbolFactoryServices)base.FactoryServices!);
+            return new CustomVirtualStructInstance(instanceName, instancePath, null, parent, (ISymbolFactoryServices)base.FactoryServices!);
         }
     }
 
@@ -209,7 +214,7 @@ namespace Beckhoff.CustomSymbolProvider
 
         public int BitSize
         {
-            get { return ByteSize*8; }
+            get { return ByteSize * 8; }
         }
 
 
@@ -308,7 +313,7 @@ namespace Beckhoff.CustomSymbolProvider
     public class CustomStringType : CustomDataType, IStringType
     {
         public CustomStringType(string name)
-            : base(DataTypeCategory.String,name, -1, PrimitiveTypeFlags.System)
+            : base(DataTypeCategory.String, name, -1, PrimitiveTypeFlags.System)
         {
         }
 
@@ -361,13 +366,15 @@ namespace Beckhoff.CustomSymbolProvider
             get { return false; }
         }
 
-        public string[] InterfaceImplementationNames => new string[] { };
-        public IInterfaceType?[]? InterfaceImplementations => new IInterfaceType?[] { };
-
         public IMemberCollection Members
         {
             get { return _members.AsReadOnly(); }
         }
+
+        public string[] InterfaceImplementationNames => Array.Empty<string>();
+
+        public IInterfaceType[] InterfaceImplementations => Array.Empty<IInterfaceType>();
+        public IRpcMethodCollection RpcMethods { get; }
     }
 
     [DebuggerDisplay("InstancePath = { instancePath }, Size = {Size}, Type = {TypeName}, Category = {Category}")]
@@ -560,7 +567,7 @@ namespace Beckhoff.CustomSymbolProvider
 
         public int BitOffset
         {
-            get { return _byteOffset*8; }
+            get { return _byteOffset * 8; }
         }
 
         public int ByteOffset
@@ -596,7 +603,7 @@ namespace Beckhoff.CustomSymbolProvider
         {
             this._services = services;
             this._parent = parent;
-            this.valueAccessor = (IAccessorValue) ((ISymbolFactoryValueServices) _services).ValueAccessor;
+            this.valueAccessor = (IAccessorValue)((ISymbolFactoryValueServices)_services).ValueAccessor;
         }
 
         //Use this constructor if the Type cannot be resolved (yet)
@@ -605,7 +612,7 @@ namespace Beckhoff.CustomSymbolProvider
         {
             this._services = services;
             this._parent = parent;
-            this.valueAccessor = (IAccessorValue) ((ISymbolFactoryValueServices) _services).ValueAccessor;
+            this.valueAccessor = (IAccessorValue)((ISymbolFactoryValueServices)_services).ValueAccessor;
         }
 
         protected IAccessorValue valueAccessor;
@@ -722,7 +729,7 @@ namespace Beckhoff.CustomSymbolProvider
 
         public Task<ResultReadValueAccess> ReadValueAsync(CancellationToken cancel)
         {
-            return valueAccessor.ReadValueAsync(this,cancel);
+            return valueAccessor.ReadValueAsync(this, cancel);
         }
 
         public void WriteValue(object value)
@@ -857,6 +864,16 @@ namespace Beckhoff.CustomSymbolProvider
             WriteRawValue(value);
         }
 
+        public ResultReadValueAccess ReadValueAsResult()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResultWriteAccess WriteValueAsResult(object value)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the SubSymbols of the <see cref="ISymbol" />
         /// </summary>
@@ -865,7 +882,7 @@ namespace Beckhoff.CustomSymbolProvider
         /// </remarks>
         public ISymbolCollection<ISymbol> SubSymbols
         {
-            get { return new ReadOnlySymbolCollection(((ISymbolInternal) this).SubSymbolsInternal); }
+            get { return new ReadOnlySymbolCollection(((ISymbolInternal)this).SubSymbolsInternal); }
         }
 
 
@@ -906,7 +923,7 @@ namespace Beckhoff.CustomSymbolProvider
 
         public IDimensionCollection Dimensions
         {
-            get { return ((IArrayType) type!).Dimensions; }
+            get { return ((IArrayType)type!).Dimensions; }
         }
 
         public ISymbolCollection<ISymbol> Elements
@@ -916,13 +933,13 @@ namespace Beckhoff.CustomSymbolProvider
 
         public IDataType? ElementType
         {
-            get { return ((IArrayType) type!).ElementType; }
+            get { return ((IArrayType)type!).ElementType; }
         }
 
         public bool TryGetElement(int[] indices, [NotNullWhen(true)] out ISymbol? symbol)
         {
             CustomArrayType? dataType = (CustomArrayType?)this.DataType;
-            
+
             if (dataType != null && ArrayIndexConverter.TryCheckIndices(indices, dataType))
             {
                 int subIndex = ArrayIndexConverter.IndicesToSubIndex(indices, dataType);
@@ -974,7 +991,7 @@ namespace Beckhoff.CustomSymbolProvider
         protected override ISymbolCollection<ISymbol> OnCreateSubSymbols(ISymbol parentSymbol)
         {
             ISymbolCollection<ISymbol> symbols;
-            IArrayType? arrayType = (IArrayType?) this.DataType;
+            IArrayType? arrayType = (IArrayType?)this.DataType;
             if (arrayType != null)
             {
                 symbols = this.FactoryServices.SymbolFactory.CreateArrayElementInstances(this, arrayType);
@@ -1007,7 +1024,7 @@ namespace Beckhoff.CustomSymbolProvider
         protected override ISymbolCollection<ISymbol> OnCreateSubSymbols(ISymbol parentSymbol)
         {
             ISymbolCollection<ISymbol> symbols;
-            IStructType? structType = (IStructType?) this.DataType;
+            IStructType? structType = (IStructType?)this.DataType;
 
             if (structType != null)
             {
@@ -1018,6 +1035,33 @@ namespace Beckhoff.CustomSymbolProvider
                 symbols = new SymbolCollection(InstanceCollectionMode.Names); // Return empty collection (Virtual Struct???)
             }
             return symbols;
+        }
+
+        public IRpcMethodCollection RpcMethods { get; }
+
+        public object? InvokeRpcMethod(string methodName, object[]? inParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object? InvokeRpcMethod(string methodName, object[]? inParameters, out object[]? outParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int TryInvokeRpcMethod(string methodName, object[]? inParameters, out object? retValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int TryInvokeRpcMethod(string methodName, object[]? inParameters, out object[]? outParameters, out object? retValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResultRpcMethodAccess> InvokeRpcMethodAsync(string methodName, object[]? inParameters, CancellationToken cancel)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1166,26 +1210,26 @@ namespace Beckhoff.CustomSymbolProvider
             {
                 valueFactory = new DynamicValueFactory(mode);
 
-                _symbolFactory = new TwinCAT.TypeSystem.DynamicSymbolFactory(new CustomSymbolFactory(),false);
-                IAccessorValue innerValueAccessor = new CustomValueAccessor(valueFactory,session);
+                _symbolFactory = new TwinCAT.TypeSystem.DynamicSymbolFactory(new CustomSymbolFactory(), false);
+                IAccessorValue innerValueAccessor = new CustomValueAccessor(valueFactory, session);
 
-                _valueAccessor = new DynamicValueAccessor(innerValueAccessor,valueFactory, mode);
+                _valueAccessor = new DynamicValueAccessor(innerValueAccessor, valueFactory, mode);
             }
             else
             {
                 valueFactory = new ValueFactory((mode));
                 _symbolFactory = new CustomSymbolFactory();
-                _valueAccessor = new CustomValueAccessor(valueFactory,session);
+                _valueAccessor = new CustomValueAccessor(valueFactory, session);
             }
 
             IAccessorValueFactory2? valueFactory2 = valueFactory as IAccessorValueFactory2;
-            
+
             if (valueFactory2 != null)
                 valueFactory2.SetValueAccessor(_valueAccessor);
 
             CustomBinder _binder = new CustomBinder(_provider, _symbolFactory, true);
 
-            _factoryServices = new SymbolFactoryValueServices(_binder, _symbolFactory, _valueAccessor,session);
+            _factoryServices = new SymbolFactoryValueServices(_binder, _symbolFactory, _valueAccessor, session);
 
             _symbolFactory.Initialize(_factoryServices);
 
@@ -1201,20 +1245,20 @@ namespace Beckhoff.CustomSymbolProvider
             ISymbolInfo yoda3 = new CustomSymbolInfo("Yoda.Quota3", "BuildInString");
 
 
-            ISymbol symbol1 = _symbolFactory.CreateInstance(info1,null);
-            ISymbol symbol2 = _symbolFactory.CreateInstance(info2,null);
-            ISymbol symbol3 = _symbolFactory.CreateInstance(info3,null);
+            ISymbol symbol1 = _symbolFactory.CreateInstance(info1, null);
+            ISymbol symbol2 = _symbolFactory.CreateInstance(info2, null);
+            ISymbol symbol3 = _symbolFactory.CreateInstance(info3, null);
 
-            ISymbol symbol4 = _symbolFactory.CreateInstance(yoda1,null);
-            ISymbol symbol5 = _symbolFactory.CreateInstance(yoda2,null);
-            ISymbol symbol6 = _symbolFactory.CreateInstance(yoda3,null);
+            ISymbol symbol4 = _symbolFactory.CreateInstance(yoda1, null);
+            ISymbol symbol5 = _symbolFactory.CreateInstance(yoda2, null);
+            ISymbol symbol6 = _symbolFactory.CreateInstance(yoda3, null);
 
-            _binder.Bind((IHierarchicalSymbol) symbol1);
-            _binder.Bind((IHierarchicalSymbol) symbol2);
-            _binder.Bind((IHierarchicalSymbol) symbol3);
-            _binder.Bind((IHierarchicalSymbol) symbol4);
-            _binder.Bind((IHierarchicalSymbol) symbol5);
-            _binder.Bind((IHierarchicalSymbol) symbol6);
+            _binder.Bind((IHierarchicalSymbol)symbol1);
+            _binder.Bind((IHierarchicalSymbol)symbol2);
+            _binder.Bind((IHierarchicalSymbol)symbol3);
+            _binder.Bind((IHierarchicalSymbol)symbol4);
+            _binder.Bind((IHierarchicalSymbol)symbol5);
+            _binder.Bind((IHierarchicalSymbol)symbol6);
         }
 
         //IBinder _binder = null;
@@ -1276,7 +1320,7 @@ namespace Beckhoff.CustomSymbolProvider
         /// <seealso cref="Symbols"/>
         public Task<ResultSymbols> GetSymbolsAsync(CancellationToken cancel)
         {
-            return Task.FromResult(new ResultSymbols(AdsErrorCode.NoError, _provider.Symbols));
+            return new Task<ResultSymbols>(() => new ResultSymbols(AdsErrorCode.NoError, _provider.Symbols));
         }
 
         /// <summary>
@@ -1289,12 +1333,99 @@ namespace Beckhoff.CustomSymbolProvider
         /// <seealso cref="DataTypes"/>
         public Task<ResultDataTypes> GetDataTypesAsync(CancellationToken cancel)
         {
-            return Task.FromResult(new ResultDataTypes(AdsErrorCode.NoError,_provider.DataTypes));
+            return new Task<ResultDataTypes>(() => new ResultDataTypes(AdsErrorCode.NoError, _provider.DataTypes));
         }
 
+        ///// <summary>
+        ///// Gets the dynamic symbols asynchronously
+        ///// </summary>
+        ///// <param name="cancel">The cancellation token.</param>
+        ///// <returns>Task&lt;ResultDynamicSymbols&gt;.</returns>
+        //public Task<ResultDynamicSymbols> GetDynamicSymbolsAsync(CancellationToken cancel)
+        //{
+        //    return new Task<ResultDynamicSymbols>(() => new ResultDynamicSymbols(AdsErrorCode.NoError, this.SymbolsDynamic));
+        //}
+
+        ///// <summary>
+        ///// Gets the symbols asynchronously
+        ///// </summary>
+        ///// <param name="forceReload">Reloads the information from the target device and bypasses the internal cache.</param>
+        ///// <param name="cancel">The cancellation token.</param>
+        ///// <returns>A task that represents the asynchronous 'GetDataTypes' operation. The <see cref="T:TwinCAT.TypeSystem.ResultSymbols" /> parameter contains the data types
+        ///// (<see cref="P:TwinCAT.TypeSystem.ResultSymbols`1.Symbols" />) and the <see cref="P:TwinCAT.Ads.ResultAds.ErrorCode" /> after execution.</returns>
+        ///// <seealso cref="P:TwinCAT.TypeSystem.ISymbolServer.Symbols" />
+        //public Task<ResultSymbols> GetSymbolsAsync(CancellationToken cancel)
+        //{
+        //    return GetSymbolsAsync(cancel);
+        //}
+
+        /// <summary>
+        /// Tries to geth the symbols from the device target.
+        /// </summary>
+        /// <param name="forceReload">Reloads the information from the target device and bypasses the internal cache.</param>
+        /// <param name="symbols">The symbols.</param>
+        /// <returns>AdsErrorCode.</returns>
+        public AdsErrorCode TryGetSymbols(bool forceReload, out ISymbolCollection<ISymbol>? symbols)
+        {
+            return TryGetSymbols(out symbols);
+        }
+
+        /// <summary>
+        /// Tries to geth the symbols from the device target.
+        /// </summary>
+        /// <param name="symbols">The symbols.</param>
+        /// <returns>AdsErrorCode.</returns>
+        public AdsErrorCode TryGetSymbols(out ISymbolCollection<ISymbol>? symbols)
+        {
+            symbols = this.Symbols;
+            return AdsErrorCode.NoError;
+        }
+
+        ///// <summary>
+        ///// Gets the data types asynchronously.
+        ///// </summary>
+        ///// <param name="cancel">The cancellation token.</param>
+        ///// <returns>A task that represents the asynchronous 'GetDataTypes' operation. The <see cref="T:TwinCAT.TypeSystem.ResultDataTypes" /> parameter contains the data types
+        ///// (<see cref="P:TwinCAT.TypeSystem.ResultDataTypes.DataTypes" />) and the <see cref="P:TwinCAT.Ads.ResultAds.ErrorCode" /> after execution.</returns>
+        ///// <seealso cref="P:TwinCAT.TypeSystem.ISymbolServer.DataTypes" />
+        //public Task<ResultDataTypes> GetDataTypesAsync(CancellationToken cancel)
+        //{
+        //    return Task.FromResult(new ResultDataTypes(AdsErrorCode.NoError, this.DataTypes));
+        //}
+
+        /// <summary>
+        /// Tries to get the symbols from the device target.
+        /// </summary>
+        /// <param name="dataTypes">The data types.</param>
+        /// <returns>AdsErrorCode.</returns>
+        public AdsErrorCode TryGetDataTypes(out IDataTypeCollection<IDataType>? dataTypes)
+        {
+            dataTypes = this.DataTypes;
+            return AdsErrorCode.NoError;
+        }
+
+        ///// <summary>
+        ///// Tries to get the symbols from the device target.
+        ///// </summary>
+        ///// <param name="dataTypes">The data types.</param>
+        ///// <returns>AdsErrorCode.</returns>
+        //public AdsErrorCode TryGetDataTypes(out IDataTypeCollection<IDataType>? dataTypes)
+        //{
+        //    return TryGetDataTypes(false, out dataTypes);
+        //}
+
+        /// <summary>
+        /// Gets the dynamic symbols asynchronously
+        /// </summary>
+        /// <param name="cancel">The cancellation token.</param>
+        /// <returns>Task&lt;ResultDynamicSymbols&gt;.</returns>
         public Task<ResultDynamicSymbols> GetDynamicSymbolsAsync(CancellationToken cancel)
         {
             return Task.FromResult(new ResultDynamicSymbols(AdsErrorCode.NoError, this.SymbolsDynamic));
+        }
+
+        public void ResetCachedSymbolicData()
+        {
         }
 
         /// <summary>
@@ -1463,26 +1594,53 @@ namespace Beckhoff.CustomSymbolProvider
         /// Gets the symbols asynchronously
         /// </summary>
         /// <param name="cancel">The cancellation token.</param>
-        /// <returns>A task that represents the asynchronous 'GetDataTypes' operation. The <see cref="ResultSymbols"/> parameter contains the data types
-        /// (<see cref="ResultSymbols{T}.Symbols"/>) and the <see cref="ResultAds.ErrorCode"/> after execution.
-        /// </returns>
-        /// <seealso cref="Symbols"/>
+        /// <returns>A task that represents the asynchronous 'GetDataTypes' operation. The <see cref="T:TwinCAT.TypeSystem.ResultSymbols" /> parameter contains the data types
+        /// (<see cref="P:TwinCAT.TypeSystem.ResultSymbols`1.Symbols" />) and the <see cref="P:TwinCAT.Ads.ResultAds.ErrorCode" /> after execution.</returns>
+        /// <seealso cref="P:TwinCAT.TypeSystem.ISymbolServer.Symbols" />
         public Task<ResultSymbols> GetSymbolsAsync(CancellationToken cancel)
         {
-            return Task.FromResult(new ResultSymbols(AdsErrorCode.NoError,_symbols.AsReadOnly()));
+            return Task.FromResult(ResultSymbols.CreateSuccess(_symbols.AsReadOnly()));
+        }
+
+        /// <summary>
+        /// Tries to geth the symbols from the device target.
+        /// </summary>
+        /// <param name="symbols">The symbols.</param>
+        /// <returns>AdsErrorCode.</returns>
+        public AdsErrorCode TryGetSymbols(out ISymbolCollection<ISymbol>? symbols)
+        {
+            symbols = this.Symbols;
+            return AdsErrorCode.NoError;
         }
 
         /// <summary>
         /// Gets the data types asynchronously.
         /// </summary>
         /// <param name="cancel">The cancellation token.</param>
-        /// <returns>A task that represents the asynchronous 'GetDataTypes' operation. The <see cref="ResultDataTypes"/> parameter contains the data types
-        /// (<see cref="ResultDataTypes.DataTypes"/>) and the <see cref="ResultAds.ErrorCode"/> after execution.
-        /// </returns>
-        /// <seealso cref="DataTypes"/>
+        /// <returns>A task that represents the asynchronous 'GetDataTypes' operation. The <see cref="T:TwinCAT.TypeSystem.ResultDataTypes" /> parameter contains the data types
+        /// (<see cref="P:TwinCAT.TypeSystem.ResultDataTypes.DataTypes" />) and the <see cref="P:TwinCAT.Ads.ResultAds.ErrorCode" /> after execution.</returns>
+        /// <seealso cref="P:TwinCAT.TypeSystem.ISymbolServer.DataTypes" />
         public Task<ResultDataTypes> GetDataTypesAsync(CancellationToken cancel)
         {
-            return Task.FromResult(new ResultDataTypes(AdsErrorCode.NoError, this.DataTypes));
+            return Task.FromResult(ResultDataTypes.CreateSuccess(this.DataTypes));
+        }
+
+        /// <summary>
+        /// Tries to get the symbols from the device target.
+        /// </summary>
+        /// <param name="dataTypes">The data types.</param>
+        /// <returns>AdsErrorCode.</returns>
+        public AdsErrorCode TryGetDataTypes(out IDataTypeCollection<IDataType>? dataTypes)
+        {
+            dataTypes = this.DataTypes;
+            return AdsErrorCode.NoError;
+        }
+
+        /// <summary>
+        /// Resets the cached symbolic data.
+        /// </summary>
+        public void ResetCachedSymbolicData()
+        {
         }
     }
 
@@ -1547,7 +1705,7 @@ namespace Beckhoff.CustomSymbolProvider
 
         public int Timeout
         {
-            get { return _timeout; } 
+            get { return _timeout; }
             set { _timeout = value; }
         }
 
@@ -1601,7 +1759,7 @@ namespace Beckhoff.CustomSymbolProvider
         {
             _sessionProvider = sessionProvider;
             _session = session;
-            _loader = new CustomSymbolLoader(session,dynamicObjects, sessionProvider);
+            _loader = new CustomSymbolLoader(session, dynamicObjects, sessionProvider);
         }
 
         /// <summary>
@@ -1618,7 +1776,7 @@ namespace Beckhoff.CustomSymbolProvider
             get
             {
                 //if (_loader != null)
-                    return _loader.DataTypes;
+                return _loader.DataTypes;
                 //else
                 //    return null;
             }
@@ -1636,7 +1794,7 @@ namespace Beckhoff.CustomSymbolProvider
             get
             {
                 //if (_loader != null)
-                    return _loader.Symbols;
+                return _loader.Symbols;
                 //else
                 //    return null;
             }
@@ -1661,6 +1819,14 @@ namespace Beckhoff.CustomSymbolProvider
 
         }
 
+        //public async Task<ResultDataTypes> GetDataTypesAsync(CancellationToken cancel)
+        //{
+        //    if (_loader != null)
+        //        return await _loader.GetDataTypesAsync(, cancel).ConfigureAwait(false);
+        //    else
+        //        return new ResultDataTypes(AdsErrorCode.InternalError, null);
+        //}
+
         /// <summary>
         /// Gets the symbols asynchronously
         /// </summary>
@@ -1672,10 +1838,54 @@ namespace Beckhoff.CustomSymbolProvider
         public async Task<ResultSymbols> GetSymbolsAsync(CancellationToken cancel)
         {
             if (_loader != null)
-
                 return await _loader.GetSymbolsAsync(cancel).ConfigureAwait(false);
             else
                 return new ResultSymbols(AdsErrorCode.InternalError, null);
+        }
+
+        public void ResetCachedSymbolicData()
+        {
+            throw new NotImplementedException();
+        }
+
+        //public async Task<ResultSymbols> GetSymbolsAsync(bool forceReload, CancellationToken cancel)
+        //{
+        //    if (_loader != null)
+        //        return await _loader.GetSymbolsAsync(forceReload, cancel).ConfigureAwait(false);
+        //    else
+        //        return new ResultSymbols(AdsErrorCode.InternalError, null);
+        //}
+
+        //public AdsErrorCode TryGetDataTypes(bool forceReload, out IDataTypeCollection<IDataType>? dataTypes)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public AdsErrorCode TryGetDataTypes(out IDataTypeCollection<IDataType>? dataTypes)
+        {
+            if (_loader != null)
+                return _loader.TryGetDataTypes(out dataTypes);
+            else
+            {
+                dataTypes = null;
+                return AdsErrorCode.InternalError;
+            }
+        }
+
+        //public AdsErrorCode TryGetSymbols(bool forceReload, out ISymbolCollection<ISymbol>? symbols)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public AdsErrorCode TryGetSymbols(out ISymbolCollection<ISymbol>? symbols)
+        {
+            if (_loader != null)
+                return _loader.TryGetSymbols(out symbols);
+            else
+            {
+                symbols = null;
+                return AdsErrorCode.InternalError;
+            }
         }
     }
 
@@ -1806,7 +2016,7 @@ namespace Beckhoff.CustomSymbolProvider
         /// <param name="factory">The value factory.</param>
         /// <param name="session">The session (if session based) or NULL</param>
         public CustomValueAccessor(IAccessorValueFactory factory, ISession session)
-            : base(factory,session)
+            : base(factory, session)
         {
             _converter = PrimitiveTypeMarshaler.Default;
         }
@@ -1864,15 +2074,15 @@ namespace Beckhoff.CustomSymbolProvider
             Func<ResultReadRawAccess> func = () =>
             {
                 DateTimeOffset? time;
-                int errorCode = TryReadArrayElementRaw(arrayInstance,indices, destination, out time);
+                int errorCode = TryReadArrayElementRaw(arrayInstance, indices, destination, out time);
 
                 if (errorCode == 0)
-                    return new ResultReadRawAccess(destination, errorCode, time!.Value);
+                    return new ResultReadRawAccess(destination, errorCode, time!.Value, 0);
                 else
                     return ResultReadRawAccess.Empty;
             };
 
-            return Task.Run<ResultReadRawAccess>(func,cancel);
+            return Task.Run<ResultReadRawAccess>(func, cancel);
         }
 
         public override int TryReadRaw(ISymbol symbol, Memory<byte> va, out DateTimeOffset? utcReadTime)
@@ -1954,10 +2164,10 @@ namespace Beckhoff.CustomSymbolProvider
 
                 ArrayIndexIterator iter = new ArrayIndexIterator((IArrayType)instance.DataType!);
 
-                foreach(int[] indices in iter)
+                foreach (int[] indices in iter)
                 {
                     DateTimeOffset? time;
-                    TryReadArrayElementRaw(instance, indices, va.Slice(currentIndex,elementSize), out time);
+                    TryReadArrayElementRaw(instance, indices, va.Slice(currentIndex, elementSize), out time);
                     currentIndex += elementSize;
                 }
             }
@@ -1974,12 +2184,12 @@ namespace Beckhoff.CustomSymbolProvider
                 int errorCode = TryReadRaw(symbolInstance, value, out time);
 
                 if (errorCode == 0)
-                    return new ResultReadRawAccess(value, errorCode, time!.Value);
+                    return new ResultReadRawAccess(value, errorCode, time!.Value, 0);
                 else
                     return ResultReadRawAccess.Empty;
             };
 
-            return Task.Run<ResultReadRawAccess>(func,cancel);
+            return Task.Run<ResultReadRawAccess>(func, cancel);
         }
 
         public override int TryWriteArrayElementRaw(IArrayInstance arrayInstance, int[] indices, ReadOnlyMemory<byte> source, out DateTimeOffset? utcWriteTime)

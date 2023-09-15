@@ -3,9 +3,9 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>PLCStartStop</RootNamespace>
     <AssemblyName>PLCStartStop</AssemblyName>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net60</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.90" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
   </ItemGroup>
 </Project>

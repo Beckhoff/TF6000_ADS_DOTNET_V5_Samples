@@ -3,34 +3,19 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net461;netstandard2.0;net6.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BuildHelp)' == 'true'">netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0;net7.0</TargetFrameworks>
     <PackageId>Beckhoff.TwinCAT.Ads.CustomSessionProvider</PackageId>
     <Authors>Ralf Heitmann</Authors>
     <Description />
     <RootNamespace>Beckhoff.CustomSymbolProvider</RootNamespace>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.Abstractions" Version="6.0.72" />
-    <PackageReference Include="Nullable" Version="1.3.0">
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.Abstractions" Version="6.*" />
+    <PackageReference Include="Nullable" Version="1.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

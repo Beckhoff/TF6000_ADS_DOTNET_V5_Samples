@@ -295,8 +295,8 @@ namespace S01_ReadWriteFlag
                 Regex filterExpression = new Regex(pattern: @"^MAIN.*"); // Everything that starts with "MAIN"
 
                 // FilterFunction that filters for the InstancePath
-                Func<ISymbol, bool> filter = s => filterExpression.IsMatch(s.InstancePath);
-                SymbolIterator iterator = new SymbolIterator(symbols: loader.Symbols, recurse: true, predicate: filter);
+                Func<ISymbol, bool> selector = s => filterExpression.IsMatch(s.InstancePath);
+                SymbolIterator iterator = new SymbolIterator(symbols: loader.Symbols, recurse: true, selector: selector);
 
                 foreach (ISymbol filteredSymbol in iterator)
                 {
@@ -569,8 +569,8 @@ namespace S01_ReadWriteFlag
                     Regex filterExpression = new Regex(pattern: @"^MAIN.*"); // Everything that starts with "MAIN"
 
                     // FilterFunction that filters for the InstancePath
-                    Func<ISymbol, bool> filter = s => filterExpression.IsMatch(s.InstancePath);
-                    SymbolIterator iterator = new SymbolIterator(symbols: resultSymbols.Symbols, recurse: true, predicate: filter);
+                    Func<ISymbol, bool> selector = s => filterExpression.IsMatch(s.InstancePath);
+                    SymbolIterator iterator = new SymbolIterator(symbols: resultSymbols.Symbols, recurse: true, selector: selector);
 
                     foreach (ISymbol filteredSymbol in iterator)
                     {
