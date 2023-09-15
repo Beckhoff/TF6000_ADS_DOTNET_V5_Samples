@@ -30,6 +30,8 @@ namespace Sample.Ads.AdsServerCore
             // to not conflict with Beckhoff prereserved servers!
             // see https://infosys.beckhoff.com/content/1033/tc3_ads.net/9408352011.html?id=1801810347107555608
 
+            // This presumes that a TwinCAT Router is already running!
+
             AdsSampleServer server1 = new AdsSampleServer(26000, "TestAdsServer1", _logger);
             AdsSampleServer server2 = new AdsSampleServer(26001, "TestAdsServer2", _logger);
 

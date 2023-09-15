@@ -533,7 +533,7 @@ namespace AdsSymbolicServerSample
                 {
                     string fieldName = match.Groups["name"].Value;
                     string arrayIndex = null;
-                    bool isArrayIndex = false;
+                    //bool isArrayIndex = false;
 
                     list.Add(fieldName);
 
@@ -541,7 +541,7 @@ namespace AdsSymbolicServerSample
 
                     if (!string.IsNullOrEmpty(arrayIndex))
                     {
-                        isArrayIndex = true;
+                        //isArrayIndex = true;
 
                         var dimGroup = match.Groups["subArray"];
                         var dimensions = match.Groups["subArray"].Captures;
@@ -626,7 +626,7 @@ namespace AdsSymbolicServerSample
         /// <returns>System.Object.</returns>
         bool SetSubValue(Span<string> delta, ISymbol rootSymbol, object rootValue, object value)
         {
-            object? oldValue = null;
+            object oldValue = null;
             bool changed = false;
 
             object actValue = rootValue;

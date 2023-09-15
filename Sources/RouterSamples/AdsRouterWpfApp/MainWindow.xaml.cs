@@ -1,23 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TwinCAT.Ads;
+using TwinCAT.Ads.SystemService;
 using TwinCAT.Ads.TcpRouter;
+using TwinCAT.Router;
 
 namespace TcpIpRouterWpf
 {
@@ -26,7 +17,21 @@ namespace TcpIpRouterWpf
     /// </summary>
     public partial class MainWindow : Window, ILogger
     {
+        /// <summary>
+        /// The router
+        /// </summary>
         private AmsTcpIpRouter _router;
+
+
+        /// <summary>
+        /// The router ADS Server (Port 1)
+        /// </summary>
+        private AdsRouterServer _routerServer;
+        /// <summary>
+        ///The System Service ADS Server (Port 10000)
+        /// </summary>
+        private SystemServiceServer _systemService;
+
         private CancellationTokenSource _cancel;
         private SynchronizationContext _ctx;
 
@@ -36,10 +41,6 @@ namespace TcpIpRouterWpf
         {
             InitializeComponent();
             _ctx = SynchronizationContext.Current;
-
-            //AmsNetId netId = new AmsNetId("1.2.3.4.5.6");
-            //Debug.Fail("");
-            //_cancel = new CancellationTokenSource();
             enableDisableControls();
         }
 
@@ -107,15 +108,37 @@ namespace TcpIpRouterWpf
             btnStart.IsEnabled = false;
             btnCancel.IsEnabled = true;
             _cancel = new CancellationTokenSource();
-            await _router.StartAsync(_cancel.Token);
+
+            Task routerTask = _router.StartAsync(_cancel.Token);
+
+            _routerServer = new AdsRouterServer(_router, this);
+            _systemService = new SystemServiceServer(_router, this);
+
+            Task<AdsErrorCode> routerServerTask = _routerServer.ConnectServerAndWaitAsync(_cancel.Token);
+            Task<AdsErrorCode> systemServiceTask = _systemService.ConnectServerAndWaitAsync(_cancel.Token);
+
+            // Wait for all Tasks to stop
+            await Task.WhenAll(routerTask, routerServerTask, systemServiceTask);
+            enableDisableControls();
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
-            _router.Stop();
-            _router.RouterStatusChanged -= _router_RouterStatusChanged;
-            _router = null;
+            if (_routerServer != null)
+                _routerServer.Dispose();
+
+            if (_systemService != null)
+                _systemService.Dispose();
+
+            if (_router != null)
+            {
+                _router.Stop();
+                _router.RouterStatusChanged -= _router_RouterStatusChanged;
+            }
             _cancel = null;
+            _routerServer = null;
+            _systemService = null;
+            _router = null;
             enableDisableControls();
         }
 
@@ -136,7 +159,12 @@ namespace TcpIpRouterWpf
 
         bool ILogger.IsEnabled(LogLevel logLevel)
         {
-            return true;
+            if (logLevel >= LogLevel.Information)
+            {
+                return true;
+            }
+            else
+                return false;
         }
 
         public IDisposable BeginScope<TState>(TState state) => default;

@@ -4,13 +4,14 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject>AdsRouterAndClientConsoleApp.SimpleProgram</StartupObject>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.72" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.*" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -64,7 +64,7 @@ namespace TestServer
          * This server replys on: ReadDeviceInfo, Read, Write and ReadState requests. 
          */
 
-        protected override Task<ResultWrite> OnWriteAsync(uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
+        protected override Task<ResultWrite> OnWriteAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
         {
             ResultWrite result = ResultWrite.CreateError(AdsErrorCode.DeviceServiceNotSupported);
 
@@ -104,7 +104,7 @@ namespace TestServer
         }
 
         
-        protected override Task<ResultReadBytes> OnReadAsync(uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
+        protected override Task<ResultReadBytes> OnReadAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
         {
             /* Distinguish between services like in AdsWriteInd */
 
@@ -112,13 +112,13 @@ namespace TestServer
             return Task.FromResult(result);
         }
 
-        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(CancellationToken cancel)
+        protected override Task<ResultReadDeviceState> OnReadDeviceStateAsync(AmsAddress sender, uint invokeId, CancellationToken cancel)
         {
             ResultReadDeviceState result = ResultReadDeviceState.CreateSuccess(new StateInfo(_localAdsState,_localDeviceState));
             return Task.FromResult(result);
         }
 
-        protected override Task<ResultAds> OnWriteControlAsync(AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
+        protected override Task<ResultAds> OnWriteControlAsync(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
         {
             // Set requested ADS and device status
             _localAdsState = adsState;
@@ -129,7 +129,7 @@ namespace TestServer
             return Task.FromResult(result);
         }
 
-        protected override Task<ResultHandle> OnAddDeviceNotificationAsync(uint indexGroup, uint indexOffset, int dataLength, AmsAddress receiver, NotificationSettings settings, CancellationToken cancel)
+        protected override Task<ResultHandle> OnAddDeviceNotificationAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int dataLength, AmsAddress receiver, NotificationSettings settings, CancellationToken cancel)
         {
             /* Create a new notifcation entry an store it in the notification table */
             NotificationRequestEntry notEntry = new NotificationRequestEntry(receiver, indexGroup, indexOffset, dataLength, settings);
@@ -139,7 +139,7 @@ namespace TestServer
             return Task.FromResult(result);
         }
 
-        protected override Task<ResultAds> OnDeleteDeviceNotificationAsync(uint hNotification, CancellationToken cancel)
+        protected override Task<ResultAds> OnDeleteDeviceNotificationAsync(AmsAddress sender, uint invokeId, uint hNotification, CancellationToken cancel)
         {
             ResultAds result = ResultAds.CreateSuccess();
 
@@ -165,7 +165,7 @@ namespace TestServer
             return Task.FromResult(ResultAds.CreateSuccess());
         }
 
-        protected override Task<ResultReadWriteBytes> OnReadWriteAsync(uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
+        protected override Task<ResultReadWriteBytes> OnReadWriteAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
         {
             ResultReadWriteBytes result = ResultReadWriteBytes.CreateError(AdsErrorCode.DeviceServiceNotSupported);
 

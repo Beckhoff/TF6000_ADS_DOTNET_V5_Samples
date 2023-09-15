@@ -10,6 +10,10 @@ using Microsoft.Extensions.Logging;
 using TwinCAT.Ads.TcpRouter;
 using System.Net;
 using System.Text;
+using TwinCAT.Ads.SystemService;
+using TwinCAT.Router;
+using TwinCAT;
+//using TwinCAT.Router;
 
 namespace TwinCAT.Ads.AdsRouterService
 {
@@ -18,13 +22,13 @@ namespace TwinCAT.Ads.AdsRouterService
 
     /// <summary>
     /// The RouterService instance represents a long running (hosted) service that implements an <see cref="AmsTcpIpRouter"/>.
-    /// Implements the <see cref="Microsoft.Extensions.Hosting.BackgroundService" />
+    /// Implements the <see cref="BackgroundService" />
     /// </summary>
     /// <remarks>
     /// Long running Background task that runs a <see cref="AmsTcpIpRouter."/>.
-    /// The service is stopped via the <see cref="CancellationToken"/> given to the <see cref="RouterService.ExecuteAsync(CancellationToken)"/> method.
+    /// The service is stopped via the <see cref="CancellationToken"/> given to the <see cref="ExecuteAsync(CancellationToken)"/> method.
     /// </remarks>
-    /// <seealso cref="Microsoft.Extensions.Hosting.BackgroundService" />
+    /// <seealso cref="BackgroundService" />
     public class RouterService : BackgroundService
     {
         /// <summary>
@@ -45,7 +49,7 @@ namespace TwinCAT.Ads.AdsRouterService
         {
             _logger = logger;
             _configuration = configuration;
-            //string value = (string)_configuration.GetValue("ASPNETCORE_ENVIRONMENT", "Production");
+            //string? value = _configuration.GetValue("ASPNETCORE_ENVIRONMENT", "Production");
         }
 
         /// <summary>
@@ -61,12 +65,12 @@ namespace TwinCAT.Ads.AdsRouterService
                 StringBuilder appCommon = new StringBuilder();
 
                 appCommon.AppendLine($"ApplicationPath: {Environment.GetCommandLineArgs()[0]}");
-                appCommon.AppendLine($"BaseDirectory: {System.AppContext.BaseDirectory}");
+                appCommon.AppendLine($"BaseDirectory: {AppContext.BaseDirectory}");
                 appCommon.AppendLine($"CurrentDirectory: {Directory.GetCurrentDirectory()}");
                 //_logger.LogInformation(sB.ToString());
 
                 StringBuilder config = new StringBuilder();
-                string value = (string)_configuration.GetValue("ASPNETCORE_ENVIRONMENT", "Production");
+                string? value = _configuration.GetValue("ASPNETCORE_ENVIRONMENT", "Production");
                 config.AppendLine($"ASPNETCORE_ENVIRONMENT: {value}");
 
                 Console.WriteLine("Application Directories");
@@ -92,7 +96,21 @@ namespace TwinCAT.Ads.AdsRouterService
             }
 
             Task routerTask = router.StartAsync(cancel); // Start the router
-            await routerTask;
+
+            // Starting included AdsServers
+            // In this case we add the simple TwinCAT Router (AmsPort 1) to support adding and removing routes
+            AdsRouterServer adsRouterService = new AdsRouterServer(router, _logger);
+
+            // And a simple TwinCAT System Service (AmsPort 10000) for supporting browsing routes (including BroadcastSearch)
+            SystemServiceServer systemService = new SystemServiceServer(router, _logger);
+
+            Task systemServiceTask = systemService.ConnectServerAndWaitAsync(cancel);
+            Task routerServerTask = adsRouterService.ConnectServerAndWaitAsync(cancel);
+
+            // Wait until Router, AdsRouter Server and SystemService Server have finished.
+            await Task.WhenAll(routerTask, systemServiceTask, routerServerTask);
+            // Succeeded
+            Console.WriteLine("Finished");
         }
 
         /// <summary>
@@ -100,7 +118,7 @@ namespace TwinCAT.Ads.AdsRouterService
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RouterStatusChangedEventArgs"/> instance containing the event data.</param>
-        private void Router_RouterStatusChanged(object sender, RouterStatusChangedEventArgs e)
+        private void Router_RouterStatusChanged(object? sender, RouterStatusChangedEventArgs e)
         {
             if (e.RouterStatus == RouterStatus.Started)
             {
@@ -108,5 +126,5 @@ namespace TwinCAT.Ads.AdsRouterService
             }
         }
     }
-#endregion
+    #endregion
 }

@@ -9,7 +9,7 @@
     <StartupObject>AdsSampleServerTester</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.Server" Version="6.0.72" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.Server" Version="6.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AdsServerConsoleApp\AdsServerConsoleApp.csproj" />

@@ -37,28 +37,31 @@ namespace TwinCAT.Ads.AdsRouterService
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <returns>IHostBuilder.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<RouterService>();
-                })
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    // Add further AppConfigurationProvider here.
-                    config.Sources.Clear(); // Clear all default config sources 
-                    config.AddEnvironmentVariables("ENV_"); // Use Environment variables
-                    //config.AddCommandLine(args); // Use Command Line
-                    //config.AddJsonFile("appSettings.json"); // Use Appsettings
-                    //config.AddStaticRoutesXmlConfiguration(); // Overriding settings with StaticRoutes.Xml 
-                })
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    // Adding console logging here.
-                    logging.AddConsole();
-                })
-            ;
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var ret = Host.CreateDefaultBuilder(args);
+
+            ret.ConfigureServices((hostContext, services) =>
+            {
+                services.AddHostedService<RouterService>();
+            })
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                // Add further AppConfigurationProvider here.
+                //config.Sources.Clear(); // Clear all default config sources 
+                config.AddEnvironmentVariables("ENV_"); // Use Environment variables
+                //config.AddCommandLine(args); // Use Command Line
+                //config.AddJsonFile("appSettings.json"); // Use Appsettings
+                //config.AddStaticRoutesXmlConfiguration(); // Overriding settings with StaticRoutes.Xml 
+            })
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                // Adding console logging here.
+                logging.AddConsole();
+            });
+            return ret;
+        }
     }
     #endregion
 }

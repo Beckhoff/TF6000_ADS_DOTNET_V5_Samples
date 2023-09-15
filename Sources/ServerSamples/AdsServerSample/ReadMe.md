@@ -1,7 +1,7 @@
 ﻿# Using of the AdsServerSample
 The AdsServerSample Solution contains two different projects. Both are implemented as .net50 Application
 ## AdsServerConsoleApp
-This is an simple Console Application that Implements two AdsServers side-by-side in one Console Application. The target framework is .NET5.0.
+This is a simple Console Application that Implements two AdsServers side-by-side in one Console Application. The target framework is net60
 The console application starts two local AdsServers on Port 30000, and 30001. If started, an ADSClient can connect to theses ports (e.g. the **TcXaeMgmt** Powershell console as described below.)
 ![AdsServerConsleApp](./AdsServerConsoleApp.png)
 

@@ -1,32 +1,14 @@
 ﻿## Description of the **AdsRouterConsoleApp** Sample application
-The package **'Beckhoff.TwinCAT.Ads.AdsRouterConsole'** contains a lean TCP ADS Router as binary. It is a simple console application
-'ready-to-run'.
+The project contains a lean TCP ADS Router as binary. It is a simple console application
+'ready-to-run' (with included simple AdsServers Port 1 and Port 10000).
 
-It can be used in scenarios where no standard TwinCAT router is established or available and is running in UserMode only (no realtime characteristics) and contains no further functionality than distributing the ADS Frames (e.g. no Port 10000, no ADS Secure). It is just used to route ADS frames locally between AdsServers 
+It can be used in scenarios where no standard TwinCAT router is established or available and is running in UserMode only (no realtime characteristics) and contains no further functionality than distributing the ADS Frames (e.g. no Port 10000, no ADS Secure). It is just used to route ADS frames locally between AdsServers and give some basic support of Route management and browsing Remote Systems.
 and to/from remote ADS devices.
 
 ## Requirements
-- **.NET 5.0**, **.NET Core 3.1**, **.NET Framework 4.61** or **.NET Standard 2.0** compatible SDK or later
 - No other System allocating the same port (e.g. a regular TwinCAT installation) 
 
-## Installation
-
-```Shell
-dotnet add package Beckhoff.TwinCAT.Ads.AdsRouterConsole
-```
-
-This will install the **AdsRouterConsole** application.
-For the .NET FullFramework the package contains the **TwinCAT.Ads.AdsRouterConsole.exe** which acts as Console application directly.
-For other platforms (.NET Core and .NET Standard) it contains the **TwinCAT.Ads.AdsRouterConsole.dll** which is indirectly started by the .NET CLI.
-
-NET Core applications are supposed to be .dllfiles. OutputType set to Exe in this case means "executable" and does everything necessary to ensure that the output is runnable (entry point from Main() method,
-The resulting dll file is meant to be run using:
-
-```shell
-dotnet Beckhoff.TwinCAT.Ads.AdsRouterConsole.dll 
-```
-
-This dll file works across all platforms that are supported by the .net core runtime (windows, linux, macOS). This is called a "portable" or "framework dependant" deployment.
+This sample works across all platforms that are supported by the .net core runtime (windows, linux, macOS). This is called a "portable" or "framework dependant" deployment.
 If an *.exe really is needed, please consider self-contained deployments.
 
 Along with the deployment of the application where the TcpRouter is implemented, a valid Router / ADS configuration must be placed to specify
@@ -158,6 +140,81 @@ dotnet run .\TwinCAT.Ads.AdsRouterConsole.dll
 ```Shell
 TwinCAT.Ads.AdsRouterConsole.exe
 ```
+
+### Testing
+The Sample Application instantiates AdsServers beneath the Routers:
+1. Router AdsServer (Port 1)
+2. SystemService AdsServer (Port 10000)
+
+Therefore, this application can be tested very easy with the 'TcXaeMgmt' Powershell Module. Just install this module into the local Powershell
+
+[Installation](https://www.powershellgallery.com/packages/TcXaeMgmt)
+
+[Documentation](https://infosys.beckhoff.com/english.php?content=../content/1033/tc3_ads_ps_tcxaemgmt/3972231819.html&id=8731138690123386389)
+
+Installing the TcXaeMgmt Module
+```pwsh
+PS> install-module TcXaeMgmt
+PS> import-module TcXaeMgmt
+```
+
+Determine the local AmsNetId
+```pwsh
+PS> Get-AdsRoute -local
+
+Name                             NetId                Protocol   TLS   Address          FingerPrint
+----                             -----                --------   ---   -------          -----------
+MYSYSTEM                          1.1.1.1.1.1          TcpIP            192.168.0.1
+```
+
+Testing the Local AdsServers (Router and SystemService)
+```pwsh
+
+PS> Test-AdsRoute -port 1
+Name                 Address           Port   Latency Result
+                                               (ms)
+----                 -------           ----   ------- ------
+MYSYSTEM              1.1.1.1.1.1       1      4       Ok
+
+PS> Test-AdsRoute -port 10000
+
+Name                 Address           Port   Latency Result
+                                               (ms)
+----                 -------           ----   ------- ------
+MYSYSTEM              1.1.1.1.1.1       10000  0.9     Ok
+```
+
+Getting remote routes of the local system 
+```pwsh
+PS> Get-AdsRoute
+
+Name                             NetId                Protocol   TLS   Address          FingerPrint
+----                             -----                --------   ---   -------          -----------
+CodedRemote                      3.3.3.3.1.1          TcpIP
+```
+
+Broadcast Search
+```pwsh
+PS> Get-AdsRoute -all
+
+Name                             NetId                Protocol   TLS   Address          FingerPrint   TcVersion    RTSystem
+----                             -----                --------   ---   -------          -----------   ---------    --------
+MYSYSTEM                         1.1.1.1.1.1          TcpIP            192.168.0.1                    [UNKNOWN]    [UNKNOWN]
+CX_11111                         1.1.1.1.1.2          TcpIP      X     192.168.0.2      478c762e...   3.1.4025     TcBSD 13.2
+CX_11112                         1.1.1.1.1.3          TcpIP      X     192.168.0.3                    3.1.4022     CE7.0
+CX_11113                         1.1.1.1.1.4          TcpIP      X     192.168.0.4      ab35ff7f...   3.1.4024     Win10 (21H2)
+CX_11114                         1.1.1.1.1.5          TcpIP      X     192.168.0.5      4528dc85...   3.1.4024     Win10 (22H2)
+```
+
+Adding and Removing Routes (help)
+
+```pwsh
+PS> get-help Add-AdsRoute -examples
+PS> get-help Remove-AdsRoute -examples
+```
+
+
+
 ## Further documentation
 The actual version of the documentation is available in the Beckhoff Infosys.
 [Beckhoff Information System](https://infosys.beckhoff.com/index.php?content=../content/1033/tc3_ads.net/index.html&id=207622008965200265)

@@ -16,7 +16,7 @@ namespace AdsRouterAndClientConsoleApp
         protected override async Task OnExecuteAsync(CancellationToken cancel)
         {
             string symbolName = "TwinCAT_SystemInfoVarList._AppInfo.ProjectName";
-            ResultAnyValue result = await _client.ReadValueAsync(symbolName, typeof(string), cancel);
+            ResultAnyValue result = await _client!.ReadValueAsync(symbolName, typeof(string), cancel);
 
             if (result.Succeeded)
                 logger.LogInformation($"ProjectName of target '{address}' is: '{result.Value}'");

@@ -12,7 +12,7 @@ namespace AdsRouterAndClientConsoleApp
         protected readonly ILogger logger;
         protected readonly AmsAddress address;
 
-        protected AdsClient _client = null;
+        protected AdsClient? _client = null;
 
         public AdsBaseService(AmsAddress address, ILogger logger)
         {

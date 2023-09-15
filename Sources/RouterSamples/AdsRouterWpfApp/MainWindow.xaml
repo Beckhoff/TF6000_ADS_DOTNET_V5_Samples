@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="btnStart" Content="Start" Margin="0,12,10,0" VerticalAlignment="Top" Click="btnStart_Click" HorizontalAlignment="Right" Width="98" RenderTransformOrigin="1.357,0.462"/>
-        <Button x:Name="btnStop" Content="Stop" Margin="0,37,10,0" VerticalAlignment="Top" Click="btnStop_Click" HorizontalAlignment="Right" Width="99"/>
+        <Button x:Name="btnStart" Content="Start Router" Margin="0,12,10,0" VerticalAlignment="Top" Click="btnStart_Click" HorizontalAlignment="Right" Width="98" RenderTransformOrigin="1.357,0.462"/>
+        <Button x:Name="btnStop" Content="Stop Router" Margin="0,37,10,0" VerticalAlignment="Top" Click="btnStop_Click" HorizontalAlignment="Right" Width="99"/>
         <Button x:Name="btnCancel" Content="Cancel" Margin="0,62,10,0" VerticalAlignment="Top" Click="btnCancel_Click" HorizontalAlignment="Right" Width="99"/>
         <Label Content="Status" Margin="49,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.818,0.866" HorizontalAlignment="Left" Width="42"/>
         <Label x:Name="lblStatus" Content="Status" Margin="109,22,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="529"/>
