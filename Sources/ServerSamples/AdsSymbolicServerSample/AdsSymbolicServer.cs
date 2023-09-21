@@ -137,6 +137,8 @@ namespace AdsSymbolicServerSample
             PrimitiveType dtBool = new PrimitiveType("BOOL", typeof(bool)); // 1-Byte size
             PrimitiveType dtInt = new PrimitiveType("INT", typeof(short)); // 2-Byte size
             PrimitiveType dtDInt = new PrimitiveType("DINT", typeof(int)); // 4-Byte size
+            PrimitiveType dtReal = new PrimitiveType("REAL", typeof(float)); // 4-Byte floating point
+            PrimitiveType dtLReal = new PrimitiveType("LREAL", typeof(double)); // 8-Byte floating point
 
             // Create an TwinCAT specific Type PCCH (for testing purposes)
             // Which is used for interop to C++ TCOM Modules
@@ -256,6 +258,8 @@ namespace AdsSymbolicServerSample
                 .AddType(dtBool)
                 .AddType(dtInt)
                 .AddType(dtDInt)
+                .AddType(dtReal)
+                .AddType(dtLReal)
                 .AddType(dtString)
                 .AddType(dtStruct)
                 .AddType(dtArray)
@@ -285,6 +289,8 @@ namespace AdsSymbolicServerSample
                 .AddSymbol("Globals.bool1", dtBool, globals)
                 .AddSymbol("Globals.int1", dtInt, globals)
                 .AddSymbol("Globals.dint1", dtDInt, globals)
+                .AddSymbol("Globals.real1",dtReal,globals)
+                .AddSymbol("Globals.lreal1", dtLReal, globals)
                 .AddSymbol("Globals.string1", dtString, globals)
                 .AddSymbol("Globals.myStruct1", dtStruct, globals)
                 .AddSymbol("Globals.myArray1", dtArray, globals)
@@ -297,6 +303,8 @@ namespace AdsSymbolicServerSample
                 .AddSymbol("Main.bool1", dtBool, general)
                 .AddSymbol("Main.int1", dtInt, general)
                 .AddSymbol("Main.dint1", dtDInt, general)
+                .AddSymbol("Main.real1", dtReal, general)
+                .AddSymbol("Main.lreal1", dtLReal, general)
                 .AddSymbol("Main.string1", dtString, general)
                 .AddSymbol("Main.myStruct1", dtStruct, general)
                 .AddSymbol("Main.myArray1", dtArray, general)
@@ -307,9 +315,13 @@ namespace AdsSymbolicServerSample
                 .AddSymbol("Main.reference1", dtReference, general)
                 .AddSymbol("Main.rpcInvoke1", dtStructRpc, general);
 
-            // Here we set the initial values of or Symbol instances
+            // Here we set the initial values of our Symbol instances
+            // The values are stored for demonstration purposes and simplicity
+            // in a Symbol->Typed Value Dictionary
             _symbolValues.Add(this.Symbols["Globals.bool1"], true);
             _symbolValues.Add(this.Symbols["Globals.int1"], (short)42);
+            _symbolValues.Add(this.Symbols["Globals.real1"], (float)1234.1234);
+            _symbolValues.Add(this.Symbols["Globals.lreal1"], (double)1234.1234);
             _symbolValues.Add(this.Symbols["Globals.dint1"], 42);
             _symbolValues.Add(this.Symbols["Globals.string1"], "Hello world!");
             _symbolValues.Add(this.Symbols["Globals.myStruct1"], new MyStruct("Globals.myStruct1",true,42,99));
@@ -322,6 +334,8 @@ namespace AdsSymbolicServerSample
             _symbolValues.Add(this.Symbols["Main.bool1"], true);
             _symbolValues.Add(this.Symbols["Main.int1"], (short)42);
             _symbolValues.Add(this.Symbols["Main.dint1"], 42);
+            _symbolValues.Add(this.Symbols["Main.real1"], (float)1234.1234);
+            _symbolValues.Add(this.Symbols["Main.lreal1"], (double)1234.1234);
             _symbolValues.Add(this.Symbols["Main.string1"], "Hello world!");
             _symbolValues.Add(this.Symbols["Main.myStruct1"], new MyStruct("Main.myStruct1",true, 42, 99));
             _symbolValues.Add(this.Symbols["Main.myArray1"], new short[4, 2]);

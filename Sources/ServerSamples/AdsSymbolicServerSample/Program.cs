@@ -169,6 +169,9 @@ namespace AdsSymbolicServerSample
         private static void CallReadBySymbol(ISymbolCollection<ISymbol> symbols)
         {
             var bSymbol = (Symbol)symbols["Main.bool1"];
+            var rSymbol = (Symbol)symbols["Main.real1"];
+            var lrSymbol = (Symbol)symbols["Main.lreal1"];
+
             var sSymbol = (Symbol)symbols["Main.string1"];
             var cSymbol = (Symbol)symbols["Main.mystruct1.name"];
 
@@ -176,6 +179,10 @@ namespace AdsSymbolicServerSample
             var complexSymbol = (Symbol)symbols["Main.myComplexArray"];
 
             bool bValue = (bool)bSymbol.ReadValue();
+
+            float rValue = (float)rSymbol.ReadValue(); // Read float
+            double lrValue = (double)lrSymbol.ReadValue(); // Read double
+
             string sValue = (string)sSymbol.ReadValue();
             string cValue = (string)cSymbol.ReadValue();
 
