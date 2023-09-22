@@ -19,7 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
+	<PackageReference Include="Beckhoff.TwinCAT.Ads.Reactive" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>

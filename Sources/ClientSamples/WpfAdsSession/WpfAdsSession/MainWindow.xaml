@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Class="AdsSessionTest.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="480" Width="640" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="640" MinHeight="800">
+        Title="MainWindow" Height="895" Width="659" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="640" MinHeight="800">
     <!--<Window.Resources>
         <ObjectDataProvider MethodName="GetValues"
         ObjectType="{x:Type sys:Enum}"
@@ -86,9 +86,19 @@
             <GroupBox x:Name="gBAddress" Header="Address" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.ColumnSpan="2">
                 <Grid Margin="0,0,0,0">
                     <Label x:Name="lblNetId" Content="NetId:" Margin="0,4,316,113"/>
-                    <Label x:Name="lblPort" Content="Port:" Margin="5,34,311,0" Height="24" VerticalAlignment="Top"/>
+                    <Label x:Name="lblPort" Content="Port:" Margin="-3,34,319,0" Height="24" VerticalAlignment="Top"/>
                     <TextBox x:Name="tbPort" Margin="70,36,10,0" TextWrapping="Wrap" Text="851" Height="22" VerticalAlignment="Top"/>
                     <TextBox x:Name="tbNetId" Margin="70,9,10,0" TextWrapping="Wrap" Height="22" VerticalAlignment="Top"/>
+                    <Label Content="Frames/Sec:" HorizontalAlignment="Left" Margin="245,68,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblFramesPerSec" Content="0.0" HorizontalAlignment="Left" Margin="343,68,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Succeeded/Sec:" HorizontalAlignment="Left" Margin="245,91,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblSuccededPerSec" Content="0.0" HorizontalAlignment="Left" Margin="343,91,0,0" VerticalAlignment="Top"/>
+                    <Slider x:Name="sldFreq" HorizontalAlignment="Left" Margin="27,139,0,0" VerticalAlignment="Top" Width="181" Minimum="1" Maximum="1000" Value="200" ValueChanged="sldFreq_ValueChanged"/>
+                    <Label x:Name="lblFreq" Content="0.0" HorizontalAlignment="Left" Margin="70,96,0,0" VerticalAlignment="Top" Width="72"/>
+                    <Label Content="Errors/Sec:" HorizontalAlignment="Left" Margin="245,114,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblErrorsPerSec" Content="0.0" HorizontalAlignment="Left" Margin="343,114,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Tick:" HorizontalAlignment="Left" Margin="32,96,0,0" VerticalAlignment="Top"/>
+                    <Label Content="ms" HorizontalAlignment="Left" Margin="127,96,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </GroupBox>
             <ComboBox x:Name="cBError" Grid.Column="2" Margin="0,117,10,49" SelectionChanged="comboBox_SelectionChanged" HorizontalAlignment="Right" Width="179" VerticalAlignment="Top"/>

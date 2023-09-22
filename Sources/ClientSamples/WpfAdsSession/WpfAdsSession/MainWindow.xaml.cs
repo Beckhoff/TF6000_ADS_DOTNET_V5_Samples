@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +21,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using TwinCAT;
 using TwinCAT.Ads;
+using TwinCAT.Ads.Reactive;
 //using TwinCAT.SystemService;
 //using TwinCAT.SystemService.UI;
 using TwinCAT.TypeSystem;
@@ -45,53 +50,62 @@ namespace AdsSessionTest
 
             tbNetId.Text = AmsNetId.Local.ToString();
 
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(200);
-            _timer.Tick += _timer_Tick;
+            _uiTimer = new DispatcherTimer();
+            _uiTimer.Interval = TimeSpan.FromMilliseconds(200);
+            _uiTimer.Tick += _uiTimer_Tick;
 
             tBDefaultResurrectionTime.Text = ((int)SessionSettings.DefaultResurrectionTime.TotalSeconds).ToString();
             tBDefaultTimeout.Text = ((int)SessionSettings.DefaultCommunicationTimeout.TotalSeconds).ToString();
 
             EnableDisableControls();
-            Update();
+            UpdateUI();
             tbNetId.TextChanged += tbNetId_TextChanged;
             tbPort.TextChanged += tbPort_TextChanged;
 
+            _ticksObserver = new TimerObservable((int)sldFreq.Value);
+            lblFreq.Content = ((int)sldFreq.Value).ToString();
         }
 
         Dictionary<string, AdsErrorCode> _errorCodesDict = new Dictionary<string, AdsErrorCode>();
 
         protected override void OnClosed(EventArgs e)
         {
-            _timer.Stop();
-            _timer = null;
-            if (_connection != null)
-            {
-                IDisposable disp = _connection as IDisposable;
-                
-                if (disp != null)
-                    disp.Dispose();
-            }
-            _connection = null;
-
-            if (_session != null && !_session.Disposed)
-            {
-                _session.Dispose();
-            }
-            _session = null;
-
-            //if (_systemService != null)
-            //{
-            //    _systemService.Dispose();
-            //}
-            //_systemService = null;
+            OnDisconnect();
             base.OnClosed(e);
         }
 
-        DispatcherTimer _timer = null;
-        //SystemServiceClass _systemService = null;
+        /// <summary>
+        /// Timer Updating the UI
+        /// </summary>
+        DispatcherTimer _uiTimer = null;
+
+        /// <summary>
+        /// Observable creating the Ticks in this application for GetState.
+        /// </summary>
+        TimerObservable _ticksObserver = null;
+        
+        IDisposable _ticksSubscription = null;
+        IDisposable _deviceStateSubscription = null;
+
+        /// <summary>
+        /// Cached ReadDeviceState result
+        /// </summary>
+        ResultReadDeviceState _resultState;
+
+        /// <summary>
+        /// The session
+        /// </summary>
         AdsSession _session = null;
+        /// <summary>
+        /// The connection
+        /// </summary>
         AdsConnection _connection = null;
+
+        CancellationTokenSource _connectCancel;
+        /// <summary>
+        /// The frames per second subscription
+        /// </summary>
+        IDisposable _framesSubscription = null;
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
@@ -114,16 +128,84 @@ namespace AdsSessionTest
             finally
             {
                 EnableDisableControls();
-                Update();
+                UpdateUI();
             }
+        }
+
+        private void OnConnect()
+        {
+            _connectCancel = new CancellationTokenSource();
+
+            AmsNetId netId = AmsNetId.Parse(tbNetId.Text);
+            int port = int.Parse(tbPort.Text);
+
+            int communicationTimeout = int.Parse(tBDefaultTimeout.Text) * 1000;
+            int resurrectionTime = int.Parse(tBDefaultResurrectionTime.Text);
+
+            SessionSettings settings = SessionSettings.Default;
+            settings.ResurrectionTime = TimeSpan.FromSeconds((double)resurrectionTime);
+
+            _session = new AdsSession(netId, port, settings);
+            _session.ConnectionStateChanged += _session_ConnectionStateChanged;
+
+            _connection = (AdsConnection)_session.Connect();
+            _connection.ConnectionStateChanged += _connection_ConnectionStatusChanged;
+            _connection.RouterStateChanged += _connection_RouterStateChanged;
+
+            try
+            {
+                _connection.RegisterAdsStateChangedAsync(_connection_AdsStateChanged, CancellationToken.None);
+                _connection.AdsSymbolVersionChanged += _connection_AdsSymbolVersionChanged;
+            }
+            catch (Exception)
+            {
+                //Debug.Fail("Can happen when Target doesn't support AdsState ",ex.Message);
+            }
+            _uiTimer.Start();
+
+            // Same interval as timer
+            _framesSubscription = _connection.PollCyclesPerSecond(TimeSpan.FromSeconds(1), Scheduler.Default)
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe((c) => { 
+                    lblFramesPerSec.Content = c.RequestsPerSecond.ToString("0.00");
+                    lblErrorsPerSec.Content = c.ErrorsPerSecond.ToString("0.00");
+                    lblSuccededPerSec.Content = c.SucceedsPerSecond.ToString("0.00");
+                });
+            
+            _ticksSubscription = _ticksObserver.Subscribe();
+            _ticksObserver.Start();
+            _deviceStateSubscription = _connection.PollDeviceStateAsync(_ticksObserver, CancellationToken.None).Subscribe(r => _resultState = r);
         }
 
         private void OnDisconnect()
         {
             AmsAddress oldConnection = null;
 
-            if (_timer != null)
-                _timer.Stop();
+            if (_ticksObserver != null)
+            {
+                _ticksObserver.Stop();
+            }
+
+            if (_ticksSubscription != null)
+            { 
+                _ticksSubscription.Dispose();
+                _ticksSubscription = null;
+            }
+
+            if (_deviceStateSubscription != null)
+            {
+                _deviceStateSubscription.Dispose();
+                _deviceStateSubscription = null;
+            }
+
+            if (_framesSubscription != null)
+            {
+                _framesSubscription.Dispose();
+                _framesSubscription = null;
+            }
+
+            if (_uiTimer != null)
+                _uiTimer.Stop();
 
             if (_connection != null)
             {
@@ -143,71 +225,29 @@ namespace AdsSessionTest
             tBSynchronized.Text = "";
             _connection = null;
             _session = null;
-
-            //if (oldConnection != null)
-            //    AddMessage(string.Format("Disconnected from {0} Port: {1}", oldConnection.NetId, oldConnection.Port));
-        }
-
-        private void OnConnect()
-        {
-            //RouteTarget target = (RouteTarget)lbNetId.SelectedItem;
-            AmsNetId netId = AmsNetId.Parse(tbNetId.Text);
-            int port = int.Parse(tbPort.Text);
-
-            int communicationTimeout = int.Parse(tBDefaultTimeout.Text) * 1000;
-            int resurrectionTime = int.Parse(tBDefaultResurrectionTime.Text);
-
-            //SessionSettings settings = new SessionSettings(true, communicationTimeout);
-            SessionSettings settings = SessionSettings.Default;
-            settings.ResurrectionTime = TimeSpan.FromSeconds((double)resurrectionTime);
-
-            _session = new AdsSession(netId, port,settings);
-
-#if NETFULL
-#pragma warning disable CS0618 // Type or member is obsolete
-            tBSynchronized.Text = settings.Synchronized.ToString();
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-            _session.ConnectionStateChanged += _session_ConnectionStateChanged;
-
-            _connection = (AdsConnection)_session.Connect();
-            _connection.ConnectionStateChanged += _connection_ConnectionStatusChanged;
-            _connection.RouterStateChanged += _connection_RouterStateChanged;
-
-            try
-            {
-                _connection.RegisterAdsStateChangedAsync(_connection_AdsStateChanged, CancellationToken.None);
-                //_connection.AdsStateChanged += _connection_AdsStateChanged;
-                _connection.AdsSymbolVersionChanged += _connection_AdsSymbolVersionChanged;
-            }
-            catch (Exception)
-            {
-                //Debug.Fail("Can happen when Target doesn't support AdsState ",ex.Message);
-            }
-            _timer.Start();
-            //AddMessage(string.Format("Connected to {0} Port: {1}", netId, port));
+            _resultState = null;
         }
 
         private void _connection_RouterStateChanged(object sender, AmsRouterNotificationEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                Update();
+                UpdateUI();
                 EnableDisableControls();
                 AddMessage($"Router: RouterStateChanged changed to '{e.State}'!");
             });
         }
 
-        private void _timer_Tick(object sender, EventArgs e)
+        private void _uiTimer_Tick(object sender, EventArgs e)
         {
-            Update();
+            UpdateUI();
         }
 
         private void _session_ConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                Update();
+                UpdateUI();
                 EnableDisableControls();
                 AddMessage($"Session: ConnectionStateChanged {e.OldState} --> {e.NewState} Reason: {e.Reason}");
             });
@@ -217,7 +257,7 @@ namespace AdsSessionTest
         {
             Dispatcher.Invoke(() =>
             {
-                Update();
+                UpdateUI();
                 EnableDisableControls();
                 AddMessage($"Connection: ConnectionStateChanged {e.OldState} --> {e.NewState} Reason: {e.Reason}");
             });
@@ -227,7 +267,7 @@ namespace AdsSessionTest
         {
             Dispatcher.Invoke(() =>
             {
-                Update();
+                UpdateUI();
                 AddMessage("Symbol version has changed");
             });
         }
@@ -236,12 +276,12 @@ namespace AdsSessionTest
         {
             Dispatcher.Invoke(() =>
             {
-                Update();
+                UpdateUI();
                 AddMessage(string.Format("AdsState changed to '{0}", e.State.AdsState));
             });
         }
 
-        private void Update()
+        private void UpdateUI()
         {
             this.DataContext = null;
             this.DataContext = _session;
@@ -271,14 +311,21 @@ namespace AdsSessionTest
                         break;
                 }
 
-
                 if (_connection.IsConnected)
                 {
-                    StateInfo info = new StateInfo();
-                    AdsErrorCode errorCode = _connection.TryReadState(out info);
-                    tBAdsState.Text = info.AdsState.ToString();
+                    //StateInfo info = new StateInfo();
+                    //AdsErrorCode errorCode = _connection.TryReadState(out info);
+                    //tBAdsState.Text = info.AdsState.ToString();
+                    AdsState state = AdsState.Invalid;
 
-                    switch(info.AdsState)
+                    if (_resultState != null)
+                    {
+                        state = _resultState.State.AdsState;
+                    }
+
+                    tBAdsState.Text = state.ToString();
+
+                    switch (state)
                     {
                         case AdsState.Run:
                             adsStateBrush = new SolidColorBrush(Colors.LightGreen);
@@ -337,15 +384,6 @@ namespace AdsSessionTest
             EnableDisableControls();
         }
 
-        private void btnAddRoute_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.Fail("");
-            //using (BroadcastSearchForm form = new BroadcastSearchForm())
-            //{
-            //    form.ShowDialog();
-            //}
-        }
-
         private void btnInjectError_Click(object sender, RoutedEventArgs e)
         {
             _connection.InjectError(_errorCode);
@@ -397,5 +435,154 @@ namespace AdsSessionTest
         {
             EnableDisableControls();
         }
+
+        private void sldFreq_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_ticksObserver != null)
+                _ticksObserver.Interval = (int)e.NewValue;
+
+            if (lblFreq != null)
+                lblFreq.Content = (int)e.NewValue;
+        }
+    }
+
+    /// <summary>
+    /// Class TimerObservable. Implementation of a Timer Observable, where the Interval can be changed on the fly.
+    /// Implements the <see cref="System.IObservable{System.Reactive.Unit}" />
+    /// Implements the <see cref="IDisposable" />
+    /// </summary>
+    /// <seealso cref="System.IObservable{System.Reactive.Unit}" />
+    /// <seealso cref="IDisposable" />
+    public sealed class TimerObservable : IObservable<Unit>, IDisposable
+    {
+        private readonly HashSet<IObserver<Unit>> _observers = new();
+
+        Timer _timer;
+        int _interval = 200;
+        private bool _isDisposed;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimerObservable"/> class.
+        /// </summary>
+        /// <param name="interval">The interval.</param>
+        public TimerObservable(int interval)
+        {
+            _interval = interval;
+        }
+
+        /// <summary>
+        /// Starts this instance.
+        /// </summary>
+        public void Start()
+        {
+            _timer = new Timer(Elapsed, null, 0, _interval);
+        }
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        public void Stop()
+        {
+            if (_timer != null)
+                _timer.Dispose();
+            _timer = null;
+        }
+
+        /// <summary>
+        /// Gets or sets the interval.
+        /// </summary>
+        /// <value>The interval.</value>
+        public int Interval
+        {
+            get { return _interval; }
+
+            set 
+            {
+                _interval = value;
+                if (_timer != null)
+                {
+                    _timer.Change(0, _interval);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Timer elapsed handler
+        /// </summary>
+        /// <param name="stateInfo">The state information.</param>
+        private void Elapsed(Object stateInfo)
+        {
+            foreach(var observer in _observers)
+            {
+                observer.OnNext(Unit.Default);
+            }
+        }
+
+        /// <summary>
+        /// Notifies the provider that an observer is to receive notifications.
+        /// </summary>
+        /// <param name="observer">The object that is to receive notifications.</param>
+        /// <returns>A reference to an interface that allows observers to stop receiving notifications before the provider has finished sending them.</returns>
+        public IDisposable Subscribe(IObserver<Unit> observer)
+        {
+            // Check whether observer is already registered. If not, add it.
+            _observers.Add(observer);
+            return new Unsubscriber<Unit>(_observers, observer);
+        }
+
+        /// <summary>
+        /// Completes the Observable
+        /// </summary>
+        public void Complete()
+        {
+            foreach (IObserver<Unit> observer in _observers)
+            {
+                observer.OnCompleted();
+            }
+            _observers.Clear();
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        private void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Stop();
+                }
+                _isDisposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    /// <summary>
+    /// Unsubscription object for the TimerObservable
+    /// Implements the <see cref="IDisposable" />
+    /// </summary>
+    /// <typeparam name="Unit">The type of the unit.</typeparam>
+    /// <seealso cref="IDisposable" />
+    internal sealed class Unsubscriber<Unit> : IDisposable
+    {
+        private readonly ISet<IObserver<Unit>> _observers;
+        private readonly IObserver<Unit> _observer;
+
+        internal Unsubscriber(
+            ISet<IObserver<Unit>> observers,
+            IObserver<Unit> observer) => (_observers, _observer) = (observers, observer);
+
+        public void Dispose() => _observers.Remove(_observer);
     }
 }
