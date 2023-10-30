@@ -122,7 +122,7 @@ docker run \
 -it \
 --rm \
 --name adsrouter \
---env-file="--env-file="src/settings-bridged-network.env" \
+--env-file="src/settings-bridged-network.env" \
 --ip 172.17.0.2 \
 -p 48898:48900 \
 ads-router-console
