@@ -1,29 +1,17 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using TwinCAT;
 using TwinCAT.Ads;
 using TwinCAT.Ads.Reactive;
-//using TwinCAT.SystemService;
-//using TwinCAT.SystemService.UI;
 using TwinCAT.TypeSystem;
 
 namespace AdsSessionTest
@@ -50,12 +38,12 @@ namespace AdsSessionTest
 
             tbNetId.Text = AmsNetId.Local.ToString();
 
+            // The UI is updated every 200 ms
             _uiTimer = new DispatcherTimer();
             _uiTimer.Interval = TimeSpan.FromMilliseconds(200);
             _uiTimer.Tick += _uiTimer_Tick;
 
-            tBDefaultResurrectionTime.Text = ((int)SessionSettings.DefaultResurrectionTime.TotalSeconds).ToString();
-            tBDefaultTimeout.Text = ((int)SessionSettings.DefaultCommunicationTimeout.TotalSeconds).ToString();
+            setSessionSettings(SessionSettings.Default);
 
             EnableDisableControls();
             UpdateUI();
@@ -66,6 +54,8 @@ namespace AdsSessionTest
             lblFreq.Content = ((int)sldFreq.Value).ToString();
         }
 
+        SessionSettings _sessionSettings;
+
         Dictionary<string, AdsErrorCode> _errorCodesDict = new Dictionary<string, AdsErrorCode>();
 
         protected override void OnClosed(EventArgs e)
@@ -75,12 +65,12 @@ namespace AdsSessionTest
         }
 
         /// <summary>
-        /// Timer Updating the UI
+        /// Timer Updating the UI (fixed 200 ms)
         /// </summary>
         DispatcherTimer _uiTimer = null;
 
         /// <summary>
-        /// Observable creating the Ticks in this application for GetState.
+        /// Observable creating the Ticks in this application driving the cyclic ADS communication via GetAdsState
         /// </summary>
         TimerObservable _ticksObserver = null;
         
@@ -107,13 +97,14 @@ namespace AdsSessionTest
         /// </summary>
         IDisposable _framesSubscription = null;
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        private async void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (_connection == null)
                 {
-                    OnConnect();
+                    // Calling the connection asynchronously
+                    await OnConnectAsync();
                 }
                 else
                 {
@@ -132,53 +123,65 @@ namespace AdsSessionTest
             }
         }
 
-        private void OnConnect()
+        private async Task OnConnectAsync()
         {
             _connectCancel = new CancellationTokenSource();
 
             AmsNetId netId = AmsNetId.Parse(tbNetId.Text);
             int port = int.Parse(tbPort.Text);
 
-            int communicationTimeout = int.Parse(tBDefaultTimeout.Text) * 1000;
-            int resurrectionTime = int.Parse(tBDefaultResurrectionTime.Text);
+            TimeSpan communicationTimeout = TimeSpan.FromMilliseconds(int.Parse(tBDefaultTimeout.Text));
+            TimeSpan resurrectionTime = TimeSpan.FromMilliseconds(int.Parse(tBDefaultResurrectionTime.Text));
 
-            SessionSettings settings = SessionSettings.Default;
-            settings.ResurrectionTime = TimeSpan.FromSeconds((double)resurrectionTime);
+            _sessionSettings.ResurrectionTime = resurrectionTime;
+            _sessionSettings.Timeout = (int)communicationTimeout.TotalMilliseconds;
 
-            _session = new AdsSession(netId, port, settings);
+            _session = new AdsSession(netId, port, _sessionSettings);
             _session.ConnectionStateChanged += _session_ConnectionStateChanged;
 
             _connection = (AdsConnection)_session.Connect();
             _connection.ConnectionStateChanged += _connection_ConnectionStatusChanged;
             _connection.RouterStateChanged += _connection_RouterStateChanged;
 
-            try
-            {
-                _connection.RegisterAdsStateChangedAsync(_connection_AdsStateChanged, CancellationToken.None);
-                _connection.AdsSymbolVersionChanged += _connection_AdsSymbolVersionChanged;
-            }
-            catch (Exception)
-            {
-                //Debug.Fail("Can happen when Target doesn't support AdsState ",ex.Message);
-            }
+            // Registering Notifications asynchronously, because their registration need ADS roundtrips when already connected!
+            await _connection.RegisterAdsStateChangedAsync(_connection_AdsStateChanged, CancellationToken.None);
+            await _connection.RegisterSymbolVersionChangedAsync(_connection_AdsSymbolVersionChanged, CancellationToken.None);
+
             _uiTimer.Start();
 
-            // Same interval as timer
+            // Polling the frames statistics (frames/sec) every second and update the UI
             _framesSubscription = _connection.PollCyclesPerSecond(TimeSpan.FromSeconds(1), Scheduler.Default)
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((c) => { 
+                .Subscribe((c) => {
+                    
                     lblFramesPerSec.Content = c.RequestsPerSecond.ToString("0.00");
                     lblErrorsPerSec.Content = c.ErrorsPerSecond.ToString("0.00");
                     lblSuccededPerSec.Content = c.SucceedsPerSecond.ToString("0.00");
+
+                    if (c.ErrorsPerSecond > 0)
+                        lblErrorsPerSec.Background = Brushes.Red;
+                    else
+                        lblErrorsPerSec.Background = lblFreq.Background;
+                    if (c.SucceedsPerSecond > 0)
+                        lblSuccededPerSec.Background = Brushes.LightGreen;
+                    else
+                        lblSuccededPerSec.Background = lblFreq.Background;
                 });
             
-            _ticksSubscription = _ticksObserver.Subscribe();
+            _ticksSubscription = _ticksObserver.Subscribe(); // Subscribe to the Tick-generator
             _ticksObserver.Start();
-            _deviceStateSubscription = _connection.PollDeviceStateAsync(_ticksObserver, CancellationToken.None).Subscribe(r => _resultState = r);
+
+            // Poll the device state (ADSState) with every tick.
+            _deviceStateSubscription = _connection.PollDeviceStateAsync(_ticksObserver, CancellationToken.None)
+                .Subscribe(r => _resultState = r); // And subscribe to that
         }
 
         private void OnDisconnect()
         {
+            // Disconnect to the session
+            // Unsubscribe GetState and Tick Subscriptions
+            // Stop Timers and Observers
+
             AmsAddress oldConnection = null;
 
             if (_ticksObserver != null)
@@ -210,9 +213,7 @@ namespace AdsSessionTest
             if (_connection != null)
             {
                 oldConnection = _connection.Address;
-                //_connection.AdsStateChanged -= _connection_AdsStateChanged;
-                //_connection.AdsSymbolVersionChanged -= _connection_AdsSymbolVersionChanged;
-                //_connection.ConnectionStatusChanged -= _connection_ConnectionStatusChanged;
+
                 if (!_connection.Disposed)
                     _connection.Dispose();
             }
@@ -222,7 +223,6 @@ namespace AdsSessionTest
                 _session.Dispose();
             }
 
-            tBSynchronized.Text = "";
             _connection = null;
             _session = null;
             _resultState = null;
@@ -245,6 +245,14 @@ namespace AdsSessionTest
 
         private void _session_ConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
         {
+            AdsSession session = (AdsSession)sender;
+
+            if (_connection == null && e.NewState == ConnectionState.Connected)
+            {
+                // Adjust the Connection upfront (Used by the GUI)
+                _connection = session.Connection;
+            }
+
             Dispatcher.Invoke(() =>
             {
                 UpdateUI();
@@ -313,9 +321,6 @@ namespace AdsSessionTest
 
                 if (_connection.IsConnected)
                 {
-                    //StateInfo info = new StateInfo();
-                    //AdsErrorCode errorCode = _connection.TryReadState(out info);
-                    //tBAdsState.Text = info.AdsState.ToString();
                     AdsState state = AdsState.Invalid;
 
                     if (_resultState != null)
@@ -335,22 +340,71 @@ namespace AdsSessionTest
                             adsStateBrush = new SolidColorBrush(Colors.Red);
                             break;
                         case AdsState.Config:
-                            adsStateBrush = new SolidColorBrush(Colors.Blue);
+                            adsStateBrush = new SolidColorBrush(Colors.LightBlue);
                             break;
                     }
+
+                    tBResurrectionTime.Text = ((int)_session.Settings.ResurrectionTime.TotalMilliseconds).ToString();
+                    tBTimeout.Text = _session.Settings.Timeout.ToString();
                 }
             }
             else
             {
                 tBConnectionState.Text = ConnectionState.None.ToString();
                 tBAdsState.Text = AdsState.Invalid.ToString();
+
+                tBResurrectionTime.Text = string.Empty;
+                tBTimeout.Text = string.Empty;
+
+                lblFramesPerSec.Content = string.Empty;
+                lblErrorsPerSec.Content = string.Empty;
+                lblSuccededPerSec.Content = string.Empty;
+                lblSuccededPerSec.Background = lblFreq.Background;
+                lblErrorsPerSec.Background = lblFreq.Background;
+
+                if (_session != null)
+                {
+                    tBCConnectionLostTime.Text = _session.Statistics.ConnectionLostAt.ToString();
+                    tBConnectionLostCount.Text = _session.Statistics.TotalConnectionLosses.ToString();
+                }
+                else
+                {
+                    tBCConnectionLostTime.Text = string.Empty;
+                    tBConnectionLostCount.Text = string.Empty;
+                }
+
             }
             tBAdsState.Background = adsStateBrush;
             tBConnectionState.Background = connectionStateBrush;
+
+            if (_session != null && _session.Statistics.ConnectionLostAt.HasValue)
+                tBCConnectionLostTime.Text = _session.Statistics.ConnectionLostAt.Value.ToString("hh:mm:ss");
+            else
+                tBCConnectionLostTime.Text = string.Empty;
+
+            if (_session != null)
+                tBConnectionLostCount.Text = _session.Statistics.TotalConnectionLosses.ToString();
+            else
+                tBConnectionLostCount.Text = string.Empty;
+
         }
 
         private void EnableDisableControls()
         {
+          bool isConnected = _connection != null;
+
+            btnDefaultSettings.IsEnabled = !isConnected;
+            btnFastWriteThrough.IsEnabled = !isConnected;
+
+            gBConnectionSettings.IsEnabled = isConnected;
+            gBState.IsEnabled = isConnected;
+            gBSession.IsEnabled = isConnected;
+            gBSymbols.IsEnabled = isConnected;
+            gBConnectionSettings.IsEnabled = isConnected;
+            gBCyclicInformation.IsEnabled = isConnected;
+
+            cBError.IsEnabled = isConnected;
+
             if (_connection != null)
             {
                 btnConnect.IsEnabled = true;
@@ -360,6 +414,7 @@ namespace AdsSessionTest
                 btnResurrect.IsEnabled = _connection.IsLost;
                 tbNetId.IsEnabled = false;
                 tbPort.IsEnabled = false;
+
             }
             else
             {
@@ -443,6 +498,23 @@ namespace AdsSessionTest
 
             if (lblFreq != null)
                 lblFreq.Content = (int)e.NewValue;
+        }
+
+        private void btnFastWriteThrough_Click(object sender, RoutedEventArgs e)
+        {
+            setSessionSettings(SessionSettings.FastWriteThrough);
+        }
+
+        private void btnDefaultSettings_Click(object sender, RoutedEventArgs e)
+        {
+            setSessionSettings(SessionSettings.Default);
+        }
+
+        private void setSessionSettings(SessionSettings settings)
+        {
+            _sessionSettings = settings;
+            tBDefaultResurrectionTime.Text = ((int)_sessionSettings.ResurrectionTime.TotalMilliseconds).ToString();
+            tBDefaultTimeout.Text = _sessionSettings.Timeout.ToString();
         }
     }
 
