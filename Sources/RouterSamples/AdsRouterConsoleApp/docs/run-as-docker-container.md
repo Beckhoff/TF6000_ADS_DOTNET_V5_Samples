@@ -53,7 +53,7 @@ docker run \
 -it \
 --rm \
 --name adsrouter \
---env-file="--env-file="src/settings-host-network.env" \
+--env-file="src/settings-host-network.env" \
 --network host \
 ads-router-console
 ```
