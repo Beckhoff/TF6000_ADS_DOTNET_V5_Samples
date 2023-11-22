@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net60-windows</TargetFramework>
+    <TargetFramework>net80-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <StartupObject>S22_SumReadWrite.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="8.*" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Docker Router",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run AdsRouter: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/AdsRouterConsole/AdsRouterConsole.csproj"
+            }
+        },
+        {
+            "name": "Launch Docker Router Server",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run Router AdsServer: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+            }
+        },
+        {
+            "name": "Launch Docker MQTT Server",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run MQTT AdsServer: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+            }
+        },
+        {
+            "name": "Launch Docker Router Client",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run Router AdsClient: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/AdsClient/AdsClient.csproj"
+            }
+        },
+        {
+            "name": "Launch Docker MQTT Client",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run MQTT AdsClient: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/AdsClient/AdsClient.csproj"
+            }
+        }        
+    ]
+}

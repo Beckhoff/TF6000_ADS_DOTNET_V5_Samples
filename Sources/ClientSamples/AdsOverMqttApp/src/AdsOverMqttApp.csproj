@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Description>Simple Console App that can use AdsOverMqtt without TwinCAT Router.</Description>
+    <Product>AdsOverMqtt Sample</Product>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <StartupObject>AdsOverMqtt.Program</StartupObject>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>    
+    <LangVersion>latest</LangVersion>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.2.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.AdsOverMqtt" Version="6.2.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.ConfigurationProviders" Version="6.2.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </None>
+  </ItemGroup>
+</Project>

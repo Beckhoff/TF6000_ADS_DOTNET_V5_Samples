@@ -238,6 +238,9 @@ PublishScripts/
 *.nuget.props
 *.nuget.targets
 
+#Nuget Configuration
+NuGet.Config
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
@@ -393,3 +396,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+#Drawio Backup
+*.bkp
+*.dtmp
+
+#TcXaeModule Debug
+TcXaeMgmt/

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
+using TwinCAT.Ads.Logging;
 using TwinCAT.Ads.TcpRouter;
 
 namespace TwinCAT.Ads.AdsRouterService
@@ -54,11 +55,18 @@ namespace TwinCAT.Ads.AdsRouterService
                 //config.AddJsonFile("appSettings.json"); // Use Appsettings
                 //config.AddStaticRoutesXmlConfiguration(); // Overriding settings with StaticRoutes.Xml 
             })
-            .ConfigureLogging(logging =>
+            .ConfigureLogging((context, logging) =>
             {
-                logging.ClearProviders();
-                // Adding console logging here.
-                logging.AddConsole();
+                 //var loggerConfig = AdsLoggerConfiguration.CreateFromEnvironment();
+                 var loggerConfig = AdsLoggerConfiguration.CreateFromConfiguration(context.Configuration);
+
+                 logging.SetMinimumLevel(LogLevel.Debug);
+                 logging.ClearProviders();
+                 
+                 // Using simplified logging instead of standard console logging.
+                 logging.AddProvider(new AdsLoggerProvider(() => loggerConfig));
+                 // Adding Standard console logging here.
+                 //logging.AddConsole();
             });
             return ret;
         }

@@ -1,0 +1,70 @@
+# Docker Compose file creating RouterConsole-AdsServer-AdsClient-PwshClient
+
+name: "routerconsolesample"
+services:
+  
+  router:
+    env_file: "config-routerconsole.env"
+    build:
+      context: .
+      dockerfile: ./AdsRouterConsole/Dockerfile
+      args:
+        # Access to DevOps Server Feed TcBase (Beckhoff internal)
+        NuGetPackageSourceCredentials_TcBase: ${NuGetPackageSourceCredentials_TcBase}
+        PAT: ${AZDEVOPS_ACCESS_TOKEN}
+    networks:
+      twincatads:
+          # The router address is defined fixed in the Environment Variables (config-routerconsole.env)
+         ipv4_address: 192.168.20.2
+
+  server:
+    env_file: "config-routerconsole.env"
+    depends_on:
+      - router
+    build:
+      context: .
+      dockerfile: ./AdsServer/Dockerfile
+      args:
+        # Access to DevOps Server Feed TcBase (Beckhoff internal)
+        NuGetPackageSourceCredentials_TcBase: ${NuGetPackageSourceCredentials_TcBase}
+        PAT: ${AZDEVOPS_ACCESS_TOKEN}
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.3
+
+  client:
+    env_file: "config-routerconsole.env"
+    depends_on:
+      - router
+      - server
+    build:
+      context: .
+      dockerfile: ./AdsClient/Dockerfile
+      args:
+        # Access to DevOps Server Feed TcBase (Beckhoff internal)
+        NuGetPackageSourceCredentials_TcBase: ${NuGetPackageSourceCredentials_TcBase}
+        PAT: ${AZDEVOPS_ACCESS_TOKEN}
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.4
+
+  # Powershell client with installed TcXaeMgmt Module (ADS for Powershell)
+  pwshclient:
+    env_file: "config-routerconsole.env"
+    build:
+      context: .
+      dockerfile: ./PwshClient/Dockerfile
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.5
+    stdin_open: true
+    tty: true
+
+networks:
+  twincatads:
+    name: twincatads
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.20.0/24
+          gateway: 192.168.20.1

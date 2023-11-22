@@ -10,18 +10,20 @@ namespace AdsRouterAndClientConsoleApp
 {
     internal class RouterService : BackgroundService
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<RouterService> _logger;
         private readonly IConfiguration _configuration;
 
-        public RouterService(ILogger<RouterService> logger, IConfiguration configuration)
+        public RouterService(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<RouterService>();
             _configuration = configuration;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var router = new AmsTcpIpRouter(_logger, _configuration);
+            var router = new AmsTcpIpRouter(_configuration,_loggerFactor);
             //_logger.LogInformation("Information!");
             //_logger.LogDebug("Debug!");
             //_logger.LogTrace("Trace!");

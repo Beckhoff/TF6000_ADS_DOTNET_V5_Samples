@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AdsClient": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

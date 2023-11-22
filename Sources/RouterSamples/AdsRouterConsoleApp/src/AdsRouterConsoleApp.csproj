@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Description>Simple TCP/IP ADS Router Console Application for use on systems without TwinCAT installation / setup.</Description>
     <Product>TCP/IP ADS Router Console Application</Product>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -13,16 +13,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.*" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.*" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="7.0.0" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.2.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.2.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="8.*" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

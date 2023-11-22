@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net60-windows</TargetFramework>
+    <TargetFramework>net80-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <RootNamespace>WPFConnectionObserver</RootNamespace>
   </PropertyGroup>

@@ -5,7 +5,14 @@
    "version": "0.2.0",
    "configurations": [
     {
-        "name": "Docker .NET Core Launch",
+        "name": "C#: AdsRouterConsoleApp",
+        "type": "dotnet",
+        "request": "launch",
+        "projectPath": "${workspaceFolder}/src/AdsRouterConsoleApp.csproj"
+    },
+    // Use this on WSL!
+    {
+        "name": "WSL Docker .NET Core Launch",
         "type": "docker",
         "request": "launch",
         "preLaunchTask": "docker-run: debug",

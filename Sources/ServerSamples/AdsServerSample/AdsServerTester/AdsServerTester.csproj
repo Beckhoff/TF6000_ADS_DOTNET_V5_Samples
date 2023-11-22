@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>AdsServerTester</RootNamespace>
     <AssemblyName>AdsServerTester</AssemblyName>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>
     <StartupObject>AdsSampleServerTester</StartupObject>

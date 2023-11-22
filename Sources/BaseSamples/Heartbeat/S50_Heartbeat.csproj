@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <TargetFramework>net60</TargetFramework>
+    <TargetFramework>net80</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>S50_Heartbeat.Program</StartupObject>

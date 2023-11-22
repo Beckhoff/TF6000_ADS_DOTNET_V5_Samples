@@ -1,0 +1,77 @@
+# Docker Compose file creating MqttBroker-AdsServer-AdsClient-PwshClient
+
+name: "mqttsample"
+services:
+  
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    hostname: mosquitto
+    ports:
+      - "1883:1883"
+    restart: unless-stopped
+    volumes:
+      - ./simple-mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.2
+
+  # AdsServer instance
+  server:
+    env_file: "config-mqtt.env"
+    environment:
+      - ChannelProtocol=AdsOverMqtt
+    depends_on:
+      - mosquitto
+    build:
+      context: .
+      dockerfile: ./AdsServer/Dockerfile
+      args: 
+        # Access to DevOps Server Feed TcBase (Beckhoff internal)
+        NuGetPackageSourceCredentials_TcBase: ${NuGetPackageSourceCredentials_TcBase}
+        PAT: ${AZDEVOPS_ACCESS_TOKEN}
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.3
+
+  # AdsClient instance
+  client:
+    env_file: "config-mqtt.env"
+    environment:
+      - ChannelProtocol=AdsOverMqtt
+    depends_on:
+      - mosquitto
+      - server
+    build:
+      context: .
+      dockerfile: ./AdsClient/Dockerfile
+      args: 
+        # Access to DevOps Server Feed TcBase (Beckhoff internal)
+        NuGetPackageSourceCredentials_TcBase: ${NuGetPackageSourceCredentials_TcBase}
+        PAT: ${AZDEVOPS_ACCESS_TOKEN}
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.4
+
+  # Powershell client with installed TcXaeMgmt Module (ADS for Powershell)
+  pwshclient:
+    env_file: "config-mqtt.env"
+    environment:
+      - ChannelProtocol=AdsOverMqtt
+    build:
+      context: .
+      dockerfile: ./PwshClient/Dockerfile
+    networks:
+      twincatads:
+        ipv4_address: 192.168.20.5
+    stdin_open: true
+    tty: true
+
+networks:
+  twincatads:
+    name: twincatads
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.20.0/24
+          gateway: 192.168.20.1

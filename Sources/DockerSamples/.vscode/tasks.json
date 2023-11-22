@@ -1,0 +1,279 @@
+{
+	"tasks": [
+		
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build AdsRouter: debug",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "adsrouter:dev",
+				"target": "base",
+				"dockerfile": "${workspaceFolder}/AdsRouterConsole/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true,
+				"args": {
+					"NuGetPackageSourceCredentials_TcBase": "${NuGetPackageSourceCredentials_TcBase}"
+				}				
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsRouterConsole/AdsRouterConsole.csproj"
+			}
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build AdsRouter: release",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "adsrouter:latest",
+				"dockerfile": "${workspaceFolder}/AdsRouterConsole/Dockerfile",
+				"context": "${workspaceFolder}",
+				"platform": {
+					"os": "linux",
+					"architecture": "amd64"
+				},
+				"pull": true,
+				"args": {
+					"NuGetPackageSourceCredentials_TcBase": "${NuGetPackageSourceCredentials_TcBase}"
+				}				
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsRouterConsole/AdsRouterConsole.csproj"
+			}
+		},		
+		{
+			"type": "docker-build",
+			"label": "docker-build AdsServer: debug",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "adsserver:dev",
+				"target": "base",
+				"dockerfile": "${workspaceFolder}/AdsServer/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true,
+				"args": {
+					"NuGetPackageSourceCredentials_TcBase": "${NuGetPackageSourceCredentials_TcBase}"
+				}				
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+			}
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build AdsServer: release",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "adsserver:latest",
+				"dockerfile": "${workspaceFolder}/AdsServer/Dockerfile",
+				"context": "${workspaceFolder}",
+				"platform": {
+					"os": "linux",
+					"architecture": "amd64"
+				},
+				"pull": true,
+				"args": {
+					"NuGetPackageSourceCredentials_TcBase": "${NuGetPackageSourceCredentials_TcBase}"
+				}				
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+			}
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build AdsClient: debug",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "adsclient:dev",
+				"target": "base",
+				"dockerfile": "${workspaceFolder}/AdsClient/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true,
+				"args": {
+					"NuGetPackageSourceCredentials_TcBase": "${NuGetPackageSourceCredentials_TcBase}"
+				}				
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+			}
+		},
+		{
+			"type": "docker-build",
+			"label": "docker-build AdsClient: release",
+			"dependsOn": [
+				"build"
+			],
+			"dockerBuild": {
+				"tag": "adsclient:latest",
+				"dockerfile": "${workspaceFolder}/AdsClient/Dockerfile",
+				"context": "${workspaceFolder}",
+				"platform": {
+					"os": "linux",
+					"architecture": "amd64"
+				},
+				"pull": true,
+				"args": {
+					"NuGetPackageSourceCredentials_TcBase": "${NuGetPackageSourceCredentials_TcBase}"
+				}				
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+			}
+		},		
+		{
+			"type": "docker-run",
+			"label": "docker-run AdsRouter: debug",
+			"dependsOn": [
+				"docker-build AdsRouter: debug"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsRouterConsole/AdsRouterConsole.csproj",
+				"enableDebugging": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run AdsRouter: release",
+			"dependsOn": [
+				"docker-build AdsRouter: release"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsRouterConsole/AdsRouterConsole.csproj"
+			}
+		},		
+		{
+			"type": "docker-run",
+			"label": "docker-run Router AdsServer: debug",
+			"dependsOn": [
+				"docker-build AdsServer: debug"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj",
+				"enableDebugging": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run Router AdsServer: release",
+			"dependsOn": [
+				"docker-build AdsServer: release"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run MQTT AdsServer: debug",
+			"dependsOn": [
+				"docker-build AdsServer: debug"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj",
+				"enableDebugging": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run MQTT AdsServer: release",
+			"dependsOn": [
+				"docker-build AdsServer: release"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsServer/AdsServer.csproj"
+			}
+		},		
+		{
+			"type": "docker-run",
+			"label": "docker-run Router AdsClient: debug",
+			"dependsOn": [
+				"docker-build AdsClient: debug"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsClient/AdsClient.csproj",
+				"enableDebugging": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run Router AdsClient: release",
+			"dependsOn": [
+				"docker-build AdsClient: release"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/settings-bridged-network.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsClient/AdsClient.csproj"
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run MQTT AdsClient: debug",
+			"dependsOn": [
+				"docker-build AdsClient: debug"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/config-mqtt.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsClient/AdsClient.csproj",
+				"enableDebugging": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run MQTT AdsClient: release",
+			"dependsOn": [
+				"docker-build AdsClient: release"
+			],
+			"dockerRun": {
+				"envFiles": ["${workspaceFolder}/config-mqtt.env"]
+			},
+			"netCore": {
+				"appProject": "${workspaceFolder}/AdsClient/AdsClient.csproj"
+			}
+		}		
+	]
+}

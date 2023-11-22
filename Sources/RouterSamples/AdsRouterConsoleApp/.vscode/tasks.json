@@ -10,7 +10,7 @@
                 "${workspaceFolder}/src/AdsRouterConsoleApp.csproj",
                 "-c", "Debug",
                 "-o", "src/bin/Debug",
-                "--framework", "net5.0",
+                "--framework", "net8.0",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

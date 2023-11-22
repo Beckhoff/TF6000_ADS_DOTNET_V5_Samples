@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>AccessByVarName</RootNamespace>
     <AssemblyName>AccessByVarName</AssemblyName>
-    <TargetFramework>net60</TargetFramework>
+    <TargetFramework>net80</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />

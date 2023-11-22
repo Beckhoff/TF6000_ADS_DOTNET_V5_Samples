@@ -32,11 +32,16 @@ namespace TwinCAT.Ads.AdsRouterService
     public class RouterService : BackgroundService
     {
         /// <summary>
-        /// Logger
+        /// The Logger factory
+        /// </summary>
+        private readonly ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// The Logger
         /// </summary>
         private readonly ILogger<RouterService> _logger;
         /// <summary>
-        /// Configuration
+        /// The Configuration
         /// </summary>
         private readonly IConfiguration _configuration;
 
@@ -45,9 +50,10 @@ namespace TwinCAT.Ads.AdsRouterService
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="configuration">The configuration.</param>
-        public RouterService(ILogger<RouterService> logger, IConfiguration configuration)
+        public RouterService(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<RouterService>();
             _configuration = configuration;
             //string? value = _configuration.GetValue("ASPNETCORE_ENVIRONMENT", "Production");
         }
@@ -84,7 +90,7 @@ namespace TwinCAT.Ads.AdsRouterService
 
                 Console.WriteLine("Press Ctrl + C to shutdown!");
 
-                router = new AmsTcpIpRouter(_logger, _configuration);
+                router = new AmsTcpIpRouter(_configuration,_loggerFactory);
                 router.RouterStatusChanged += Router_RouterStatusChanged;
 
                 // Use this overload to instantiate a Router without support of IHost/IConfigurationProvider support and parametrize by code
@@ -99,10 +105,10 @@ namespace TwinCAT.Ads.AdsRouterService
 
             // Starting included AdsServers
             // In this case we add the simple TwinCAT Router (AmsPort 1) to support adding and removing routes
-            AdsRouterServer adsRouterService = new AdsRouterServer(router, _logger);
+            AdsRouterServer adsRouterService = new AdsRouterServer(router, _loggerFactory);
 
             // And a simple TwinCAT System Service (AmsPort 10000) for supporting browsing routes (including BroadcastSearch)
-            SystemServiceServer systemService = new SystemServiceServer(router, _logger);
+            SystemServiceServer systemService = new SystemServiceServer(router, _loggerFactory);
 
             Task systemServiceTask = systemService.ConnectServerAndWaitAsync(cancel);
             Task routerServerTask = adsRouterService.ConnectServerAndWaitAsync(cancel);

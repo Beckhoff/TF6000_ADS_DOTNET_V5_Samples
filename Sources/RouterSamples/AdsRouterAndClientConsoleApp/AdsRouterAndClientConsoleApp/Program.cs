@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using TwinCAT.Ads;
+using TwinCAT.Ads.Configuration;
 using TwinCAT.Ads.SystemService;
 using TwinCAT.Ads.TcpRouter;
 using TwinCAT.Router;
@@ -23,11 +24,11 @@ namespace AdsRouterAndClientConsoleApp
         static string _remoteRouteName = "CodedRemote";
         static IPAddress _remoteIp = IPAddress.Parse("192.168.0.3");
 
-        static ILogger? _logger = null;
+        // static ILogger? _logger = null;
+        // static ILoggerFactory? _loggerFactory = null;
 
         private async static Task Main(string[] args)
         {
-
             try
             {
                 using var cancelSource = new CancellationTokenSource();
@@ -42,10 +43,10 @@ namespace AdsRouterAndClientConsoleApp
                     builder.AddConsole();
                 });
 
-                _logger = loggerFactory.CreateLogger("AdsRouter");
+                //_logger = loggerFactory.CreateLogger("AdsRouter");
 
                 Console.WriteLine("Starting Router");
-                var router = new AmsTcpIpRouter(_localNetId, _logger);
+                var router = new AmsTcpIpRouter(_localNetId, loggerFactory);
 
                 //Use this overload to instantiate a Router without support of IHost / IConfigurationProvider support and parametrize by code
                 //var x = new AmsTcpIpRouter(loggerFactory.CreateLogger("AdsRouter"), _configuration);

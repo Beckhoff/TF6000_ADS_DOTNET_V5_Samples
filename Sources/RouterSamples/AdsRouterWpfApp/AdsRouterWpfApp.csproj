@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>TcpIpRouterWpf.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.*" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.*" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.2.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.2.*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.*" />
   </ItemGroup>
 </Project>

@@ -45,7 +45,7 @@ namespace AdsSymbolicServerSample
         /// <summary>
         /// Symbolic Marshaler for Values
         /// </summary>
-        SymbolicAnyTypeMarshaler _symbolMarshaler = new SymbolicAnyTypeMarshaler();
+        SymbolicAnyTypeMarshaler _symbolMarshaler = new SymbolicAnyTypeMarshaler(Encoding.UTF8);
 
 
         bool _toggleValues = false;
