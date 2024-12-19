@@ -51,10 +51,15 @@ namespace AdsSymbolicServerSample
                 }
                 else
                 {
+                    while (!server.IsConnected)
+                    {
+                        await Task.Delay(200); // Wait until the server is connected
+                    }
+                    
                     Console.WriteLine($"Symbolic Test Server runnning on Address: '{server.ServerAddress}' ...\n");
                     Console.WriteLine($"For testing the server see the ReadMe.md file in project root");
                     Console.WriteLine($"or type the following command from Powrshell with installed 'TcXaeMgmt' module:\n");
-                    Console.WriteLine($"PS> test-adsroute -NetId {server.ServerAddress.NetId} -port {server.ServerAddress.Port}\n\n");
+                    Console.WriteLine($"PS> test-adsroute -NetId {server.ServerAddress?.NetId} -port {server.ServerAddress?.Port}\n\n");
                     Console.WriteLine("Press the ENTER key to cancel...\n");
 
                     // Beneath the external access from an out-of-process ADS client
@@ -103,7 +108,8 @@ namespace AdsSymbolicServerSample
                         // Receiving notifications on all Symbols (that are not virtual, have a value)
                         SymbolIterator iter = new SymbolIterator(symbols,true,s => ((IValueSymbol)s).HasValue);
                         IList<ISymbol> allSymbols = iter.ToList();
-                        disposables = ReceiveNotifications(session,allSymbols);
+                        disposables = ReceiveNotifications(session,allSymbols, NotificationSettings.Default);
+                        //disposables = ReceiveNotifications(session, allSymbols, new NotificationSettings(AdsTransMode.Cyclic, 10000, 0));
 
                         // Wait for stopping Server Task or cancellation
                         await Task.WhenAny(new[] { cancelTask, serverTask });
@@ -221,11 +227,10 @@ namespace AdsSymbolicServerSample
             object m5ReturnValue = rpcInvoke.InvokeRpcMethod("Method5", new object[] { (short)14 }, out m5OutParameters);
         }
 
-        private static List<IDisposable> ReceiveNotifications(AdsSession session, IList<ISymbol> symbols)
+        private static List<IDisposable> ReceiveNotifications(AdsSession session, IList<ISymbol> symbols, NotificationSettings settings)
         {
             List<IDisposable> result = new List<IDisposable>();
-
-            IDisposable subscription = SubscribeNotifications(session, symbols, NotificationSettings.Default);
+            IDisposable subscription = SubscribeNotifications(session, symbols, settings);
             
             //Enable for different Notification strategy
             //IDisposable subscription = SubscribeNotifications(session, symbols, NotificationSettings.ImmediatelyOnChange);
