@@ -6,10 +6,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using TwinCAT.Ams;
 using TwinCAT.Ads;
 using TwinCAT.Ads.Server;
 using TwinCAT.Ads.Server.TypeSystem;
@@ -17,6 +14,7 @@ using TwinCAT.Ads.TypeSystem;
 using TwinCAT.TypeSystem;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace AdsSymbolicServerSample
 {
@@ -56,27 +54,9 @@ namespace AdsSymbolicServerSample
         /// <summary>
         /// Initializes a new instance of the <see cref="SymbolicTestServer"/> class.
         /// </summary>
-        public SymbolicTestServer()
-            : base(s_Port, "SymbolicTestServer", null)
+        public SymbolicTestServer(ILoggerFactory loggerFactory)
+            : base(s_Port, "SymbolicTestServer", loggerFactory)
         {
-
-            /// AMS Router enpoint can be changed via envrionment variables which is
-            /// benefitial in containerized setups where the AMS router is not listening
-            /// at the default loopback address and port 
-            IPAddress ipEndpoint;
-            if( !IPAddress.TryParse(System.Environment.GetEnvironmentVariable("ENV_AmsConfiguration__LoopbackAddress"), out ipEndpoint))
-            {
-                ipEndpoint = IPAddress.Loopback;
-            }
-
-            int port;
-            if( ! int.TryParse(System.Environment.GetEnvironmentVariable("ENV_AmsConfiguration__LoopbackPort"), out port))
-            {
-                port = 48898;
-            }
-
-            AmsConfiguration.RouterEndPoint = new IPEndPoint( ipEndpoint, port);
-
             _toggleValues = true; // Simulates a value change
         }
 
@@ -87,8 +67,7 @@ namespace AdsSymbolicServerSample
         /// </summary>
         protected override void OnConnected()
         {
-            this.AddSymbols()
-                .AddNotificationTrigger();
+            this.AddSymbols();
 
             // An Observable.Interval is used to simulate changed values 
             IObservable<long> changeValueTrigger = Observable.Interval(_toggleValuesTime, Scheduler.Default);
@@ -119,14 +98,14 @@ namespace AdsSymbolicServerSample
             }
         }
 
-        /// <summary>
-        /// Creates an Notification trigger for the Notifications base tick.
-        /// </summary>
-        private SymbolicTestServer AddNotificationTrigger()
-        {
-            base.notificationTrigger.Add(new BaseTickTrigger(TimeSpan.FromMilliseconds(100)));
-            return this;
-        }
+        ///// <summary>
+        ///// Creates an Notification trigger for the Notifications base tick.
+        ///// </summary>
+        //private SymbolicTestServer AddNotificationTrigger()
+        //{
+        //    base.notificationTrigger.Add(new BaseTickTrigger(TimeSpan.FromMilliseconds(100)));
+        //    return this;
+        //}
 
         /// <summary>
         /// Create the Symbolic information DataAreas, DataTypes and Symbols.

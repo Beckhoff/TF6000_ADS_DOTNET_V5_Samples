@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +10,8 @@ using TwinCAT.Ads;
 using TwinCAT.Ads.Reactive;
 using TwinCAT.Ads.TypeSystem;
 using TwinCAT.TypeSystem;
-using System.Runtime.CompilerServices;
+using TwinCAT.Ads.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace AdsSymbolicServerSample
 {
@@ -22,9 +21,23 @@ namespace AdsSymbolicServerSample
 
         static async Task Main(string[] args)
         {
+            ILoggerFactory loggerFactory = null;
+
+            // Include the next lines to activate Logging
+            //AdsLoggerConfiguration config = new AdsLoggerConfiguration();
+            //config.LogLevel = LogLevel.Information;
+
+            //AdsLoggerProvider loggerProvider = new AdsLoggerProvider(() => config);
+
+            //loggerFactory = LoggerFactory.Create(builder =>
+            //    builder.AddProvider(loggerProvider)
+            //    .AddConsole()
+            //    .SetMinimumLevel(LogLevel.Debug)
+            //);
+
             Console.WriteLine("Starting the AdsSymbolicServer ...\n");
 
-            using (SymbolicTestServer server = new SymbolicTestServer())
+            using (SymbolicTestServer server = new SymbolicTestServer(loggerFactory))
             {
                 // Run the the cancel request in a seperate task asynchronously
                 Task cancelTask = Task.Run(() =>
