@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.2.*" />
     <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.2.*" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.ConfigurationProviders" Version="6.2.*" />
+	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.*" />
   </ItemGroup>
 </Project>

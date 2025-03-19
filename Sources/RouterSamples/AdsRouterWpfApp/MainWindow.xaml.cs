@@ -1,11 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using TwinCAT.Ads;
+using TwinCAT.Ads.Logging;
 using TwinCAT.Ads.SystemService;
 using TwinCAT.Ads.TcpRouter;
 using TwinCAT.Router;
@@ -18,10 +21,34 @@ namespace TcpIpRouterWpf
     public partial class MainWindow : Window, ILogger
     {
         /// <summary>
+        /// Simple LoggerProvider class that simply binds an existing ILogger instance as ILoggerProvider
+        /// Implements the <see cref="ILoggerProvider" />
+        /// </summary>
+        /// <seealso cref="ILoggerProvider" />
+        private class MyLoggerProvider : ILoggerProvider
+        {
+            ILogger _logger;
+
+            public MyLoggerProvider(ILogger logger)
+            {
+                _logger = logger;
+            }
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return _logger;
+            }
+
+            public void Dispose()
+            {
+                _logger = null;
+            }
+        }
+
+        /// <summary>
         /// The router
         /// </summary>
         private AmsTcpIpRouter _router;
-
 
         /// <summary>
         /// The router ADS Server (Port 1)
@@ -35,10 +62,26 @@ namespace TcpIpRouterWpf
         private CancellationTokenSource _cancel;
         private SynchronizationContext _ctx;
 
+        /// <summary>
+        /// The logger factory
+        /// </summary>
+        ILoggerFactory _loggerFactory;
+
         AmsNetId _local = new AmsNetId("1.2.3.4.5.6");
 
         public MainWindow()
         {
+            AdsLoggerConfiguration config = new AdsLoggerConfiguration();
+            config.LogLevel = LogLevel.Information;
+
+            MyLoggerProvider loggerProvider = new MyLoggerProvider(this);
+            loggerProvider.CreateLogger("test");
+
+            _loggerFactory = LoggerFactory.Create(builder =>
+                builder.AddProvider(loggerProvider)
+                .SetMinimumLevel(LogLevel.Debug)
+            );
+
             InitializeComponent();
             _ctx = SynchronizationContext.Current;
             enableDisableControls();
@@ -54,7 +97,7 @@ namespace TcpIpRouterWpf
                     lblStatus.Content = "";
                 enableDisableControls();
             }
-            ,null);
+            , null);
         }
 
         private void enableDisableControls()
@@ -101,7 +144,7 @@ namespace TcpIpRouterWpf
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            _router = new AmsTcpIpRouter(_local, AmsTcpIpRouter.DEFAULT_TCP_PORT, null, AmsTcpIpRouter.DEFAULT_TCP_PORT, (IPNetwork)null,this);
+            _router = new AmsTcpIpRouter(_local, AmsTcpIpRouter.DEFAULT_TCP_PORT, null, AmsTcpIpRouter.DEFAULT_TCP_PORT, (IPNetwork?)null, _loggerFactory);
             _router.RouterStatusChanged += _router_RouterStatusChanged;
             lblStatus.Content = _router.RouterStatus.ToString();
 
@@ -111,8 +154,8 @@ namespace TcpIpRouterWpf
 
             Task routerTask = _router.StartAsync(_cancel.Token);
 
-            _routerServer = new AdsRouterServer(_router, this);
-            _systemService = new SystemServiceServer(_router, this);
+            _routerServer = new AdsRouterServer(_router, _loggerFactory);
+            _systemService = new SystemServiceServer(_router, _loggerFactory);
 
             Task<AdsErrorCode> routerServerTask = _routerServer.ConnectServerAndWaitAsync(_cancel.Token);
             Task<AdsErrorCode> systemServiceTask = _systemService.ConnectServerAndWaitAsync(_cancel.Token);
