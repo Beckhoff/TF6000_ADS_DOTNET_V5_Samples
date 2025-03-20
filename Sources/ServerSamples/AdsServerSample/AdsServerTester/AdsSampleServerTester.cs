@@ -1,18 +1,13 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TestServer;
 using TwinCAT;
 using TwinCAT.Ads;
+using TwinCAT.Ads.Logging;
 using TwinCAT.Ads.Server;
+
 
 /* Sample Windows.Forms application that instantiates ans connects an AdsSampleServer. 
  */
@@ -22,15 +17,57 @@ public partial class AdsSampleServerTester : Form, ILogger
     private AdsSampleServer _server;
     private uint _serverNotificationHandle = 0;
 
+    /// <summary>
+    /// Simple LoggerProvider class that simply binds an existing ILogger instance as ILoggerProvider
+    /// Implements the <see cref="ILoggerProvider" />
+    /// </summary>
+    /// <seealso cref="ILoggerProvider" />
+    private class MyLoggerProvider : ILoggerProvider
+    {
+        ILogger _logger;
+
+        public MyLoggerProvider(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return _logger;
+        }
+
+        public void Dispose()
+        {
+            _logger = null;
+        }
+    }
+
+    /// <summary>
+    /// The logger factory
+    /// </summary>
+    ILoggerFactory _loggerFactory;
+
     public AdsSampleServerTester()
     {
+        AdsLoggerConfiguration config = new AdsLoggerConfiguration();
+        config.LogLevel = LogLevel.Information;
+
+        MyLoggerProvider loggerProvider = new MyLoggerProvider((ILogger)this);
+        loggerProvider.CreateLogger("AdsSampleServer");
+
+        _loggerFactory = LoggerFactory.Create(builder =>
+            builder.AddProvider(loggerProvider)
+            .SetMinimumLevel(LogLevel.Debug)
+        );
+
         InitializeComponent();
 
         // Create a new AdsSampleServer instance listening on Ads port 2500.
         // User Server Ports must be in between
         // AmsPort.CUSTOMER_FIRST (25000) <= PORT <= AmsPort.CUSTOMER_LAST (25999)
+        // AmsPort.CUSTOMER_PRIVATE_FIRST (26000) <= PORT <= AmsPort.CUSTOMER_PRIVATE_LAST (26999)
         // to not conflict with Beckhoff prereserved servers!
-        _server = new AdsSampleServer(25000, "AdsSampleServer", this);
+        _server = new AdsSampleServer(25000, "AdsSampleServer", _loggerFactory);
         _server.ServerConnectionStateChanged+=ConnectionStatusChanged;
         enableDisableControls();
     }
@@ -60,7 +97,15 @@ public partial class AdsSampleServerTester : Form, ILogger
         else if (args.State == ServerConnectionState.Disconnected)
             AppendLogMessage("Server is disconnected");
 
-        enableDisableControls();
+
+        if (this.InvokeRequired)
+        {
+            this.Invoke(() => enableDisableControls());
+        }
+        else
+        {
+            enableDisableControls();
+        }
     }
 
     void AdsSampleServerTester_Closing(object sender, System.ComponentModel.CancelEventArgs e)

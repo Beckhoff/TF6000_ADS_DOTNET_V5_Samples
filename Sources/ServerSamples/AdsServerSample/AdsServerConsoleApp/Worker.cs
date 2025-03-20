@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -11,12 +9,14 @@ namespace Sample.Ads.AdsServerCore
 {
     public class ServerWorker : BackgroundService
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<ServerWorker> _logger;
 
-        public ServerWorker(ILogger<ServerWorker> logger)
+        //public ServerWorker(ILogger<ServerWorker> logger)
+        public ServerWorker(ILoggerFactory loggerFactory)
         {
-            _logger = logger;
-
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<ServerWorker>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancel)
@@ -32,8 +32,8 @@ namespace Sample.Ads.AdsServerCore
 
             // This presumes that a TwinCAT Router is already running!
 
-            AdsSampleServer server1 = new AdsSampleServer(26000, "TestAdsServer1", _logger);
-            AdsSampleServer server2 = new AdsSampleServer(26001, "TestAdsServer2", _logger);
+            AdsSampleServer server1 = new AdsSampleServer(26000, "TestAdsServer1", _loggerFactory);
+            AdsSampleServer server2 = new AdsSampleServer(26001, "TestAdsServer2", _loggerFactory);
 
             Task[] serverTasks = new Task[2];
 

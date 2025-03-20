@@ -1,9 +1,5 @@
 using System;
 using System.Collections;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using TwinCAT.Ads.Server;
 using TwinCAT.Ads;
 using Microsoft.Extensions.Logging;
@@ -24,7 +20,8 @@ namespace TestServer
         private Hashtable _notificationTable = new Hashtable();
         private uint _currentNotificationHandle = 0;
 
-        private IServerLogger _serverLogger;
+        //private IServerLogger _serverLogger;
+        private ILogger _logger;
 
         /* Instanstiate an ADS server with a fix ADS port assigned by the ADS router.
         */
@@ -34,17 +31,19 @@ namespace TestServer
         //    //_serverLogger = logger;
         //}
 
-        public AdsSampleServer(ushort port, string portName, ILogger logger) : base(port, portName, logger)
+        public AdsSampleServer(ushort port, string portName, ILoggerFactory loggerFactory) : base(port, portName, null)
         {
-            _serverLogger = new ServerLogger(logger);
+            _logger = loggerFactory.CreateLogger(portName);
+            //_serverLogger = new ServerLogger(logger);
         }
 
         /*
          * Instanstiate an ADS server with an unfixed ADS port assigned by the ADS router.
          */
-        public AdsSampleServer(string portName, ILogger logger) : base(portName, logger)
+        public AdsSampleServer(string portName, ILoggerFactory loggerFactory) : base(portName, loggerFactory)
         {
-            _serverLogger = new ServerLogger(logger);
+            _logger = loggerFactory.CreateLogger<AdsSampleServer>();
+            //_serverLogger = new ServerLogger(logger);
 
             // custom intialization  
             //_logger = gui;
@@ -54,9 +53,8 @@ namespace TestServer
 
         protected override void OnConnected()
         {
-            _serverLogger.Logger.LogInformation($"Server '{this.GetType()}', Address: {base.ServerAddress} connected!");
+            _logger.LogInformation("Server '{Server}', Address: {Address} connected!",nameof(AdsSampleServer),this.ServerAddress);
         }
-
 
         /* Overwrite the indication methods of the AdsServer class for the services your ADS server
          * provides. They are called upon incoming requests. All indications that are not overwritten in
@@ -86,14 +84,9 @@ namespace TestServer
                     if (writeData.Length == 4)
                     {
                         uint value = BinaryPrimitives.ReadUInt32LittleEndian(writeData.Span.Slice(0, 4));
-
-                        if (_serverLogger != null)
-                        {
-                            _serverLogger.Log(String.Format("PLC Counter: {0}", value));
-                        }
+                        _logger.LogInformation("PLC Counter: {Count}", value);
                         result = ResultWrite.CreateSuccess();
                     }
-
                     break;
 
                 default: /* other services are not supported */
@@ -197,76 +190,59 @@ namespace TestServer
 #pragma warning disable CS0618 // Type or member is obsolete
         protected override Task<AdsErrorCode> WriteIndicationAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogWriteInd(sender, invokeId, indexGroup, indexOffset, writeData);
-            }
+            _logger.LogDebug($"WriteInd(Address: {sender}, InvokeId: {invokeId}, IG: {indexGroup}, IO: {indexOffset}, Length: {writeData.Length})");
             return base.WriteIndicationAsync(sender, invokeId, indexGroup, indexOffset, writeData, cancel);
         }
 
-        protected override Task<AdsErrorCode> ReadIndicationAsync(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
+        protected override Task<AdsErrorCode> ReadIndicationAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int readLength, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadInd(rAddr, invokeId, indexOffset, readLength);
-            }
-            return base.ReadIndicationAsync(rAddr, invokeId, indexGroup, indexOffset, readLength, cancel);
+            _logger.LogDebug($"ReadInd(Address: {sender}, InvokeId: {invokeId}, IO: {indexOffset}, Length: {readLength})");
+            return base.ReadIndicationAsync(sender, invokeId, indexGroup, indexOffset, readLength, cancel);
         }
 
-        protected override Task<AdsErrorCode> ReadDeviceStateIndicationAsync(AmsAddress rAddr, uint invokeId, CancellationToken cancel)
+        protected override Task<AdsErrorCode> ReadDeviceInfoIndicationAsync(AmsAddress sender, uint invokeId, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadStateInd(rAddr, invokeId);
-            }
-            return base.ReadDeviceInfoIndicationAsync(rAddr, invokeId, cancel);
+            _logger.LogDebug($"ReadDeviceInfoInd(Address: {sender}, InvokeId: {invokeId})");
+            return base.ReadDeviceInfoIndicationAsync(sender, invokeId, cancel);
         }
 
-        protected override Task<AdsErrorCode> WriteControlIndicationAsync(AmsAddress rAddr, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
+        protected override Task<AdsErrorCode> ReadDeviceStateIndicationAsync(AmsAddress sender, uint invokeId, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogWriteControlInd(rAddr, invokeId, adsState, deviceState, data);
-            }
-            return base.WriteControlIndicationAsync(rAddr, invokeId, adsState, deviceState, data, cancel);
+            _logger.LogDebug($"ReadStateInd(Address: {sender}, InvokeId: {invokeId})");
+            return base.ReadDeviceStateIndicationAsync(sender, invokeId, cancel);
         }
 
-        protected override Task<AdsErrorCode> AddDeviceNotificationIndicationAsync(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int length, NotificationSettings settings, CancellationToken cancel)
+        protected override Task<AdsErrorCode> WriteControlIndicationAsync(AmsAddress sender, uint invokeId, AdsState adsState, ushort deviceState, ReadOnlyMemory<byte> data, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogAddDeviceNotificationInd(rAddr, invokeId, indexGroup, indexOffset, length, settings);
-            }
-            return base.AddDeviceNotificationIndicationAsync(rAddr, invokeId, indexGroup, indexOffset, length, settings, cancel);
+            _logger.LogDebug($"WriteControlInd(Address: {sender}, InvokeId: {invokeId}, AdsState: {adsState}, DeviceState: {deviceState}, Length: {data.Length})");
+            return base.WriteControlIndicationAsync(sender, invokeId, adsState, deviceState, data, cancel);
         }
 
-        protected override Task<AdsErrorCode> DeleteDeviceNotificationIndicationAsync(AmsAddress rAddr, uint invokeId, uint hNotification, CancellationToken cancel)
+        protected override Task<AdsErrorCode> AddDeviceNotificationIndicationAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int length, NotificationSettings settings, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogDelDeviceNotificationInd(rAddr, invokeId, hNotification);
-            }
-            return base.DeleteDeviceNotificationIndicationAsync(rAddr, invokeId, hNotification, cancel);
+            _logger.LogDebug($"AddDeviceNotificationInd(Address: {sender}, InvokeId: {invokeId}, IG: {indexGroup}, IO: {indexOffset}, Len: {length})");
+            return base.AddDeviceNotificationIndicationAsync(sender, invokeId, indexGroup, indexOffset, length, settings, cancel);
         }
 
-        protected override Task<AdsErrorCode> DeviceNotificationIndicationAsync(AmsAddress address, uint invokeId, uint numStampHeaders, NotificationSamplesStamp[] stampHeaders, CancellationToken cancel)
-
+        protected override Task<AdsErrorCode> DeleteDeviceNotificationIndicationAsync(AmsAddress sender, uint invokeId, uint hNotification, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogDeviceNotificationInd(address, invokeId, numStampHeaders, stampHeaders);
-                _serverLogger.Log("Received Device Notification Request");
-            }
-            return base.DeviceNotificationIndicationAsync(address, invokeId, numStampHeaders, stampHeaders, cancel);
+            _logger.LogDebug($"DelDeviceNotificationInd(Address: {sender}, InvokeId: {invokeId}, Handle: {hNotification})");
+            return base.DeleteDeviceNotificationIndicationAsync(sender, invokeId, hNotification, cancel);
         }
 
-        protected override Task<AdsErrorCode> ReadWriteIndicationAsync(AmsAddress rAddr, uint invokeId, uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
+        protected override Task<AdsErrorCode> DeviceNotificationIndicationAsync(AmsAddress sender, uint invokeId, uint numStampHeaders, NotificationSamplesStamp[] stampHeaders, CancellationToken cancel)
+
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadWriteInd(rAddr, invokeId, indexGroup, indexOffset, readLength, writeData);
-            }
-            return base.ReadWriteIndicationAsync(rAddr, invokeId, indexGroup, indexOffset, readLength, writeData, cancel);
+            _logger.LogDebug($"DeviceNotificationInd(Address: {sender}, InvokeId: {invokeId}, Headers: {numStampHeaders})");
+            _logger.LogInformation("Received Device Notification Request");
+
+            return base.DeviceNotificationIndicationAsync(sender, invokeId, numStampHeaders, stampHeaders, cancel);
+        }
+
+        protected override Task<AdsErrorCode> ReadWriteIndicationAsync(AmsAddress sender, uint invokeId, uint indexGroup, uint indexOffset, int readLength, ReadOnlyMemory<byte> writeData, CancellationToken cancel)
+        {
+            _logger.LogDebug($"ReadWriteInd(Address: {sender}, InvokeId: {invokeId}, IG: {indexGroup}, IO: {indexOffset}, ReadLen: {readLength}, WriteLen: {writeData.Length})");
+            return base.ReadWriteIndicationAsync(sender, invokeId, indexGroup, indexOffset, readLength, writeData, cancel);
         }
 #pragma warning restore CS0672 // Member overrides obsolete member
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -277,99 +253,73 @@ namespace TestServer
          * 
          * In common, it is not necessary to overload the virtual Confirmation methods!
          */
-        protected override Task<AdsErrorCode> OnReadDeviceStateConfirmationAsync(AmsAddress rAddr, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState, CancellationToken cancel)
-
+        protected override Task<AdsErrorCode> OnReadDeviceStateConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, AdsState adsState, ushort deviceState, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadStateCon(rAddr, invokeId, result, adsState, deviceState);
-                _serverLogger.Log("Received Read State Confirmation");
-            }
+            _logger.LogDebug($"ReadStateCon(Address: {sender}, InvokeId: {invokeId}, Result: {result}, State: {adsState}, DeviceState: {deviceState})");
+            _logger.LogInformation("Received Read State Confirmation");
 
-            return base.OnReadDeviceStateConfirmationAsync(rAddr, invokeId, result, adsState, deviceState, cancel);
+            return base.OnReadDeviceStateConfirmationAsync(sender, invokeId, result, adsState, deviceState, cancel);
         }
 
         protected override Task<AdsErrorCode> OnReadConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData, CancellationToken cancel)
 
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadCon(sender, invokeId, result, readData);
-                _serverLogger.Log("Received Read Confirmation");
-            }
+            _logger.LogDebug($"ReadCon(Address: {sender}, InvokeId: {invokeId}, Result: {result}, cbLength: {readData.Length}");
+            _logger.LogInformation("Received Read Confirmation");
 
             return base.OnReadConfirmationAsync(sender, invokeId, result, readData, cancel);
         }
 
         protected override Task<AdsErrorCode> OnWriteConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogWriteCon(sender, invokeId, result);
-                _serverLogger.Log("Received Write Confirmation");
-            }
+            _logger.LogDebug($"WriteCon(Address: {sender}, InvokeId: {invokeId}, Result: {result})");
+            _logger.LogInformation("Received Write Confirmation");
 
             return base.OnWriteConfirmationAsync(sender, invokeId, result, cancel);
         }
 
         protected override Task<AdsErrorCode> OnReadDeviceInfoConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, string name, AdsVersion version, CancellationToken cancel)
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadDeviceInfoCon(sender, invokeId, result, name, version);
-                _serverLogger.Log("Received Read Device Info Confirmation");
-            }
+            _logger.LogDebug($"ReadDeviceInfoCon(Address: {sender}, InvokeId: {invokeId}, Result: {result}, Name: {name}, Version: {version})");
+            _logger.LogInformation("Received Read Device Info Confirmation");
 
             return base.OnReadDeviceInfoConfirmationAsync(sender, invokeId, result, name, version, cancel);
         }
 
-        protected override Task<AdsErrorCode> OnWriteControlConfirmationAsync(AmsAddress rAddr, uint invokeId, AdsErrorCode result, CancellationToken cancel)
+        protected override Task<AdsErrorCode> OnWriteControlConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, CancellationToken cancel)
 
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadDeviceInfoCon(rAddr, invokeId, result);
-                _serverLogger.Log("Received Write Control Confirmation");
-            }
+            _logger.LogDebug($"ReadDeviceInfoCon(Address: {sender}, InvokeId: {invokeId}, Result: {result})");
+            _logger.LogInformation("Received Write Control Confirmation");
 
-            return base.OnWriteControlConfirmationAsync(rAddr, invokeId, result, cancel);
+            return base.OnWriteControlConfirmationAsync(sender, invokeId, result, cancel);
         }
 
         protected override Task<AdsErrorCode> OnAddDeviceNotificationConfirmationAsync(AmsAddress rAddr, uint invokeId, AdsErrorCode result, uint notificationHandle, CancellationToken cancel)
 
         {
-            //_serverLogger.ServerNotificationHandle = notificationHandle;
+            _logger.LogDebug($"AddDeviceNotificationCon(Address: {rAddr}, InvokeId: {invokeId}, Result: {result}, Handle: {notificationHandle}");
+            _logger.LogInformation("Received Add Device Notification Confirmation. Notification handle: " + notificationHandle);
 
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogAddDeviceNotificationCon(rAddr, invokeId, result, notificationHandle);
-                _serverLogger.Log("Received Add Device Notification Confirmation. Notification handle: " + notificationHandle);
-            }
-
-            return OnAddDeviceNotificationConfirmationAsync(rAddr, invokeId, result, notificationHandle, cancel);
+            return base.OnAddDeviceNotificationConfirmationAsync(rAddr, invokeId, result, notificationHandle, cancel);
         }
 
-        protected override Task<AdsErrorCode> OnDeleteDeviceNotificationConfirmationAsync(AmsAddress rAddr, uint invokeId, AdsErrorCode result, CancellationToken cancel)
+        protected override Task<AdsErrorCode> OnDeleteDeviceNotificationConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, CancellationToken cancel)
 
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogDelDeviceNotificationCon(rAddr, invokeId, result);
-                _serverLogger.Log("Received Delete Device Notification Confirmation");
-            }
+            _logger.LogDebug($"DelDeviceNotificationCon(Address: {sender}, InvokeId: {invokeId}, Result: {result})");
+            _logger.LogInformation("Received Delete Device Notification Confirmation");
 
-            return OnDeleteDeviceNotificationConfirmationAsync(rAddr, invokeId, result, cancel);
+            return base.OnDeleteDeviceNotificationConfirmationAsync(sender, invokeId, result, cancel);
         }
 
-        protected override Task<AdsErrorCode> OnReadWriteConfirmationAsync(AmsAddress address, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData, CancellationToken cancel)
+        protected override Task<AdsErrorCode> OnReadWriteConfirmationAsync(AmsAddress sender, uint invokeId, AdsErrorCode result, ReadOnlyMemory<byte> readData, CancellationToken cancel)
 
         {
-            if (_serverLogger != null)
-            {
-                _serverLogger.LogReadWriteCon(address, invokeId, result, readData);
-                _serverLogger.Log("Received Read Write Confirmation");
-            }
-            return OnReadWriteConfirmationAsync(address, invokeId, result, readData, cancel);
+            _logger.LogDebug($"ReadWriteConfirmation(Address: {sender}, InvokeId: {invokeId}, Result: {result}, Length: {readData.Length})");
+            _logger.LogInformation("Received Read Write Confirmation");
+
+            return base.OnReadWriteConfirmationAsync(sender, invokeId, result, readData, cancel);
         }
 
         uint invokeId = 0;
