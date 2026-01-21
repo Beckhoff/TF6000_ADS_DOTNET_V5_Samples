@@ -12,7 +12,6 @@ using TwinCAT.Ads.SumCommand;
 using TwinCAT.TypeSystem;
 using TwinCAT.ValueAccess;
 
-
 namespace S22_SumReadWrite
 {
     /// <summary>
@@ -20,10 +19,9 @@ namespace S22_SumReadWrite
     /// </summary>
     public partial class Form1 : Form
     {
-        
+        private SymbolCollection symbols = new SymbolCollection();
         private AdsClient adsClient;
         private ISymbolLoader loader;
-        SymbolCollection symbols = new SymbolCollection();
         private string[] variablePaths;
 
         public Form1()
@@ -61,7 +59,7 @@ namespace S22_SumReadWrite
             {
                 // Connect to PLC
                 adsClient = new AdsClient();
-                adsClient.Connect(AmsNetId.Local,851);
+                adsClient.Connect(AmsNetId.Local, 851);
 
                 variablePaths = new string[] { "MAIN.uintValue", "MAIN.dintValue", "MAIN.boolValue" };
 
@@ -90,7 +88,7 @@ namespace S22_SumReadWrite
 
             try
             {
-                SumSymbolRead readCommand = new SumSymbolRead(adsClient, symbols);
+                SumSymbolRead readCommand = new SumSymbolRead(adsClient, symbols, SumFallbackMode.Sum);
                 var resultSumRead = readCommand.Read();
 
                 tbUint.Text = resultSumRead[0].ToString();
@@ -112,12 +110,12 @@ namespace S22_SumReadWrite
 
             try
             {
-                SumSymbolWrite writeCommand = new SumSymbolWrite(adsClient,symbols);
+                SumSymbolWrite writeCommand = new SumSymbolWrite(adsClient, symbols, SumFallbackMode.Sum);
 
                 object[] writeValues = new object[]{Convert.ToInt16(tbUint2.Text),
                                                     Convert.ToInt16(tbDint2.Text),
                                                     Convert.ToBoolean(tbBool2.Text) };
-                
+
                 writeCommand.Write(writeValues);
             }
             catch (Exception err)

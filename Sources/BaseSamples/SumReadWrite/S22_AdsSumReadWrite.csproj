@@ -6,6 +6,6 @@
     <StartupObject>S22_SumReadWrite.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="8.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="7.*" />
   </ItemGroup>
 </Project>
