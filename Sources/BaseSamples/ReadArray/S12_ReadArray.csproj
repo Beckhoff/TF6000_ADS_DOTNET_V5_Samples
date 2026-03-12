@@ -6,6 +6,6 @@
     <StartupObject>S12_ReadArray.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="7.*" />
   </ItemGroup>
 </Project>

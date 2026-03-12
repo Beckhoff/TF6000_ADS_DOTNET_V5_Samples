@@ -88,12 +88,12 @@ namespace S22_SumReadWrite
 
             try
             {
-                SumSymbolRead readCommand = new SumSymbolRead(adsClient, symbols, SumFallbackMode.Sum);
-                var resultSumRead = readCommand.Read();
+                SumSymbolRead readCommand = new SumSymbolRead(adsClient, symbols);
+                var resultSumRead = readCommand.ReadAsResult();
 
-                tbUint.Text = resultSumRead[0].ToString();
-                tbDint.Text = resultSumRead[1].ToString();
-                tbBool.Text = resultSumRead[2].ToString();
+                tbUint.Text = resultSumRead.Values[0].ToString();
+                tbDint.Text = resultSumRead.Values[1].ToString();
+                tbBool.Text = resultSumRead.Values[2].ToString();
             }
             catch (Exception err)
             {
@@ -110,7 +110,7 @@ namespace S22_SumReadWrite
 
             try
             {
-                SumSymbolWrite writeCommand = new SumSymbolWrite(adsClient, symbols, SumFallbackMode.Sum);
+                SumSymbolWrite writeCommand = new SumSymbolWrite(adsClient, symbols);
 
                 object[] writeValues = new object[]{Convert.ToInt16(tbUint2.Text),
                                                     Convert.ToInt16(tbDint2.Text),
