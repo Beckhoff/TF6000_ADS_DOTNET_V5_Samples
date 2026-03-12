@@ -7,10 +7,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.2.*" />
+    <!--<PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.2.*" />
     <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="6.2.*" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.2.*" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.SystemServer" Version="6.2.*" />-->
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\AdsApiDotNetCore\Sources\TwinCAT.Ads.Abstractions\TwinCAT.Ads.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\AdsApiDotNetCore\Sources\TwinCAT.Ads.AdsClient\TwinCAT.Ads.AdsClient.csproj" />
+    <ProjectReference Include="..\..\..\..\..\AdsApiDotNetCore\Sources\TwinCAT.Ads.AdsServer\TwinCAT.Ads.AdsServer.csproj" />
+    <ProjectReference Include="..\..\..\..\..\AdsApiDotNetCore\Sources\TwinCAT.Ads.SystemServer\TwinCAT.Ads.SystemServer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

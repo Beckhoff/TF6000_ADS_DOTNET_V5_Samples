@@ -353,6 +353,9 @@ namespace AdsSessionTest
                 tBConnectionState.Text = ConnectionState.None.ToString();
                 tBAdsState.Text = AdsState.Invalid.ToString();
 
+                tBConnectionActiveSince.Text = string.Empty;
+                tBResurrections.Text = string.Empty;
+
                 tBResurrectionTime.Text = string.Empty;
                 tBTimeout.Text = string.Empty;
 
@@ -364,29 +367,40 @@ namespace AdsSessionTest
 
                 if (_session != null)
                 {
-                    tBCConnectionLostTime.Text = _session.Statistics.ConnectionLostAt.ToString();
                     tBConnectionLostCount.Text = _session.Statistics.TotalConnectionLosses.ToString();
                 }
                 else
                 {
-                    tBCConnectionLostTime.Text = string.Empty;
                     tBConnectionLostCount.Text = string.Empty;
                 }
-
             }
             tBAdsState.Background = adsStateBrush;
             tBConnectionState.Background = connectionStateBrush;
 
             if (_session != null && _session.Statistics.ConnectionLostAt.HasValue)
-                tBCConnectionLostTime.Text = _session.Statistics.ConnectionLostAt.Value.ToString("hh:mm:ss");
+                tBConnectionLostTime.Text = _session.Statistics.ConnectionLostAt.Value.ToString("hh:mm:ss");
             else
-                tBCConnectionLostTime.Text = string.Empty;
+                tBConnectionLostTime.Text = string.Empty;
 
             if (_session != null)
                 tBConnectionLostCount.Text = _session.Statistics.TotalConnectionLosses.ToString();
             else
                 tBConnectionLostCount.Text = string.Empty;
 
+            if (_session != null && _session.Statistics.ConnectionActiveSince.HasValue)
+                tBConnectionActiveSince.Text = _session.Statistics.ConnectionActiveSince?.ToString("hh:mm:ss");
+            else
+                tBConnectionActiveSince.Text = string.Empty;
+
+            if (_session != null)
+                tBResurrections.Text = _session.Statistics.TotalResurrections.ToString();
+            else
+                tBResurrections.Text = string.Empty;
+
+            if (_session != null)
+                tBErrorsSinceLastSucceeded.Text = _session.Statistics.CommunicationErrorsSinceLastSucceeded.ToString();
+            else
+                tBErrorsSinceLastSucceeded.Text = string.Empty;
         }
 
         private void EnableDisableControls()
@@ -474,12 +488,22 @@ namespace AdsSessionTest
 
         private void btnSymbols_Click(object sender, RoutedEventArgs e)
         {
-            IEnumerable<IDataType> dataTypes = _session.SymbolServer.DataTypes;
-            IEnumerable<ISymbol> symbols = _session.SymbolServer.Symbols;
+            var dataTypes = _session.SymbolServer.DataTypes;
+            var symbols = _session.SymbolServer.Symbols;
 
-            SymbolsWindow window = new SymbolsWindow();
-            window.SetSymbols(symbols, dataTypes);
-            window.ShowDialog();
+            string message = $"""
+                The project contains {symbols.Count} Root Symbols and {dataTypes.Count} data types. 
+                The SymbolBrowser is only a simple showcase with problems on large/complex projects.
+                Do you want to open the SymbolBrowser?
+                """;
+            MessageBoxResult result = MessageBox.Show(this,message, "SymbolBrowser", MessageBoxButton.OKCancel);
+
+            if (result == MessageBoxResult.OK)
+            {
+                SymbolsWindow window = new SymbolsWindow();
+                window.SetSymbols(symbols, dataTypes);
+                window.ShowDialog();
+            }
         }
 
         private void tbNetId_TextChanged(object sender, TextChangedEventArgs e)

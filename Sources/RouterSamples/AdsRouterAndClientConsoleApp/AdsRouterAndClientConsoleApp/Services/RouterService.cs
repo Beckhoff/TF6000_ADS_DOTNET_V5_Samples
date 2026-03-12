@@ -23,7 +23,7 @@ namespace AdsRouterAndClientConsoleApp
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var router = new AmsTcpIpRouter(_configuration,_loggerFactor);
+            var router = new AmsTcpIpRouter(_configuration,_loggerFactory);
             //_logger.LogInformation("Information!");
             //_logger.LogDebug("Debug!");
             //_logger.LogTrace("Trace!");

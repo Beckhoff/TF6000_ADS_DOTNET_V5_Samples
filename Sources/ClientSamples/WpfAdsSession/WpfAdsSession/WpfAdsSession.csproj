@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>    
+    <TargetFramework>net10.0-windows</TargetFramework>    
     <UseWPF>true</UseWPF>    
     <StartupObject>AdsSessionTest.App</StartupObject>
   </PropertyGroup>
@@ -19,12 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="8.*" />
-    <PackageReference Include="System.Reactive" Version="6.0.2" />
-    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.*" />
-	<PackageReference Include="Beckhoff.TwinCAT.Ads.Reactive" Version="6.*" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.4" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="7.*" />
+	  <PackageReference Include="Beckhoff.TwinCAT.Ads.Reactive" Version="7.*" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Resources\Alias.ico" />
     <Resource Include="Resources\Array.ico" />

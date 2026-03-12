@@ -20,9 +20,9 @@ namespace AdsRouterAndClientConsoleApp
         // Application settings as Static Variables here
         static AmsNetId _localNetId = new AmsNetId("1.1.1.1.1.1");
         
-        static AmsNetId _remoteNetId = new AmsNetId("3.3.3.3.1.1");
+        static AmsNetId _remoteNetId = new AmsNetId("172.28.175.131.1.1");
         static string _remoteRouteName = "CodedRemote";
-        static IPAddress _remoteIp = IPAddress.Parse("192.168.0.3");
+        static IPAddress _remoteIp = IPAddress.Parse("172.17.62.79");
 
         // static ILogger? _logger = null;
         // static ILoggerFactory? _loggerFactory = null;
@@ -39,7 +39,7 @@ namespace AdsRouterAndClientConsoleApp
 
                 using var loggerFactory = LoggerFactory.Create(builder =>
                 {
-                    builder.SetMinimumLevel(LogLevel.Information);
+                    builder.SetMinimumLevel(LogLevel.Trace);
                     builder.AddConsole();
                 });
 
@@ -62,11 +62,11 @@ namespace AdsRouterAndClientConsoleApp
                 // Starting included AdsServers
                 // In this case we add the simple TwinCAT Router (AmsPort 1) to support adding and removing routes
                 // (Add-AdsRoute, Remove-AdsRoute from TcXaeMgmt powershell module are supported)
-                AdsRouterServer adsRouterService = new AdsRouterServer(router, _logger);
+                AdsRouterServer adsRouterService = new AdsRouterServer(router, loggerFactory);
 
                 // And a simple TwinCAT System Service (AmsPort 10000) for supporting browsing routes
                 // (Get-AdsRoute support including BroadcastSearch 'Get-AdsRoute -all' in 'TcXaeMgmt' Powershell module)
-                SystemServiceServer systemService = new SystemServiceServer(router, _logger);
+                SystemServiceServer systemService = new SystemServiceServer(router, loggerFactory);
 
                 Task systemServiceTask = systemService.ConnectServerAndWaitAsync(cancel);
                 Task routerServerTask = adsRouterService.ConnectServerAndWaitAsync(cancel);
@@ -78,7 +78,7 @@ namespace AdsRouterAndClientConsoleApp
                 }
 
                 // Instantiate and connect Client
-                using var client = new AdsClient(loggerFactory.CreateLogger("AdsClient"));
+                using var client = new AdsClient(loggerFactory);
                 client.Connect(new AmsAddress(_remoteNetId, 10000));
 
                 Console.WriteLine("Client connected");

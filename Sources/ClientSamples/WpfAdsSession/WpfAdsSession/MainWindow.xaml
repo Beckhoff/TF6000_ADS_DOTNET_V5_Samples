@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Class="AdsSessionTest.MainWindow"
         mc:Ignorable="d"
-        Title="ADS Session Test" Height="850" Width="770" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="640" MinHeight="800">
+        Title="ADS Session Test" Height="850" Width="770" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="770" MinHeight="851">
     <!--<Window.Resources>
         <ObjectDataProvider MethodName="GetValues"
         ObjectType="{x:Type sys:Enum}"
@@ -18,11 +18,17 @@
         </ObjectDataProvider>
     </Window.Resources>-->
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="130*"/>
+            <ColumnDefinition Width="523*"/>
+            <ColumnDefinition Width="117*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="781*"/>
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
-        <Grid Margin="10,20,10,0" UseLayoutRounding="False" Grid.RowSpan="2">
+        <Grid Margin="10,20,10,0" UseLayoutRounding="False" Grid.RowSpan="2" Grid.ColumnSpan="4">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -67,7 +73,7 @@
                 <Grid Margin="0,0,0,0">
                     <TextBox x:Name="tBConnectionEstablishedAt" Height="22" Margin="98,74,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionEstablishedAt, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Connection established time"/>
                     <TextBox x:Name="tBConnectionLostCount" Height="22" Margin="98,46,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionLostCount, Mode=OneWay}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Lost counter of the session."/>
-                    <TextBox x:Name="tBCConnectionLostTime" Height="24" Margin="98,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionLostTime, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Lost Time of the connection (if lost)"/>
+                    <TextBox x:Name="tBConnectionLostTime" Height="24" Margin="98,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ConnectionLostTime, Mode=OneWay, StringFormat=\{0:hh:mm:ss\}}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Lost Time of the connection (if lost)" />
                     <Label x:Name="lblConnectionLostCount" Content="LostCount" HorizontalAlignment="Left" Margin="3,42,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.494,1.731"/>
                     <Label x:Name="lblConnectionLostTime" Content="LostTime" HorizontalAlignment="Left" Margin="3,12,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="lblConnectionEstablishedAt" Content="Established" HorizontalAlignment="Left" Margin="3,74,0,0" VerticalAlignment="Top"/>
@@ -78,8 +84,8 @@
                     <Label x:Name="lblResurrections" Content="Resurrections" Margin="0,103,127,19"/>
                     <TextBox x:Name="tBTotalCycles" Height="22" Margin="96,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.TotalCycles, Mode=OneWay}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Number of ADS Roundtrips/Cycles occured in the actual session"/>
                     <TextBox x:Name="tBTotalErrors" Height="22" Margin="96,42,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.TotalErrors, Mode=OneWay}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Number of ADS errors occured in the actual session"/>
-                    <TextBox x:Name="tBErrorsSinceLastSucceeded" Height="24" Margin="96,72,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.ErrorsSinceLastSucceeded, Mode=OneWay}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Number of ADS errors since the last succeeded communication"/>
-                    <TextBox x:Name="tBResurrections" Height="24" Margin="96,104,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.Resurrections, Mode=OneWay}" HorizontalContentAlignment="Right" ToolTip="Resurrection counter"/>
+                    <TextBox x:Name="tBErrorsSinceLastSucceeded" Height="24" Margin="96,72,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.CommunicationErrorsSinceLastSucceeded, Mode=OneWay}" IsReadOnly="True" HorizontalContentAlignment="Right" ToolTip="Number of ADS errors since the last succeeded communication" />
+                    <TextBox x:Name="tBResurrections" Height="24" Margin="96,104,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Statistics.TotalResurrections, Mode=OneWay}" HorizontalContentAlignment="Right" ToolTip="Resurrection counter"/>
                     <Label x:Name="lblCycles" Content="Cycles" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="lblTotalErrors" Content="Errors" HorizontalAlignment="Left" Margin="0,42,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="lblErrorsSinceLastSuccess" Content="ErrorsSinceSucc" HorizontalAlignment="Left" Margin="0,72,0,0" VerticalAlignment="Top"/>
